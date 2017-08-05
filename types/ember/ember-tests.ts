@@ -24,6 +24,7 @@ App.president.get('fullName');
 declare class MyPerson extends Ember.Object {
     static createMan(): MyPerson;
 }
+MyPerson.createMan();
 
 const Person1 = Ember.Object.extend({
     say: (thing: string) => {
@@ -34,6 +35,8 @@ const Person1 = Ember.Object.extend({
 declare class MyPerson2 extends Ember.Object {
     helloWorld(): void;
 }
+MyPerson2.create().helloWorld();
+
 const tom = Person1.create({
     name: 'Tom Dale',
     helloWorld() {
