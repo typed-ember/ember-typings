@@ -4,8 +4,7 @@ import { or } from '@ember/object/computed';
 
 let App: any;
 
-App = Ember.Application.create<Ember.Application>();
-
+App = Ember.Application.create();
 App.president = Ember.Object.create({
     name: 'Barack Obama',
 });
@@ -26,7 +25,7 @@ declare class MyPerson extends Ember.Object {
     static createMan(): MyPerson;
 }
 
-const Person1 = Ember.Object.extend<typeof MyPerson>({
+const Person1 = Ember.Object.extend({
     say: (thing: string) => {
         alert(thing);
     },
@@ -35,7 +34,7 @@ const Person1 = Ember.Object.extend<typeof MyPerson>({
 declare class MyPerson2 extends Ember.Object {
     helloWorld(): void;
 }
-const tom = Person1.create<MyPerson2>({
+const tom = Person1.create({
     name: 'Tom Dale',
     helloWorld() {
         this.say('Hi my name is ' + this.get('name'));
@@ -44,7 +43,7 @@ const tom = Person1.create<MyPerson2>({
 tom.helloWorld();
 
 Person1.reopen({ isPerson: true });
-Person1.create<Ember.Object>().get('isPerson');
+Person1.create().get('isPerson');
 
 Person1.reopenClass({
     createMan: () => {
@@ -54,7 +53,7 @@ Person1.reopenClass({
 // ReSharper disable once DuplicatingLocalDeclaration
 Person1.createMan().get('isMan');
 
-const person = Person1.create<Ember.Object>({
+const person = Person1.create({
     firstName: 'Yehuda',
     lastName: 'Katz',
 });
@@ -126,7 +125,7 @@ Handlebars.registerHelper(
 
 const coolView = App.CoolView.create();
 
-const Person2 = Ember.Object.extend<typeof Ember.Object>({
+const Person2 = Ember.Object.extend({
     sayHello() {
         console.log('Hello from ' + this.get('name'));
     },
@@ -142,8 +141,8 @@ const arr = Ember.A([Ember.Object.create(), Ember.Object.create()]);
 arr.setEach('name', 'unknown');
 arr.getEach('name');
 
-const Person3 = Ember.Object.extend<typeof Ember.Object>({
-    name: null,
+const Person3 = Ember.Object.extend({
+    name: '',
     isHappy: false,
 });
 const people2 = Ember.A([
