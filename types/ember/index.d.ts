@@ -799,6 +799,8 @@ declare namespace Ember {
         frozenCopy(): Copyable;
     }
     interface CoreObject {
+        _super(...args: any[]): any;
+
         /**
         An overridable method called when objects are instantiated. By default,
         does nothing unless it is overridden during class definition.
