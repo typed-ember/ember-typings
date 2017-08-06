@@ -320,6 +320,8 @@ type EmberClassArguments<T> = Partial<T> & {
     [key: string]: any
 };
 
+type EmberMixin<T> = Ember.Mixin<T> | T;
+
 interface EmberClassConstructor<T> {
     new (...args: any[]): T;
     prototype: T;
@@ -327,6 +329,11 @@ interface EmberClassConstructor<T> {
     create<Instance, Extensions extends EmberClassArguments<T>>(
         this: EmberClassConstructor<Instance>,
         args?: Extensions & ThisType<Extensions & Instance>): Extensions & Instance;
+
+    createWithMixins<Instance, M1, Extensions extends EmberClassArguments<T>>(
+        this: EmberClassConstructor<Instance>,
+        mixin1: EmberMixin<M1>,
+        args?: Extensions & ThisType<Extensions & Instance & M1>): Extensions & Instance & M1;
 }
 
 interface EmberClass<T> extends EmberClassConstructor<T> {
@@ -334,6 +341,20 @@ interface EmberClass<T> extends EmberClassConstructor<T> {
         this: EmberClass<Instance> & Statics,
         args?: Extensions & ThisType<Extensions & Instance>): EmberClass<Extensions & Instance>;
 
+    extend<Statics, Instance, M1, Extensions extends EmberClassArguments<T>>(
+        this: EmberClass<Instance> & Statics,
+        mixin1: EmberMixin<M1>,
+        args?: Extensions & ThisType<Extensions & Instance & M1>): EmberClass<Extensions & Instance & M1>;
+
+    extend<Statics, Instance, M1, M2, Extensions extends EmberClassArguments<T>>(
+        this: EmberClass<Instance> & Statics,
+        mixin1: EmberMixin<M1>, mixin2: EmberMixin<M2>,
+        args?: Extensions & ThisType<Extensions & Instance & M1 & M2>): EmberClass<Extensions & Instance & M1 & M2>;
+
+    extend<Statics, Instance, M1, M2, M3, Extensions extends EmberClassArguments<T>>(
+        this: EmberClass<Instance> & Statics,
+        mixin1: EmberMixin<M1>, mixin2: EmberMixin<M2>, mixin3: EmberMixin<M3>,
+        args?: Extensions & ThisType<Extensions & Instance & M1 & M2 & M3>): EmberClass<Extensions & Instance & M1 & M2 & M3>;
     // /**
     // Equivalent to doing extend(arguments).create(). If possible use the normal create method instead.
     // @method createWithMixins
@@ -1059,15 +1080,8 @@ declare namespace Ember {
         copy(): MapWithDefault;
         static create(): MapWithDefault;
     }
-    class Mixin {
-        apply(obj: any): any;
-        /**
-        Creates an instance of the class.
-        @param arguments A hash containing values with which to initialize the newly instantiated object.
-        **/
-        // static create<T extends Mixin>(...args: CoreObjectArguments[]): T;
-        detect(obj: any): boolean;
-        reopen<T extends Mixin>(args?: {}): T;
+    class Mixin<T = {}> {
+        static create<T>(args?: T): Mixin<T>;
     }
     class MutableArray implements Array, MutableEnumberable {
         addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
