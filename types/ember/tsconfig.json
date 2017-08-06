@@ -18,6 +18,7 @@
         "test/lib/assert.ts",
         "test/ember-tests.ts",
         "test/extend.ts",
-        "test/object.ts"
+        "test/object.ts",
+        "test/mixin.ts"
     ]
 }

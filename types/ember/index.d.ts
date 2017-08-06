@@ -36,19 +36,12 @@ type EmberClassArguments<T> = Partial<T> & {
     [key: string]: any
 };
 
-<<<<<<< HEAD
 type EmberMixin<T> = Ember.Mixin<T> | T;
 
 interface EmberClassConstructor<T> {
-||||||| merged common ancestors
-interface EmberClass<T> {
-=======
-interface EmberClassConstructor<T> {
->>>>>>> fix instance methods not appearing on extended es6 classes
     new (...args: any[]): T;
     prototype: T;
 
-<<<<<<< HEAD
     create<Instance, Extensions extends EmberClassArguments<T>>(
         this: EmberClassConstructor<Instance>,
         args?: Extensions & ThisType<Extensions & Instance>): Extensions & Instance;
@@ -60,20 +53,10 @@ interface EmberClassConstructor<T> {
 }
 
 interface EmberClass<T> extends EmberClassConstructor<T> {
-||||||| merged common ancestors
-=======
-    create<Instance, Extensions extends EmberClassArguments<T>>(
-        this: EmberClassConstructor<Instance>,
-        args?: Extensions & ThisType<Extensions & Instance>): Extensions & Instance;
-}
-
-interface EmberClass<T> extends EmberClassConstructor<T> {
->>>>>>> fix instance methods not appearing on extended es6 classes
     extend<Statics, Instance, Extensions extends EmberClassArguments<T>>(
         this: EmberClass<Instance> & Statics,
         args?: Extensions & ThisType<Extensions & Instance>): EmberClass<Extensions & Instance>;
 
-<<<<<<< HEAD
     extend<Statics, Instance, M1, Extensions extends EmberClassArguments<T>>(
         this: EmberClass<Instance> & Statics,
         mixin1: EmberMixin<M1>,
@@ -92,57 +75,6 @@ interface EmberClass<T> extends EmberClassConstructor<T> {
     reopen<Extra>(args?: Extra & ThisType<T & Extra>): EmberClass<T & Extra>;
 
     reopenClass<Extra>(args?: Extra): EmberClass<T> & Extra;
-||||||| merged common ancestors
-    create<Instance, Extensions extends EmberClassArguments<T>>(
-        this: EmberClass<Instance>,
-        args?: Extensions & ThisType<Extensions & Instance>): Extensions & Instance;
-
-    // /**
-    // Equivalent to doing extend(arguments).create(). If possible use the normal create method instead.
-    // @method createWithMixins
-    // @static
-    // @param [args]
-    // **/
-    // static createWithMixins<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's prototype with additional properties and functions.
-    // To add functions and properties to the constructor itself, see reopenClass.
-    // @method reopen
-    // **/
-    // static reopen<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's own properties and functions.
-    // To add functions and properties to instances of a constructor by extending the
-    // constructor's prototype see reopen.
-    // @method reopenClass
-    // **/
-    // static reopenClass<T extends {}>(args?: {}): T;
-=======
-    // /**
-    // Equivalent to doing extend(arguments).create(). If possible use the normal create method instead.
-    // @method createWithMixins
-    // @static
-    // @param [args]
-    // **/
-    // static createWithMixins<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's prototype with additional properties and functions.
-    // To add functions and properties to the constructor itself, see reopenClass.
-    // @method reopen
-    // **/
-    // static reopen<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's own properties and functions.
-    // To add functions and properties to instances of a constructor by extending the
-    // constructor's prototype see reopen.
-    // @method reopenClass
-    // **/
-    // static reopenClass<T extends {}>(args?: {}): T;
->>>>>>> fix instance methods not appearing on extended es6 classes
 
     // TODO: remove private API?
 
