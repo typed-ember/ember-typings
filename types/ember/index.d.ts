@@ -2067,6 +2067,11 @@ declare namespace Ember {
     function canInvoke(obj: any, methodName: string): boolean;
     function changeProperties(callback: Function, binding?: any): void;
     function compare(v: any, w: any): number;
+    type compareFunc = (itemA: any, itemB: any) => number;
+    interface DeprecateOptions {
+        id: string;
+        until: string;
+    }
     // ReSharper disable once DuplicatingLocalDeclaration
     const computed: {
         (...args: any[]): ComputedProperty;
@@ -2074,26 +2079,39 @@ declare namespace Ember {
         and(...args: string[]): ComputedProperty;
         any(...args: string[]): ComputedProperty;
         bool(dependentKey: string): ComputedProperty;
+        collect(...args: string[]): ComputedProperty;
         defaultTo(defaultPath: string): ComputedProperty;
+        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty;
         empty(dependentKey: string): ComputedProperty;
         equal(dependentKey: string, value: any): ComputedProperty;
         filter(
             dependentKey: string,
             callback: (item: any, index?: number, array?: any[]) => boolean
         ): ComputedProperty;
-        filterBy(dependentKey: string, propertyKey: string, value: any): ComputedProperty;
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty;
         gt(dependentKey: string, value: number): ComputedProperty;
         gte(dependentKey: string, value: number): ComputedProperty;
+        intersect(...args: string[]): ComputedProperty;
         lt(dependentKey: string, value: number): ComputedProperty;
         lte(dependentKey: string, value: number): ComputedProperty;
         map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty;
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty;
         match(dependentKey: string, regexp: RegExp): ComputedProperty;
+        max(dependentKey: string): ComputedProperty;
+        min(dependentKey: string): ComputedProperty;
         none(dependentKey: string): ComputedProperty;
         not(dependentKey: string): ComputedProperty;
         notEmpty(dependentKey: string): ComputedProperty;
         oneWay(dependentKey: string): ComputedProperty;
         or(...args: string[]): ComputedProperty;
         readOnly(dependentString: string): ComputedProperty;
+        reads(dependentKey: string): ComputedProperty;
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty;
+        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty;
+        sum(dependentKey: string): ComputedProperty;
+        union(...args: string[]): ComputedProperty;
+        uniq(propertyKey: string): ComputedProperty;
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty;
     };
     // ReSharper restore DuplicatingLocalDeclaration
     function controllerFor(
