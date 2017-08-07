@@ -19,6 +19,7 @@
         "test/ember-tests.ts",
         "test/extend.ts",
         "test/object.ts",
-        "test/mixin.ts"
+        "test/mixin.ts",
+        "test/reopen.ts"
     ]
 }

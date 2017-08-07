@@ -46,14 +46,6 @@ tom.helloWorld();
 Person1.reopen({ isPerson: true });
 Person1.create().get('isPerson');
 
-Person1.reopenClass({
-    createMan: () => {
-        return Person1.create({ isMan: true });
-    },
-});
-// ReSharper disable once DuplicatingLocalDeclaration
-Person1.createMan().get('isMan');
-
 const person = Person1.create({
     firstName: 'Yehuda',
     lastName: 'Katz',
