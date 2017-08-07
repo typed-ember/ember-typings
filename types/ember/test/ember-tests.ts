@@ -45,8 +45,8 @@ const tom = Person1.create({
 });
 tom.helloWorld();
 
-Person1.reopen({ isPerson: true });
-Person1.create().get('isPerson');
+const PersonReopened = Person1.reopen({ isPerson: true });
+PersonReopened.create().get('isPerson');
 
 const person = Person1.create({
     firstName: 'Yehuda',
@@ -121,6 +121,7 @@ Handlebars.registerHelper(
 const coolView = App.CoolView.create();
 
 const Person2 = Ember.Object.extend({
+    name: '',
     sayHello() {
         console.log('Hello from ' + this.get('name'));
     },
@@ -144,7 +145,7 @@ const people2 = Ember.A([
     Person3.create({ name: 'Yehuda', isHappy: true }),
     Person3.create({ name: 'Majd', isHappy: false }),
 ]);
-const isHappy = (person: Ember.Object): Boolean => {
+const isHappy = (person: typeof Person3.prototype): boolean => {
     return !!person.get('isHappy');
 };
 people2.every(isHappy);
