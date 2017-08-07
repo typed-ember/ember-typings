@@ -22,6 +22,10 @@
         "test/mixin.ts",
         "test/reopen.ts",
         "test/array.ts",
-        "test/array-proxy.ts"
+        "test/array-proxy.ts",
+        "test/get.ts",
+        "test/get-properties.ts",
+        "test/set.ts",
+        "test/set-properties.ts"
     ]
 }

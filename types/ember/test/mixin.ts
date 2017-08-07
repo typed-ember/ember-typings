@@ -1,8 +1,13 @@
 import Ember from 'ember';
 import { assertType } from "./lib/assert";
 
-const EditableMixin = Ember.Mixin.create({
-    edit(this: Ember.Object) {
+interface EditableMixin extends Ember.Object {
+    edit(): void;
+    isEditing: boolean;
+}
+
+const EditableMixin = Ember.Mixin.create(<EditableMixin> {
+    edit() {
         console.log('starting to edit');
         this.set('isEditing', true);
     },
