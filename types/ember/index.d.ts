@@ -355,28 +355,10 @@ interface EmberClass<T> extends EmberClassConstructor<T> {
         this: EmberClass<Instance> & Statics,
         mixin1: EmberMixin<M1>, mixin2: EmberMixin<M2>, mixin3: EmberMixin<M3>,
         args?: Extensions & ThisType<Extensions & Instance & M1 & M2 & M3>): EmberClass<Extensions & Instance & M1 & M2 & M3>;
-    // /**
-    // Equivalent to doing extend(arguments).create(). If possible use the normal create method instead.
-    // @method createWithMixins
-    // @static
-    // @param [args]
-    // **/
-    // static createWithMixins<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's prototype with additional properties and functions.
-    // To add functions and properties to the constructor itself, see reopenClass.
-    // @method reopen
-    // **/
-    // static reopen<T extends {}>(args?: {}): T;
-    //
-    // /**
-    // Augments a constructor's own properties and functions.
-    // To add functions and properties to instances of a constructor by extending the
-    // constructor's prototype see reopen.
-    // @method reopenClass
-    // **/
-    // static reopenClass<T extends {}>(args?: {}): T;
+
+    reopen<Extra>(args?: Extra & ThisType<T & Extra>): EmberClass<T & Extra>;
+
+    reopenClass<Extra>(args?: Extra): EmberClass<T> & Extra;
 
     // TODO: remove private API?
 
