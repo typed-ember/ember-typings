@@ -214,7 +214,7 @@ namespace Ember {
     recommended that you use Ember.A when creating addons for ember or when you can not garentee
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
-    function A(arr?: any[]): NativeArray;
+    function A(arr?: any[]): any[];
     /**
     An instance of Ember.Application is the starting point for every Ember application. It helps to
     instantiate, initialize and coordinate the many objects that make up your app.
