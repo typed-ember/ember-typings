@@ -20,6 +20,8 @@
         "test/extend.ts",
         "test/object.ts",
         "test/mixin.ts",
-        "test/reopen.ts"
+        "test/reopen.ts",
+        "test/array.ts",
+        "test/array-proxy.ts"
     ]
 }

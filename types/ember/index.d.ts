@@ -193,127 +193,10 @@ interface String {
     w(): string[];
 }
 
-interface Array<T> {
-    constructor(arr: any[]): void;
-    activate(): void;
-    addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-    addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-    any(callback: Function, target?: any): boolean;
-    anyBy(key: string, value?: string): boolean;
-    arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-    arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-    someProperty(key: string, value?: any): boolean;
-    clear(): any[];
-    compact(): any[];
-    contains(obj: any): boolean;
-    enumerableContentDidChange(
-        start: number,
-        removing: Ember.Enumerable | number,
-        adding: Ember.Enumerable | number
-    ): any;
-    enumerableContentDidChange(
-        removing: Ember.Enumerable | number,
-        adding: Ember.Enumerable | number
-    ): any;
-    enumerableContentWillChange(
-        removing: Ember.Enumerable | number,
-        adding: Ember.Enumerable | number
-    ): Ember.Enumerable;
-    every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-    everyBy(key: string, value?: string): boolean;
-    everyProperty(key: string, value?: any): boolean;
-    filter(callback: Function, target?: any): any[];
-    filterBy(key: string, value?: string): any[];
-
-    /**
-    Returns the first item in the array for which the callback returns true.
-    This method works similar to the `filter()` method defined in JavaScript 1.6
-    except that it will stop working on the array once a match is found.
-    The callback method you provide should have the following signature (all
-    parameters are optional):
-    ```javascript
-    function(item, index, enumerable);
-    ```
-    - `item` is the current item in the iteration.
-    - `index` is the current index in the iteration.
-    - `enumerable` is the enumerable object itself.
-    It should return the `true` to include the item in the results, `false`
-    otherwise.
-    Note that in addition to a callback, you can also pass an optional target
-    object that will be set as `this` on the context. This is a good way
-    to give your iterator function access to the current object.
-    @function find
-    @arg callback The callback to execute
-    @arg {Object} [target] The target object to use
-    @return {Object} Found item or `undefined`.
-*/
-    find(callback: Function, target?: any): any;
-    findBy(key: string, value?: string): any;
-    forEach(callback: Function, target?: any): any;
-    getEach(key: string): any[];
-    indexOf(object: any, startAt?: number): number;
-    insertAt(idx: number, object: any): any[];
-    invoke(methodName: string, ...args: any[]): any[];
-    lastIndexOf(object: any, startAt?: number): number;
-    map(callback: Function, target?: any): any[];
-    mapBy(key: string): any[];
-    nextObject(index: number, previousObject: any, context: any): any;
-    objectAt(idx: number): any;
-    objectsAt(...args: number[]): any[];
-    popObject(): any;
-    pushObject(obj: any): any;
-    pushObjects(...args: any[]): any[];
-    reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-    reject: ItemIndexEnumerableCallbackTarget;
-    rejectBy(key: string, value?: string): any[];
-    removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-    removeAt(start: number, len: number): any;
-    removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-    replace(idx: number, amt: number, objects: any[]): void;
-    reverseObjects(): any[];
-    setEach(key: string, value?: any): any;
-    setObjects(objects: any[]): any[];
-    shiftObject(): any;
-    slice(beginIndex?: number, endIndex?: number): any[];
-    some(callback: Function, target?: any): boolean;
-    toArray(): any[];
-    uniq(): any[];
-    unshiftObject(object: any): any;
-    unshiftObjects(objects: any[]): any[];
-    without(value: any): any[];
-    '[]': any[];
-    '@each': Ember.EachProxy;
-    Boolean: boolean;
-    firstObject: any;
-    hasEnumerableObservers: boolean;
-    lastObject: any;
-    addObject(object: any): any;
-    addObjects(objects: Ember.Enumerable): any[];
-    removeObject(object: any): any;
-    removeObjects(objects: Ember.Enumerable): any[];
-    addObserver: ModifyObserver;
-    beginPropertyChanges(): any[];
-    cacheFor(keyName: string): any;
-    decrementProperty(keyName: string, decrement?: number): number;
-    endPropertyChanges(): any[];
-    get(keyName: string): any;
-    getProperties(...args: string[]): {};
-    getProperties(keys: string[]): {};
-    getWithDefault(keyName: string, defaultValue: any): any;
-    hasObserverFor(key: string): boolean;
-    incrementProperty(keyName: string, increment?: number): number;
-    notifyPropertyChange(keyName: string): any[];
-    propertyDidChange(keyName: string): any[];
-    propertyWillChange(keyName: string): any[];
-    removeObserver(key: string, target: any, method: Function | string): Ember.Observable;
-    set(keyName: string, value: any): any[];
-    setProperties(hash: {}): any[];
-    toggleProperty(keyName: string): any;
-    copy(deep: boolean): any[];
-    frozenCopy(): any[];
-    // 1.3
-    isAny(key: string, value?: string): boolean;
-    isEvery(key: string, value?: string): boolean;
+// NOTE: only if EmberENV.EXTEND_PROTOTYPES
+declare global {
+    interface Array<T> extends Ember.NativeArray {
+    }
 }
 
 type EmberClassArguments<T> = Partial<T> & {
@@ -383,11 +266,6 @@ interface EnumerableConfigurationOptions {
     didChange?: boolean;
 }
 
-type ItemIndexEnumerableCallbackTarget = (
-    callback: ItemIndexEnumerableCallback,
-    target?: any
-) => any[];
-
 type ItemIndexEnumerableCallback = (item: any, index: number, enumerable: Ember.Enumerable) => void;
 
 type ReduceCallback = (
@@ -422,13 +300,6 @@ interface RenderOptions {
     view?: string;
 }
 
-type ModifyObserver = (
-    obj: any,
-    path: string | null,
-    target: Function | any,
-    method?: Function | string
-) => void;
-
 declare namespace Ember {
     /**
     Alias for jQuery.
@@ -441,7 +312,7 @@ declare namespace Ember {
     recommended that you use Ember.A when creating addons for ember or when you can not garentee
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
-    function A(arr?: any[]): NativeArray;
+    function A(arr?: any[]): any[];
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
@@ -549,141 +420,31 @@ declare namespace Ember {
     This module implements Observer-friendly Array-like behavior. This mixin is picked up by the
     Array class as well as other controllers, etc. that want to appear to be arrays.
     **/
-    class Array implements Enumerable {
+    interface Array extends Enumerable {
         addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
         arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
         arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        someProperty(key: string, value?: string): boolean;
-        compact(): any[];
-        contains(obj: any): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
-        enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target?: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
-        getEach(key: string): any[];
         indexOf(object: any, startAt: number): number;
-        invoke(methodName: string, ...args: any[]): any[];
         lastIndexOf(object: any, startAt: number): number;
-        map: ItemIndexEnumerableCallbackTarget;
-        mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
         objectAt(idx: number): any;
         objectsAt(...args: number[]): any[];
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
-        rejectBy(key: string, value?: string): any[];
         removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        setEach(key: string, value?: any): any;
         slice(beginIndex?: number, endIndex?: number): any[];
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        without(value: any): Enumerable;
         '@each': EachProxy;
-        Boolean: boolean;
-        '[]': any[];
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
         length: number;
     }
+    const Array: Mixin<Ember.Array>;
     /**
     An ArrayProxy wraps any other object that implements Ember.Array and/or Ember.MutableArray,
     forwarding all requests. This makes it very useful for a number of binding use cases or other cases
     where being able to swap out the underlying array is useful.
     **/
-    class ArrayProxy extends Object implements MutableArray {
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        someProperty(key: string, value?: string): boolean;
-        clear(): any[];
-        compact(): any[];
-        contains(obj: any): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
-        enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, $target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
-        getEach(key: string): any[];
-        indexOf(object: any, startAt: number): number;
-        insertAt(idx: number, object: any): any[];
-        invoke(methodName: string, ...args: any[]): any[];
-        lastIndexOf(object: any, startAt: number): number;
-        map: ItemIndexEnumerableCallbackTarget;
-        mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        objectAt(idx: number): any;
+    interface ArrayProxy extends Object, MutableArray {
+        content: any[];
         objectAtContent(idx: number): any;
-        objectsAt(...args: number[]): any[];
-        popObject(): any;
-        pushObject(obj: any): any;
-        pushObjects(...args: any[]): any[];
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
-        rejectBy(key: string, value?: string): any[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-        removeAt(start: number, len: number): any;
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        replace(idx: number, amt: number, objects: any[]): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
-        reverseObjects(): any[];
-        setEach(key: string, value?: any): any;
-        setObjects(objects: any[]): any[];
-        shiftObject(): any;
-        slice(beginIndex?: number, endIndex?: number): any[];
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        unshiftObject(object: any): any;
-        unshiftObjects(objects: any[]): any[];
-        without(value: any): Enumerable;
-        '[]': any[];
-        '@each': EachProxy;
-        Boolean: boolean;
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
-        length: number;
-        addObject(object: any): any;
-        addObjects(objects: Enumerable): MutableEnumberable;
-        removeObject(object: any): any;
-        removeObjects(objects: Enumerable): MutableEnumberable;
     }
+    const ArrayProxy: EmberClass<ArrayProxy>;
     const BOOTED: boolean;
     /**
     Connects the properties of two objects so that whenever the value of one property changes,
@@ -915,10 +676,11 @@ declare namespace Ember {
     This mixin is applied automatically to the Array class on page load, so you can use any of these methods
     on simple arrays. If Array already implements one of these methods, the mixin will not override them.
     **/
-    class Enumerable {
+    interface Enumerable {
         addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
         any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
         anyBy(key: string, value?: string): boolean;
+        isAny(key: string, value?: boolean): boolean;
         someProperty(key: string, value?: string): boolean;
         compact(): any[];
         contains(obj: any): boolean;
@@ -933,6 +695,7 @@ declare namespace Ember {
             adding: Enumerable | number
         ): Enumerable;
         every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
+        isEvery(key: string, value?: boolean): boolean;
         everyBy(key: string, value?: string): boolean;
         everyProperty(key: string, value?: string): boolean;
         filter(callback: ItemIndexEnumerableCallback, target: any): any[];
@@ -942,11 +705,11 @@ declare namespace Ember {
         forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
         getEach(key: string): any[];
         invoke(methodName: string, ...args: any[]): any[];
-        map: ItemIndexEnumerableCallbackTarget;
+        map(callback: ItemIndexEnumerableCallback, target?: any): any[];
         mapBy(key: string): any[];
         nextObject(index: number, previousObject: any, context: any): any;
         reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
+        reject(callback: ItemIndexEnumerableCallback, target?: any): any[];
         rejectBy(key: string, value?: string): any[];
         removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
         setEach(key: string, value?: any): any;
@@ -959,6 +722,7 @@ declare namespace Ember {
         hasEnumerableObservers: boolean;
         lastObject: any;
     }
+    const Enumerable: Mixin<Enumerable>;
     /**
     A subclass of the JavaScript Error object for use in Ember.
     **/
@@ -1065,260 +829,39 @@ declare namespace Ember {
     class Mixin<T = {}> {
         static create<T>(args?: T): Mixin<T>;
     }
-    class MutableArray implements Array, MutableEnumberable {
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        someProperty(key: string, value?: string): boolean;
+    interface MutableArray extends Array, MutableEnumberable {
         clear(): any[];
-        compact(): any[];
-        contains(obj: any): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
-        enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
-        getEach(key: string): any[];
-        indexOf(object: any, startAt: number): number;
         insertAt(idx: number, object: any): any[];
-        invoke(methodName: string, ...args: any[]): any[];
-        lastIndexOf(object: any, startAt: number): number;
-        map: ItemIndexEnumerableCallbackTarget;
-        mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        objectAt(idx: number): any;
-        objectsAt(...args: number[]): any[];
         popObject(): any;
         pushObject(obj: any): any;
         pushObjects(...args: any[]): any[];
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
-        rejectBy(key: string, value?: string): any[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
         removeAt(start: number, len: number): any;
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
         replace(idx: number, amt: number, objects: any[]): any;
         reverseObjects(): any[];
-        setEach(key: string, value?: any): any;
         setObjects(objects: any[]): any[];
         shiftObject(): any;
-        slice(beginIndex?: number, endIndex?: number): any[];
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
         unshiftObject(object: any): any;
         unshiftObjects(objects: any[]): any[];
-        without(value: any): Enumerable;
-        '[]': any[];
-        '@each': EachProxy;
-        Boolean: boolean;
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
-        length: number;
+    }
+    const MutableArray: Mixin<MutableArray>;
+    interface MutableEnumberable extends Enumerable {
         addObject(object: any): any;
         addObjects(objects: Enumerable): MutableEnumberable;
         removeObject(object: any): any;
         removeObjects(objects: Enumerable): MutableEnumberable;
     }
-    class MutableEnumberable implements Enumerable {
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        addObject(object: any): any;
-        addObjects(objects: Enumerable): MutableEnumberable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
-        someProperty(key: string, value?: string): boolean;
-        compact(): any[];
-        contains(obj: any): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
-        enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
-        getEach(key: string): any[];
-        invoke(methodName: string, ...args: any[]): any[];
-        map: ItemIndexEnumerableCallbackTarget;
-        mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
-        rejectBy(key: string, value?: string): any[];
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        removeObject(object: any): any;
-        removeObjects(objects: Enumerable): MutableEnumberable;
-        setEach(key: string, value?: any): any;
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        without(value: any): Enumerable;
-        '[]': any[];
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
-    }
+    const MutableEnumerable: Mixin<MutableEnumberable>;
     const NAME_KEY: string;
     interface Namespace extends Object {
     }
     const Namespace: EmberClass<Namespace>;
-    class NativeArray implements MutableArray, Observable, Copyable {
-        constructor(arr: any[]);
-        static activate(): void;
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        someProperty(key: string, value?: any): boolean;
-        clear(): any[];
-        compact(): any[];
-        contains(obj: any): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
-        enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: any): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
-        getEach(key: string): any[];
-        indexOf(object: any, startAt: number): number;
-        insertAt(idx: number, object: any): any[];
-        invoke(methodName: string, ...args: any[]): any[];
-        lastIndexOf(object: any, startAt: number): number;
-        map: ItemIndexEnumerableCallbackTarget;
-        mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        objectAt(idx: number): any;
-        objectsAt(...args: number[]): any[];
-        popObject(): any;
-        pushObject(obj: any): any;
-        pushObjects(...args: any[]): any[];
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject: ItemIndexEnumerableCallbackTarget;
-        rejectBy(key: string, value?: string): any[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-        removeAt(start: number, len: number): any;
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        replace(idx: number, amt: number, objects: any[]): any;
-        reverseObjects(): any[];
-        setEach(key: string, value?: any): any;
-        setObjects(objects: any[]): any[];
-        shiftObject(): any;
-        slice(beginIndex?: number, endIndex?: number): any[];
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        unshiftObject(object: any): any;
-        unshiftObjects(objects: any[]): any[];
-        without(value: any): Enumerable;
-        '[]': any[];
-        '@each': EachProxy;
-        Boolean: boolean;
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
-        length: number;
-        addObject(object: any): any;
-        addObjects(objects: Enumerable): MutableEnumberable;
-        removeObject(object: any): any;
-        removeObjects(objects: Enumerable): MutableEnumberable;
-        addObserver: ModifyObserver;
-        beginPropertyChanges(): Observable;
-        cacheFor(keyName: string): any;
-        decrementProperty(keyName: string, decrement?: number): number;
-        endPropertyChanges(): Observable;
-        get(keyName: string): any;
-        getProperties(...args: string[]): {};
-        getProperties(keys: string[]): {};
-        getWithDefault(keyName: string, defaultValue: any): any;
-        hasObserverFor(key: string): boolean;
-        incrementProperty(keyName: string, increment?: number): number;
-        notifyPropertyChange(keyName: string): Observable;
-        propertyDidChange(keyName: string): Observable;
-        propertyWillChange(keyName: string): Observable;
-        removeObserver(key: string, target: any, method: Function | string): void;
-        set(keyName: string, value: any): Observable;
-        setProperties(hash: {}): Observable;
-        toggleProperty(keyName: string): any;
-        copy(deep: boolean): Copyable;
-        frozenCopy(): Copyable;
+    interface NativeArray extends MutableArray, Observable, Copyable {
     }
+    const NativeArray: Mixin<NativeArray>;
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
     interface Object extends CoreObject, Observable {
-        addObserver: ModifyObserver;
-        beginPropertyChanges(): Observable;
-        cacheFor(keyName: string): any;
-        decrementProperty(keyName: string, decrement?: number): number;
-        endPropertyChanges(): Observable;
-
-        /**
-         * Retrieves the value of a property from the object
-         * @param keyName
-         * @returns {}
-         */
-        get(keyName: string): any;
-
-        /**
-         * Retrieves the value of a property from the object
-         * @param keyName
-         * @returns {}
-         */
-        get<T>(keyName: string): T;
-
-        getProperties(...args: string[]): {};
-        getProperties(keys: string[]): {};
-        getWithDefault(keyName: string, defaultValue: any): any;
-        hasObserverFor(key: string): boolean;
-        incrementProperty(keyName: string, increment?: number): number;
-        notifyPropertyChange(keyName: string): Observable;
-        propertyDidChange(keyName: string): Observable;
-        propertyWillChange(keyName: string): Observable;
-        removeObserver(key: string, target: any, method: Function | string): Observable;
-        set(keyName: string, value: any): Observable;
-        setProperties(hash: {}): Observable;
-        toggleProperty(keyName: string): any;
     }
     const Object: EmberClass<Object>;
     interface ObjectProxy extends Object {
@@ -1328,8 +871,8 @@ declare namespace Ember {
         content: Object;
     }
     const ObjectProxy: EmberClass<ObjectProxy>;
-    class Observable {
-        addObserver: ModifyObserver;
+    interface Observable {
+        addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
         beginPropertyChanges(): Observable;
         cacheFor(keyName: string): any;
         decrementProperty(keyName: string, decrement?: number): number;
@@ -1351,6 +894,7 @@ declare namespace Ember {
         */
         toggleProperty(keyName: string): boolean;
     }
+    const Observable: Mixin<Observable>;
     class OrderedSet {
         add(obj: any): void;
         clear(): void;
@@ -1377,9 +921,6 @@ declare namespace Ember {
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
     interface Route extends Object, ActionHandlerMixin, Evented {
-        // static isClass: boolean;
-        // static isMethod: boolean;
-
         /**
         This hook is executed when the router enters the route. It is not executed
         when the model for the route changes.
@@ -1907,27 +1448,7 @@ declare namespace Ember {
         router: Router;
         options: any;
     }
-    interface Service extends CoreObject, Observable {
-        /* Observable */
-        addObserver: ModifyObserver;
-        beginPropertyChanges(): Observable;
-        cacheFor(keyName: string): any;
-        decrementProperty(keyName: string, decrement?: number): number;
-        endPropertyChanges(): Observable;
-        get(keyName: string): any;
-        getProperties(...args: string[]): {};
-        getProperties(keys: string[]): {};
-        getWithDefault(keyName: string, defaultValue: any): any;
-        hasObserverFor(key: string): boolean;
-        incrementProperty(keyName: string, increment?: number): number;
-        notifyPropertyChange(keyName: string): Observable;
-        propertyDidChange(keyName: string): Observable;
-        propertyWillChange(keyName: string): Observable;
-        removeObserver(key: string, target: {}, method: Function | string): void;
-        set(keyName: string, value: any): Observable;
-        setProperties(hash: {}): Observable;
-        toggleProperty(keyName: string): boolean;
-        /* /Observable */
+    interface Service extends Object {
     }
     const Service: EmberClass<Service>;
     const STRINGS: boolean;
@@ -2057,7 +1578,7 @@ declare namespace Ember {
         method: Function | string,
         once?: boolean
     ): void;
-    const addObserver: ModifyObserver;
+    function addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
     /**
     Ember.alias is deprecated. Please use Ember.aliasMethod or Ember.computed.alias instead.
     **/

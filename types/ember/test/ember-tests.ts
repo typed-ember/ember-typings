@@ -147,8 +147,9 @@ const isHappy = (person: Ember.Object): Boolean => {
 };
 people2.every(isHappy);
 people2.any(isHappy);
-people2.everyProperty('isHappy', true);
-people2.someProperty('isHappy', true);
+people2.isEvery('isHappy', true);
+people2.isAny('isHappy', true);
+people2.isAny('isHappy');
 
 // Examples taken from http://emberjs.com/api/classes/Em.RSVP.Promise.html
 const promise = new Ember.RSVP.Promise<string, string>((resolve: Function, reject: Function) => {
