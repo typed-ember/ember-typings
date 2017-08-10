@@ -296,7 +296,6 @@ interface Array<T> {
     cacheFor(keyName: string): any;
     decrementProperty(keyName: string, decrement?: number): number;
     endPropertyChanges(): any[];
-    expandProperties(pattern: string, callback: Function): any;
     get(keyName: string): any;
     getProperties(...args: string[]): {};
     getProperties(keys: string[]): {};
@@ -2489,6 +2488,7 @@ declare namespace Ember {
     // ReSharper disable once DuplicatingLocalDeclaration
     const empty: typeof deprecateFunc;
     function endPropertyChanges(): void;
+    function expandProperties(pattern: string, callback: Function): void;
     function finishChains(obj: any): void;
     function generateController(
         container: Container,
