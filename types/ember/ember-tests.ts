@@ -174,6 +174,9 @@ promise.then(
     }
 );
 
+// make sure Ember.RSVP.Promise can be reference as a type
+declare function promiseReturningFunction(urn: string): Ember.RSVP.Promise<string, any>;
+
 const mix1 = Ember.Mixin.create({
     foo: 1,
 });
