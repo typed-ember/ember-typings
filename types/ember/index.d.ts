@@ -1585,6 +1585,9 @@ declare namespace Ember {
 
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
     const RSVP: typeof Rsvp;
+    namespace RSVP {
+        type Promise<T, C> = Rsvp.Promise<T, C>;
+    }
 
     /**
       The `Ember.Route` class is used to define individual routes. Refer to
