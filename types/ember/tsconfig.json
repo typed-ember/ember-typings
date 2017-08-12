@@ -26,6 +26,7 @@
         "test/get.ts",
         "test/get-properties.ts",
         "test/set.ts",
-        "test/set-properties.ts"
+        "test/set-properties.ts",
+        "test/computed.ts"
     ]
 }
