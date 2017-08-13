@@ -6,7 +6,7 @@ const Person = Ember.Object.extend({
     lastName: '',
     age: 0,
 
-    array: Ember.computed(() => Ember.A()),
+    noArgs: Ember.computed(() => 'test'),
 
     fullName: Ember.computed('firstName', 'lastName', function() {
         return `${this.get('firstName')} ${this.get('lastName')}`;
@@ -35,7 +35,7 @@ const person = Person.create({
     age: 29,
 });
 
-assertType<any[]>(person.get('array'));
+assertType<string>(person.get('noArgs'));
 assertType<string>(person.get('firstName'));
 assertType<string>(person.get('fullName'));
 assertType<string>(person.get('fullNameReadonly'));

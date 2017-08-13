@@ -4,7 +4,7 @@ const pets = ['dog', 'cat', 'fish'];
 const proxy = Ember.ArrayProxy.create({ content: Ember.A(pets) });
 
 proxy.get('firstObject'); // 'dog'
-proxy.set('content', ['amoeba', 'paramecium']);
+proxy.set('content', Ember.A(['amoeba', 'paramecium']));
 proxy.get('firstObject'); // 'amoeba'
 
 const overridden = Ember.ArrayProxy.create({
