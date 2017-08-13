@@ -1,4 +1,4 @@
-// Type definitions for ember-data 2.14.1
+// Type definitions for ember-data 2.14
 // Project: http://emberjs.com/
 // Definitions by: Derek Wickern <https://github.com/dwickern>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -20,13 +20,12 @@ namespace DS {
    * `DS.belongsTo` is used to define One-To-One and One-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function belongsTo(modelName: string, options: {}): Ember.computed;
+  function belongsTo(modelName: string, options: {}): Ember.ComputedProperty;
   /**
    * `DS.hasMany` is used to define One-To-Many and Many-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function hasMany(type: string, options: {}): Ember.computed;
-  function 'diff-array'(oldArray: any[], newArray: any[]): {};
+  function hasMany(type: string, options: {}): Ember.ComputedProperty;
   /**
    * This method normalizes a modelName into the format Ember Data uses
    * internally.
@@ -41,7 +40,7 @@ namespace DS {
    * `boolean` and `date`. You can define your own transforms by subclassing
    * [DS.Transform](/api/data/classes/DS.Transform.html).
    */
-  function attr(type: string|{}, options: {}): Attribute;
+  function attr(type: string|{}, options: {}): Ember.ComputedProperty;
   /**
    * WARNING: This interface is likely to change in order to accomodate https://github.com/emberjs/rfcs/pull/4
    * ## Using BuildURLMixin
@@ -607,7 +606,7 @@ namespace DS {
      * Data will treat the new data as the conanical value of this
      * relationship on the backend.
      */
-    push(objectOrPromise: {}|Promise<any>): Promise<record>;
+    push(objectOrPromise: {}|Promise<any>): Promise<any>;
     /**
      * `value()` synchronously returns the current value of the belongs-to
      * relationship. Unlike `record.get('relationshipName')`, calling
@@ -706,12 +705,12 @@ namespace DS {
      * Triggers a fetch for the backing entity based on its `remoteType`
      * (see `remoteType` definitions per reference type).
      */
-    load(): Promise<record>;
+    load(): Promise<any>;
     /**
      * Reloads the record if it is already loaded. If the record is not
      * loaded it will load the record via `store.findRecord`
      */
-    reload(): Promise<record>;
+    reload(): Promise<any>;
   }
   /**
    * A `ManyArray` is a `MutableArray` that represents the contents of a has-many
@@ -1407,7 +1406,7 @@ namespace DS {
      * the server. You should override this method, munge the hash
      * and call super if you have generic normalization to do.
      */
-    normalize(modelClass: Model, resourceHash: {}, prop: string): {};
+    normalize(modelClass: Model, resourceHash: {}, prop?: string): {};
     /**
      * This method allows you to push a payload containing top-level
      * collections of records organized per type.
@@ -1546,7 +1545,7 @@ namespace DS {
      * The `queryRecord()` method is invoked when the store is asked for a single
      * record through a query object.
      */
-    queryRecord(store: Store, type: subclass, query: {}): Promise<any>;
+    queryRecord(store: Store, type: Model, query: {}): Promise<any>;
     /**
      * If the globally unique IDs for your records should be generated on the client,
      * implement the `generateIdForRecord()` method. This method will be invoked
