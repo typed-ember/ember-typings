@@ -193,12 +193,6 @@ interface String {
     w(): string[];
 }
 
-// NOTE: only if EmberENV.EXTEND_PROTOTYPES
-declare global {
-    interface Array<T> extends Ember.NativeArray {
-    }
-}
-
 type EmberClassArguments<T> = Partial<T> & {
     [key: string]: any
 };
@@ -312,7 +306,7 @@ declare namespace Ember {
     recommended that you use Ember.A when creating addons for ember or when you can not garentee
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
-    function A(arr?: any[]): any[];
+    function A(arr?: any[]): NativeArray;
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
@@ -440,7 +434,7 @@ declare namespace Ember {
     where being able to swap out the underlying array is useful.
     **/
     interface ArrayProxy extends Object, MutableArray {
-        content: any[];
+        content: NativeArray;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }

@@ -1,9 +1,5 @@
 import Ember from 'ember';
 
-const pets = ['dog', 'cat', 'fish'];
-pets.get('length'); // 3
-pets.get('firstObject'); // 'dog'
-
 const Person = Ember.Object.extend({
     name: '',
     isHappy: false
