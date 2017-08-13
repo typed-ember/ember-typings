@@ -407,6 +407,7 @@ type ModifyObserver = (
     method?: Function | string
 ) => void;
 
+// tslint:disable-line strict-export-declare-modifiers
 export namespace Ember {
     /**
     Alias for jQuery.

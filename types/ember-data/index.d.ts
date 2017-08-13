@@ -4,10 +4,10 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
-/// <reference types="jquery" />
-/// <reference types="handlebars" />
+declare module 'ember-data' {
+import Ember from 'ember';
 
-declare namespace DS {
+namespace DS {
   /**
    * Convert an hash of errors into an array with errors in JSON-API format.
    */
@@ -42,22 +42,6 @@ declare namespace DS {
    * [DS.Transform](/api/data/classes/DS.Transform.html).
    */
   function attr(type: string|{}, options: {}): Attribute;
-  namespace Ember {
-    namespace HTMLBars {
-      class helpers {
-        /**
-         * If you have Ember Inflector (such as if Ember Data is present),
-         * pluralize a word. For example, turn "ox" into "oxen".
-         * Example:
-         * {{pluralize count myProperty}}
-         * {{pluralize 1 "oxen"}}
-         * {{pluralize myProperty}}
-         * {{pluralize "ox"}}
-         */
-        pluralize(count: number|Property, word: string|Property): any;
-      }
-    }
-  }
   /**
    * WARNING: This interface is likely to change in order to accomodate https://github.com/emberjs/rfcs/pull/4
    * ## Using BuildURLMixin
@@ -1673,47 +1657,6 @@ declare namespace DS {
     singularize(): any;
   }
 }
-declare namespace Ember {
-  namespace HTMLBars {
-    class helpers {
-      /**
-       * If you have Ember Inflector (such as if Ember Data is present),
-       * singularize a word. For example, turn "oxen" into "ox".
-       * Example:
-       * {{singularize myProperty}}
-       * {{singularize "oxen"}}
-       */
-      singularize(word: string|Property): any;
-    }
-  }
-  /**
-   * DEPRECATED:
-   * Date.parse with progressive enhancement for ISO 8601 <https://github.com/csnover/js-iso8601>
-   */
-  class Date {
-  }
-  /**
-   * Inflector.Ember provides a mechanism for supplying inflection rules for your
-   * application. Ember includes a default set of inflection rules, and provides an
-   * API for providing additional rules.
-   */
-  class Inflector {
-    enableCache(): any;
-    purgedCache(): any;
-    'disableCache;'(): any;
-    plural(regex: RegExp, string: string): any;
-    singular(regex: RegExp, string: string): any;
-    uncountable(regex: string): any;
-    irregular(singular: string, plural: string): any;
-    pluralize(word: string): any;
-    singularize(word: string): any;
-    inflect(word: string, typeRules: {}, irregular: {}): any;
-  }
-}
-declare namespace Handlebars {
-  class SafeString {
-  }
-}
 /**
  * Manages relationship payloads for a given store, for uninitialized
  * relationships.  Acts as a single source of truth (of payloads) for both sides
@@ -1721,19 +1664,19 @@ declare namespace Handlebars {
  * payload received without needing too much eager processing when those payloads
  * are pushed into the store.
  */
-declare class RelationshipPayloadsManager {
+class RelationshipPayloadsManager {
 }
 /**
  * Manages the payloads for both sides of a single relationship, across all model
  * instances.
  */
-declare class RelationshipPayloads {
+class RelationshipPayloads {
 }
 /**
  * `IdentityMap` is a custom storage map for records by modelName
  * used by `DS.Store`.
  */
-declare class IdentityMap {
+class IdentityMap {
   /**
    * Retrieves the `InternalModelMap` for a given modelName,
    * creating one if one did not already exist. This is
@@ -1750,16 +1693,62 @@ declare class IdentityMap {
  * `InternalModelMap` is a custom storage map for internalModels of a given modelName
  * used by `IdentityMap`.
  */
-declare class InternalModelMap {
+class InternalModelMap {
   /**
    * Destroy all models in the internalModelTest and wipe metadata.
    */
   clear(): any;
 }
-declare class DOMElement {
+
+export default DS;
 }
-declare class Registry {
+
+declare module 'ember' {
+    namespace Ember {
+        namespace HTMLBars {
+            class helpers {
+                /**
+                 * If you have Ember Inflector (such as if Ember Data is present),
+                 * pluralize a word. For example, turn "ox" into "oxen".
+                 * Example:
+                 * {{pluralize count myProperty}}
+                 * {{pluralize 1 "oxen"}}
+                 * {{pluralize myProperty}}
+                 * {{pluralize "ox"}}
+                 */
+                pluralize(count: number, word: string): any;
+                /**
+                 * If you have Ember Inflector (such as if Ember Data is present),
+                 * singularize a word. For example, turn "oxen" into "ox".
+                 * Example:
+                 * {{singularize myProperty}}
+                 * {{singularize "oxen"}}
+                 */
+                singularize(word: string): any;
+            }
+        }
+        /**
+         * DEPRECATED:
+         * Date.parse with progressive enhancement for ISO 8601 <https://github.com/csnover/js-iso8601>
+         */
+        class Date {
+        }
+        /**
+         * Inflector.Ember provides a mechanism for supplying inflection rules for your
+         * application. Ember includes a default set of inflection rules, and provides an
+         * API for providing additional rules.
+         */
+        class Inflector {
+            enableCache(): any;
+            purgedCache(): any;
+            'disableCache;'(): any;
+            plural(regex: RegExp, string: string): any;
+            singular(regex: RegExp, string: string): any;
+            uncountable(regex: string): any;
+            irregular(singular: string, plural: string): any;
+            pluralize(word: string): any;
+            singularize(word: string): any;
+            inflect(word: string, typeRules: {}, irregular: {}): any;
+        }
+    }
 }
-declare class Transition {
-}
-export default Ember;
