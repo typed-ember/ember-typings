@@ -8,11 +8,12 @@
 /// <reference types="jquery" />
 /// <reference types="handlebars" />
 
+declare module 'ember' {
 // Capitalization is intentional: this makes it much easier to re-export RSVP on
 // the Ember namespace.
 import Rsvp from 'rsvp';
 
-declare namespace EmberStates {
+namespace EmberStates {
     interface Transition {
         targetName: string;
         urlMethod: string;
@@ -161,7 +162,7 @@ declare namespace EmberStates {
 // Get an alias to the global Array type to use in inner scope below.
 type GlobalArray<T> = T[];
 
-declare namespace EmberTesting {
+namespace EmberTesting {
     namespace Test {
         class Adapter {
             asyncEnd(): void;
@@ -406,7 +407,7 @@ type ModifyObserver = (
     method?: Function | string
 ) => void;
 
-declare namespace Ember {
+export namespace Ember {
     /**
     Alias for jQuery.
     **/
@@ -2557,3 +2558,4 @@ declare namespace Ember {
 }
 
 export default Ember;
+}
