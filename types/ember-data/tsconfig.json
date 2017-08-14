@@ -14,6 +14,12 @@
     },
     "files": [
         "index.d.ts",
-        "ember-data-tests.ts"
+        "test/model.ts",
+        "test/adapter.ts",
+        "test/serializer.ts",
+        "test/transform.ts",
+        "test/relationships.ts",
+        "test/store.ts",
+        "test/inflector.ts"
     ]
 }
