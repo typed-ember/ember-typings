@@ -1,4 +1,4 @@
-﻿// Type definitions for Ember.js 2.7
+// Type definitions for Ember.js 2.7
 // Project: http://emberjs.com/
 // Definitions by: Jed Mao <https://github.com/jedmao>
 //                 bttf <https://github.com/bttf>
