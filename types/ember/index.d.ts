@@ -2642,7 +2642,7 @@ export default Ember;
 
 declare module '@ember/application' {
     import Ember from 'ember';
-    export default class Application extends Ember.Application { }
+    export default Ember.Application;
     const getOwner: typeof Ember.getOwner;
     const onLoad: typeof Ember.onLoad;
     const runLoadHooks: typeof Ember.runLoadHooks;
@@ -2657,22 +2657,22 @@ declare module '@ember/application/deprecations' {
 
 declare module '@ember/application/globals-resolver' {
     import Ember from 'ember';
-    export default class GlobalsResolver extends Ember.DefaultResolver { }
+    export default Ember.DefaultResolver;
 }
 
 declare module '@ember/application/instance' {
     import Ember from 'ember';
-    export default class ApplicationInstance extends Ember.ApplicationInstance { }
+    export default Ember.ApplicationInstance;
 }
 
 declare module '@ember/application/resolver' {
     import Ember from 'ember';
-    export default class Resolver extends Ember.Resolver { }
+    export default Ember.Resolver;
 }
 
 declare module '@ember/array' {
     import Ember from 'ember';
-    export default class EmberArray extends Ember.Array { }
+    export default Ember.Array;
     const A: typeof Ember.A;
     const isArray: typeof Ember.isArray;
     const makeArray: typeof Ember.makeArray;
@@ -2680,43 +2680,43 @@ declare module '@ember/array' {
 
 declare module '@ember/array/mutable' {
     import Ember from 'ember';
-    export default class MutableArray extends Ember.MutableArray { }
+    export default Ember.MutableArray;
 }
 
 declare module '@ember/array/proxy' {
     import Ember from 'ember';
-    export default class ArrayProxy extends Ember.ArrayProxy { }
+    export default Ember.ArrayProxy;
 }
 
 declare module '@ember/component' {
     import Ember from 'ember';
-    export default class Component extends Ember.Component { }
+    export default Ember.Component;
 }
 
 declare module '@ember/component/checkbox' {
     import Ember from 'ember';
-    export default class Checkbox extends Ember.Checkbox { }
+    export default Ember.Checkbox;
 }
 
 declare module '@ember/component/helper' {
     import Ember from 'ember';
-    export default class Helper extends Ember.Helper { }
+    export default Ember.Helper;
     const helper: typeof Ember.Helper.helper;
 }
 
 declare module '@ember/component/text-area' {
     import Ember from 'ember';
-    export default class TextArea extends Ember.TextArea { }
+    export default Ember.TextArea;
 }
 
 declare module '@ember/component/text-field' {
     import Ember from 'ember';
-    export default class TextField extends Ember.TextField { }
+    export default Ember.TextField;
 }
 
 declare module '@ember/controller' {
     import Ember from 'ember';
-    export default class Controller extends Ember.Controller { }
+    export default Ember.Controller;
     const inject: typeof Ember.inject.controller;
 }
 
@@ -2733,28 +2733,28 @@ declare module '@ember/debug' {
 
 declare module '@ember/debug/container-debug-adapter' {
     import Ember from 'ember';
-    export default class ContainerDebugAdapter extends Ember.ContainerDebugAdapter { }
+    export default Ember.ContainerDebugAdapter;
 }
 
 declare module '@ember/debug/data-adapter' {
     import Ember from 'ember';
-    export default class DataAdapter extends Ember.DataAdapter { }
+    export default Ember.DataAdapter;
 }
 
 declare module '@ember/engine' {
     import Ember from 'ember';
-    export default class Engine extends Ember.Engine { }
+    export default Ember.Engine;
     const getEngineParent: typeof Ember.getEngineParent;
 }
 
 declare module '@ember/engine/instance' {
     import Ember from 'ember';
-    export default class EngineInstance extends Ember.EngineInstance { }
+    export default Ember.EngineInstance;
 }
 
 declare module '@ember/enumerable' {
     import Ember from 'ember';
-    export default class Enumerable extends Ember.Enumerable { }
+    export default Ember.Enumerable;
 }
 
 declare module '@ember/instrumentation' {
@@ -2767,17 +2767,17 @@ declare module '@ember/instrumentation' {
 
 declare module '@ember/map' {
     import Ember from 'ember';
-    export default class EmberMap extends Ember.Map { }
+    export default Ember.Map;
 }
 
 declare module '@ember/map/with-default' {
     import Ember from 'ember';
-    export default class MapWithDefault extends Ember.MapWithDefault { }
+    export default Ember.MapWithDefault;
 }
 
 declare module '@ember/object' {
     import Ember from 'ember';
-    export default class EmberObject extends Ember.Object { }
+    export default Ember.Object;
     const aliasMethod: typeof Ember.aliasMethod;
     const computed: typeof Ember.computed;
     const defineProperty: typeof Ember.defineProperty;
@@ -2792,7 +2792,7 @@ declare module '@ember/object' {
 
 declare module '@ember/object/computed' {
     import Ember from 'ember';
-    export default class ComputedProperty extends Ember.ComputedProperty { }
+    export default Ember.ComputedProperty;
     const alias: typeof Ember.computed.alias;
     const and: typeof Ember.computed.and;
     const bool: typeof Ember.computed.bool;
@@ -2832,12 +2832,12 @@ declare module '@ember/object/computed' {
 
 declare module '@ember/object/core' {
     import Ember from 'ember';
-    export default class CoreObject extends Ember.CoreObject { }
+    export default Ember.CoreObject;
 }
 
 declare module '@ember/object/evented' {
     import Ember from 'ember';
-    export default class Evented extends Ember.Evented { }
+    export default Ember.Evented;
     const on: typeof Ember.on;
 }
 
@@ -2857,12 +2857,12 @@ declare module '@ember/object/internals' {
 
 declare module '@ember/object/mixin' {
     import Ember from 'ember';
-    export default class Mixin extends Ember.Mixin { }
+    export default Ember.Mixin;
 }
 
 declare module '@ember/object/observable' {
     import Ember from 'ember';
-    export default class Observable extends Ember.Observable { }
+    export default Ember.Observable;
 }
 
 declare module '@ember/object/observers' {
@@ -2873,12 +2873,12 @@ declare module '@ember/object/observers' {
 
 declare module '@ember/object/promise-proxy-mixin' {
     import Ember from 'ember';
-    export default class PromiseProxyMixin extends Ember.PromiseProxyMixin { }
+    export default Ember.PromiseProxyMixin;
 }
 
 declare module '@ember/object/proxy' {
     import Ember from 'ember';
-    export default class ObjectProxy extends Ember.ObjectProxy { }
+    export default Ember.ObjectProxy;
 }
 
 declare module '@ember/polyfills' {
@@ -2892,42 +2892,42 @@ declare module '@ember/polyfills' {
 
 declare module '@ember/routing/auto-location' {
     import Ember from 'ember';
-    export default class AutoLocation extends Ember.AutoLocation { }
+    export default Ember.AutoLocation;
 }
 
 declare module '@ember/routing/hash-location' {
     import Ember from 'ember';
-    export default class HashLocation extends Ember.HashLocation { }
+    export default Ember.HashLocation;
 }
 
 declare module '@ember/routing/history-location' {
     import Ember from 'ember';
-    export default class HistoryLocation extends Ember.HistoryLocation { }
+    export default Ember.HistoryLocation;
 }
 
 declare module '@ember/routing/link-component' {
     import Ember from 'ember';
-    export default class LinkComponent extends Ember.LinkComponent { }
+    export default Ember.LinkComponent;
 }
 
 declare module '@ember/routing/location' {
     import Ember from 'ember';
-    export default class Location extends Ember.Location { }
+    export default Ember.Location;
 }
 
 declare module '@ember/routing/none-location' {
     import Ember from 'ember';
-    export default class NoneLocation extends Ember.NoneLocation { }
+    export default Ember.NoneLocation;
 }
 
 declare module '@ember/routing/route' {
     import Ember from 'ember';
-    export default class Route extends Ember.Route { }
+    export default Ember.Route;
 }
 
 declare module '@ember/routing/router' {
     import Ember from 'ember';
-    export default class EmberRouter extends Ember.Router { }
+    export default Ember.Router;
 }
 
 declare module '@ember/runloop' {
@@ -2949,7 +2949,7 @@ declare module '@ember/runloop' {
 
 declare module '@ember/service' {
     import Ember from 'ember';
-    export default class Service extends Ember.Service { }
+    export default Ember.Service;
     const inject: typeof Ember.inject.service;
 }
 
@@ -2979,7 +2979,7 @@ declare module '@ember/test' {
 
 declare module '@ember/test/adapter' {
     import Ember from 'ember';
-    export default class TestAdapter extends Ember.Test.Adapter { }
+    export default Ember.Test.Adapter;
 }
 
 declare module '@ember/utils' {
