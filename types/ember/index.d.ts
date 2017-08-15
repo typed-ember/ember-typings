@@ -1,4 +1,4 @@
-// Type definitions for Ember.js 2.7
+// Type definitions for Ember.js 2.8
 // Project: http://emberjs.com/
 // Definitions by: Jed Mao <https://github.com/jedmao>
 //                 bttf <https://github.com/bttf>
@@ -411,6 +411,12 @@ declare namespace Ember {
     }
     const Application: EmberClass<Application>;
     /**
+    The `ApplicationInstance` encapsulates all of the stateful aspects of a
+    running `Application`.
+    **/
+    class ApplicationInstance extends EngineInstance {
+    }
+    /**
     This module implements Observer-friendly Array-like behavior. This mixin is picked up by the
     Array class as well as other controllers, etc. that want to appear to be arrays.
     **/
@@ -439,6 +445,11 @@ declare namespace Ember {
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
     const ArrayProxy: EmberClass<ArrayProxy>;
+    /**
+    AutoLocation will select the best location option based off browser support with the priority order: history, hash, none.
+    **/
+    class AutoLocation extends Object {
+    }
     const BOOTED: boolean;
     /**
     Connects the properties of two objects so that whenever the value of one property changes,
@@ -522,6 +533,16 @@ declare namespace Ember {
         destroy(): void;
         reset(): void;
     }
+    /**
+    The ContainerDebugAdapter helps the container and resolver interface
+    with tools that debug Ember such as the Ember Inspector for Chrome and Firefox.
+    **/
+    class ContainerDebugAdapter extends Object {
+      resolver: Resolver;
+      canCatalogEntriesByType(type: string): boolean;
+      catalogEntriesByType(type: string): any[];
+    }
+
     interface Controller extends Object, ControllerMixin {
         replaceRoute(name: string, ...args: any[]): void;
         transitionToRoute(name: string, ...args: any[]): void;
@@ -625,6 +646,21 @@ declare namespace Ember {
         names: any[];
         vertices: {};
     }
+    /**
+    The DataAdapter helps a data persistence library interface with tools
+     that debug Ember such as the Ember Extension for Chrome and Firefox.
+    */
+    class DataAdapter extends Object {
+        acceptsModelName: any;
+        containerDebugAdapter: ContainerDebugAdapter;
+        getFilters(): any[];
+        watchModelTypes(typesAdded: any, typesUpdated: any): Function;
+        watchRecords(modelName: any, recordsAdded: any, recordsUpdated: any, recordsRemoved: any): Function;
+    }
+    const Debug: {
+        registerDeprecationHandler(handler: Function): void;
+        registerWarnHandler(handler: Function): void;
+    };
     function DEFAULT_GETTER_FUNCTION(name: string): Function;
     /**
     The DefaultResolver defines the default lookup rules to resolve container lookups before consulting
@@ -662,6 +698,21 @@ declare namespace Ember {
     **/
     class EachProxy extends Object {
         unknownProperty(keyName: string, value: any): any[];
+    }
+    /**
+    The Engine class contains core functionality for both applications and engines.
+    **/
+    class Engine extends Namespace {
+      resolver: Resolver;
+      initializer(initializer: Object): any;
+      instanceInitializer(instanceInitializer: Object): any;
+    }
+    /**
+     The `EngineInstance` encapsulates all of the stateful aspects of a
+     running `Engine`.
+     **/
+    class EngineInstance extends Object {
+      unregister(fullName: string): void;
     }
     /**
     This mixin defines the common interface implemented by enumerable objects in Ember. Most of these
@@ -790,6 +841,17 @@ declare namespace Ember {
         unsubscribe(subscriber: any): void;
     }
     const K: Function;
+    class LinkComponent extends Component {
+      activeClass: string;
+      attributeBindings: any[] | string;
+      classNameBindings: any[];
+      currentWhen: any;
+      rel: string | null;
+      replace: string | null;
+      tabindex: string | null;
+      target: string | null;
+      title: string | null;
+    }
     const LOG_BINDINGS: boolean;
     const LOG_STACKTRACE_ON_DEPRECATION: boolean;
     const LOG_VERSION: boolean;
@@ -899,9 +961,19 @@ declare namespace Ember {
         isEmpty(): boolean;
         toArray(): any[];
     }
+    /**
+    A low level mixin making ObjectProxy promise-aware.
+    */
+    class PromiseProxyMixin {
+      catch(callback: Function): Rsvp.Promise<any, any>;
+      finally(callback: Function): Rsvp.Promise<any, any>;
+      then(callback: Function): Rsvp.Promise<any, any>;
+    }
     class Registry {
         constructor(options: any);
         static set: typeof Ember.set;
+    }
+    class Resolver {
     }
 
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
@@ -1492,6 +1564,7 @@ declare namespace Ember {
         function decamelize(str: string): string;
         function fmt(...args: string[]): string;
         function htmlSafe(str: string): void; // TODO: @returns Handlebars.SafeStringStatic;
+        function isHTMLSafe(str: string): boolean;
         function loc(...args: string[]): string;
         function underscore(str: string): string;
         function w(str: string): string[];
@@ -1585,6 +1658,11 @@ declare namespace Ember {
     function canInvoke(obj: any, methodName: string): boolean;
     function changeProperties(callback: Function, binding?: any): void;
     function compare(v: any, w: any): number;
+    type compareFunc = (itemA: any, itemB: any) => number;
+    interface DeprecateOptions {
+        id: string;
+        until: string;
+    }
     // ReSharper disable once DuplicatingLocalDeclaration
 
     type ComputedPropertyGet<T> = (this: any, key: string) => T;
@@ -1611,26 +1689,41 @@ declare namespace Ember {
         and(...args: string[]): ComputedProperty;
         any(...args: string[]): ComputedProperty;
         bool(dependentKey: string): ComputedProperty;
+        collect(...dependentKeys: string[]): ComputedProperty;
         defaultTo(defaultPath: string): ComputedProperty;
+        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty;
         empty(dependentKey: string): ComputedProperty;
         equal(dependentKey: string, value: any): ComputedProperty;
         filter(
             dependentKey: string,
             callback: (item: any, index?: number, array?: any[]) => boolean
         ): ComputedProperty;
-        filterBy(dependentKey: string, propertyKey: string, value: any): ComputedProperty;
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty;
+        filterProperty(key: string, value?: string): any[];
         gt(dependentKey: string, value: number): ComputedProperty;
         gte(dependentKey: string, value: number): ComputedProperty;
+        intersect(...args: string[]): ComputedProperty;
         lt(dependentKey: string, value: number): ComputedProperty;
         lte(dependentKey: string, value: number): ComputedProperty;
         map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty;
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty;
+        mapProperty(key: string): any[];
         match(dependentKey: string, regexp: RegExp): ComputedProperty;
+        max(dependentKey: string): ComputedProperty;
+        min(dependentKey: string): ComputedProperty;
         none(dependentKey: string): ComputedProperty;
         not(dependentKey: string): ComputedProperty;
         notEmpty(dependentKey: string): ComputedProperty;
         oneWay(dependentKey: string): ComputedProperty;
         or(...args: string[]): ComputedProperty;
         readOnly(dependentString: string): ComputedProperty;
+        reads(dependentKey: string): ComputedProperty;
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty;
+        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty;
+        sum(dependentKey: string): ComputedProperty;
+        union(...args: string[]): ComputedProperty;
+        uniq(...args: string[]): ComputedProperty;
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty;
     };
     function get<T, K extends keyof T>(obj: T, key: K): T[K];
     function getProperties<T, K extends keyof T>(obj: T, list: K[]): Pick<T, K>;
@@ -1660,6 +1753,7 @@ declare namespace Ember {
     // ReSharper disable once DuplicatingLocalDeclaration
     const empty: typeof deprecateFunc;
     function endPropertyChanges(): void;
+    function expandProperties(pattern: string, callback: Function): void;
     function finishChains(obj: any): void;
     function generateController(
         container: Container,
@@ -1667,6 +1761,7 @@ declare namespace Ember {
         context: any
     ): Controller;
     function generateGuid(obj: any, prefix?: string): string;
+    function getEngineParent(engine: EngineInstance): EngineInstance;
     /**
     getPath is deprecated since get now supports paths.
     **/
@@ -1705,6 +1800,7 @@ declare namespace Ember {
     const none: typeof deprecateFunc;
     function observer(...args: any[]): Function;
     function observersFor(obj: any, path: string): any[];
+    function on(eventNames: string, func: Function): Function;
     function onLoad(name: string, callback: Function): void;
     const onError: Error;
     function onerror(error: any): void;
@@ -1726,6 +1822,7 @@ declare namespace Ember {
     ): void;
     function removeObserver(obj: any, path: string, target: any, method: Function): any;
     function required(): Descriptor;
+    function reset(): void;
     function rewatch(obj: any): void;
 
     type RunMethod<T> = (...args: any[]) => T;
@@ -1769,6 +1866,7 @@ declare namespace Ember {
     **/
     const trySetPath: typeof deprecateFunc;
     function typeOf(item: any): string;
+    function unsubscribe(subscriber: any): void;
     function unwatch(obj: any, keyPath: string): void;
     function unwatchKey(obj: any, keyName: string): void;
     function unwatchPath(obj: any, keyPath: string): void;

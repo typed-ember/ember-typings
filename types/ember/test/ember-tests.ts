@@ -185,3 +185,54 @@ const component1 = Ember.Component.extend(mix1, mix2, {
     lyft: Ember.inject.service(),
     cars: Ember.computed.readOnly('lyft.cars'),
 });
+
+// computed property macros
+const objectWithComputedProperties = Ember.Object.extend({
+    alias: Ember.computed.alias('foo'),
+    and: Ember.computed.and('foo', 'bar', 'baz', 'qux'),
+    bool: Ember.computed.bool('foo'),
+    collect: Ember.computed.collect('foo', 'bar', 'baz', 'qux'),
+    deprecatingAlias: Ember.computed.deprecatingAlias('foo', {
+        id: 'hamster.deprecate-banana',
+        until: '3.0.0'
+    }),
+    empty: Ember.computed.empty('foo'),
+    equalNumber: Ember.computed.equal('foo', 1),
+    equalString: Ember.computed.equal('foo', 'bar'),
+    equalObject: Ember.computed.equal('foo', {}),
+    filter: Ember.computed.filter('foo', (item) => item === 'bar'),
+    filterBy1: Ember.computed.filterBy('foo', 'bar'),
+    filterBy2: Ember.computed.filterBy('foo', 'bar', false),
+    gt: Ember.computed.gt('foo', 3),
+    gte: Ember.computed.gte('foo', 3),
+    intersect: Ember.computed.intersect('foo', 'bar', 'baz', 'qux'),
+    lt: Ember.computed.lt('foo', 3),
+    lte: Ember.computed.lte('foo', 3),
+    map: Ember.computed.map('foo', (item, index) => item.bar),
+    mapBy: Ember.computed.mapBy('foo', 'bar'),
+    match: Ember.computed.match('foo', /^tom.ter$/),
+    max: Ember.computed.max('foo'),
+    min: Ember.computed.min('foo'),
+    none: Ember.computed.none('foo'),
+    not: Ember.computed.not('foo'),
+    notEmpty: Ember.computed.notEmpty('foo'),
+    oneWay: Ember.computed.oneWay('foo'),
+    or: Ember.computed.or('foo', 'bar', 'baz', 'qux'),
+    readOnly: Ember.computed.readOnly('foo'),
+    reads: Ember.computed.reads('foo'),
+    setDiff: Ember.computed.setDiff('foo', 'bar'),
+    sort1: Ember.computed.sort('foo', 'bar'),
+    sort2: Ember.computed.sort('foo', (itemA, itemB) => {
+        if (itemA < itemB) {
+            return -1;
+        } else if (itemA > itemB) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }),
+    sum: Ember.computed.sum('foo'),
+    union: Ember.computed.union('foo', 'bar', 'baz', 'qux'),
+    uniq: Ember.computed.uniq('foo'),
+    uniqBy: Ember.computed.uniqBy('foo', 'bar')
+});
