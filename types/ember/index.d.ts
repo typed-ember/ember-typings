@@ -828,7 +828,7 @@ declare namespace Ember {
     class ContainerDebugAdapter extends Object {
       resolver: Resolver;
       canCatalogEntriesByType(type: string): boolean;
-      catalogEntriesByType(type: string): Array;
+      catalogEntriesByType(type: string): any[];
     }
 
     class Controller extends Object implements ControllerMixin {
@@ -1013,14 +1013,14 @@ declare namespace Ember {
     class DataAdapter extends Object {
         acceptsModelName: any;
         containerDebugAdapter: ContainerDebugAdapter;
-        getFilters(): Array;
-        watchModelTypes(typesAdded, typesUpdated): Function;
-        watchRecords(modelName, recordsAdded, recordsUpdated, recordsRemoved): Function
+        getFilters(): any[];
+        watchModelTypes(typesAdded: any, typesUpdated: any): Function;
+        watchRecords(modelName: any, recordsAdded: any, recordsUpdated: any, recordsRemoved: any): Function;
     }
     const Debug: {
         registerDeprecationHandler(handler: Function): void;
         registerWarnHandler(handler: Function): void;
-    }
+    };
     function DEFAULT_GETTER_FUNCTION(name: string): Function;
     /**
     The DefaultResolver defines the default lookup rules to resolve container lookups before consulting
@@ -1078,8 +1078,8 @@ declare namespace Ember {
     **/
     class Engine extends Namespace {
       resolver: Resolver;
-      initializer(initializer: Object);
-      instanceInitializer (instanceInitializer : Object);
+      initializer(initializer: Object): any;
+      instanceInitializer(instanceInitializer: Object): any;
     }
     /**
      The `EngineInstance` encapsulates all of the stateful aspects of a
@@ -1256,8 +1256,8 @@ declare namespace Ember {
     const K: Function;
     class LinkComponent extends Component {
       activeClass: string;
-      attributeBindings: Array | String;
-      classNameBindings: Array;
+      attributeBindings: any[] | String;
+      classNameBindings: any[];
       currentWhen: any;
       rel: string | null;
       replace: string | null;
@@ -2447,7 +2447,7 @@ declare namespace Ember {
             callback: (item: any, index?: number, array?: any[]) => boolean
         ): ComputedProperty;
         filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty;
-        filterProperty(key: string, value?: string): Array;
+        filterProperty(key: string, value?: string): any[];
         gt(dependentKey: string, value: number): ComputedProperty;
         gte(dependentKey: string, value: number): ComputedProperty;
         intersect(...args: string[]): ComputedProperty;
@@ -2455,7 +2455,7 @@ declare namespace Ember {
         lte(dependentKey: string, value: number): ComputedProperty;
         map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty;
         mapBy(dependentKey: string, propertyKey: string): ComputedProperty;
-        mapProperty(key: string): Array;
+        mapProperty(key: string): any[];
         match(dependentKey: string, regexp: RegExp): ComputedProperty;
         max(dependentKey: string): ComputedProperty;
         min(dependentKey: string): ComputedProperty;
