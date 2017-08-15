@@ -1256,7 +1256,7 @@ declare namespace Ember {
     const K: Function;
     class LinkComponent extends Component {
       activeClass: string;
-      attributeBindings: any[] | String;
+      attributeBindings: any[] | string;
       classNameBindings: any[];
       currentWhen: any;
       rel: string | null;
