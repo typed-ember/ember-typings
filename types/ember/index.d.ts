@@ -2643,16 +2643,16 @@ export default Ember;
 declare module '@ember/application' {
     import Ember from 'ember';
     export default Ember.Application;
-    const getOwner: typeof Ember.getOwner;
-    const onLoad: typeof Ember.onLoad;
-    const runLoadHooks: typeof Ember.runLoadHooks;
-    const setOwner: typeof Ember.setOwner;
+    export const getOwner: typeof Ember.getOwner;
+    export const onLoad: typeof Ember.onLoad;
+    export const runLoadHooks: typeof Ember.runLoadHooks;
+    export const setOwner: typeof Ember.setOwner;
 }
 
 declare module '@ember/application/deprecations' {
     import Ember from 'ember';
-    const deprecate: typeof Ember.deprecate;
-    const deprecateFunc: typeof Ember.deprecateFunc;
+    export const deprecate: typeof Ember.deprecate;
+    export const deprecateFunc: typeof Ember.deprecateFunc;
 }
 
 declare module '@ember/application/globals-resolver' {
@@ -2673,9 +2673,9 @@ declare module '@ember/application/resolver' {
 declare module '@ember/array' {
     import Ember from 'ember';
     export default Ember.Array;
-    const A: typeof Ember.A;
-    const isArray: typeof Ember.isArray;
-    const makeArray: typeof Ember.makeArray;
+    export const A: typeof Ember.A;
+    export const isArray: typeof Ember.isArray;
+    export const makeArray: typeof Ember.makeArray;
 }
 
 declare module '@ember/array/mutable' {
@@ -2701,7 +2701,7 @@ declare module '@ember/component/checkbox' {
 declare module '@ember/component/helper' {
     import Ember from 'ember';
     export default Ember.Helper;
-    const helper: typeof Ember.Helper.helper;
+    export const helper: typeof Ember.Helper.helper;
 }
 
 declare module '@ember/component/text-area' {
@@ -2717,18 +2717,18 @@ declare module '@ember/component/text-field' {
 declare module '@ember/controller' {
     import Ember from 'ember';
     export default Ember.Controller;
-    const inject: typeof Ember.inject.controller;
+    export const inject: typeof Ember.inject.controller;
 }
 
 declare module '@ember/debug' {
     import Ember from 'ember';
-    const assert: typeof Ember.assert;
-    const debug: typeof Ember.debug;
-    const inspect: typeof Ember.inspect;
-    const registerDeprecationHandler: typeof Ember.Debug.registerDeprecationHandler;
-    const registerWarnHandler: typeof Ember.Debug.registerWarnHandler;
-    const runInDebug: typeof Ember.runInDebug;
-    const warn: typeof Ember.warn;
+    export const assert: typeof Ember.assert;
+    export const debug: typeof Ember.debug;
+    export const inspect: typeof Ember.inspect;
+    export const registerDeprecationHandler: typeof Ember.Debug.registerDeprecationHandler;
+    export const registerWarnHandler: typeof Ember.Debug.registerWarnHandler;
+    export const runInDebug: typeof Ember.runInDebug;
+    export const warn: typeof Ember.warn;
 }
 
 declare module '@ember/debug/container-debug-adapter' {
@@ -2744,7 +2744,7 @@ declare module '@ember/debug/data-adapter' {
 declare module '@ember/engine' {
     import Ember from 'ember';
     export default Ember.Engine;
-    const getEngineParent: typeof Ember.getEngineParent;
+    export const getEngineParent: typeof Ember.getEngineParent;
 }
 
 declare module '@ember/engine/instance' {
@@ -2759,10 +2759,10 @@ declare module '@ember/enumerable' {
 
 declare module '@ember/instrumentation' {
     import Ember from 'ember';
-    const instrument: typeof Ember.instrument;
-    const reset: typeof Ember.reset;
-    const subscribe: typeof Ember.subscribe;
-    const unsubscribe: typeof Ember.unsubscribe;
+    export const instrument: typeof Ember.instrument;
+    export const reset: typeof Ember.reset;
+    export const subscribe: typeof Ember.subscribe;
+    export const unsubscribe: typeof Ember.unsubscribe;
 }
 
 declare module '@ember/map' {
@@ -2778,56 +2778,56 @@ declare module '@ember/map/with-default' {
 declare module '@ember/object' {
     import Ember from 'ember';
     export default Ember.Object;
-    const aliasMethod: typeof Ember.aliasMethod;
-    const computed: typeof Ember.computed;
-    const defineProperty: typeof Ember.defineProperty;
-    const get: typeof Ember.get;
-    const getProperties: typeof Ember.getProperties;
-    const getWithDefault: typeof Ember.getWithDefault;
-    const observer: typeof Ember.observer;
-    const set: typeof Ember.set;
-    const setProperties: typeof Ember.setProperties;
-    const trySet: typeof Ember.trySet;
+    export const aliasMethod: typeof Ember.aliasMethod;
+    export const computed: typeof Ember.computed;
+    export const defineProperty: typeof Ember.defineProperty;
+    export const get: typeof Ember.get;
+    export const getProperties: typeof Ember.getProperties;
+    export const getWithDefault: typeof Ember.getWithDefault;
+    export const observer: typeof Ember.observer;
+    export const set: typeof Ember.set;
+    export const setProperties: typeof Ember.setProperties;
+    export const trySet: typeof Ember.trySet;
 }
 
 declare module '@ember/object/computed' {
     import Ember from 'ember';
     export default Ember.ComputedProperty;
-    const alias: typeof Ember.computed.alias;
-    const and: typeof Ember.computed.and;
-    const bool: typeof Ember.computed.bool;
-    const collect: typeof Ember.computed.collect;
-    const deprecatingAlias: typeof Ember.computed.deprecatingAlias;
-    const empty: typeof Ember.computed.empty;
-    const equal: typeof Ember.computed.equal;
-    const expandProperties: typeof Ember.expandProperties;
-    const filter: typeof Ember.computed.filter;
-    const filterBy: typeof Ember.computed.filterBy;
-    const filterProperty: typeof Ember.computed.filterProperty;
-    const gt: typeof Ember.computed.gt;
-    const gte: typeof Ember.computed.gte;
-    const intersect: typeof Ember.computed.intersect;
-    const lt: typeof Ember.computed.lt;
-    const lte: typeof Ember.computed.lte;
-    const map: typeof Ember.computed.map;
-    const mapBy: typeof Ember.computed.mapBy;
-    const mapProperty: typeof Ember.computed.mapProperty;
-    const match: typeof Ember.computed.match;
-    const max: typeof Ember.computed.max;
-    const min: typeof Ember.computed.min;
-    const none: typeof Ember.computed.none;
-    const not: typeof Ember.computed.not;
-    const notEmpty: typeof Ember.computed.notEmpty;
-    const oneWay: typeof Ember.computed.oneWay;
-    const or: typeof Ember.computed.or;
-    const readOnly: typeof Ember.computed.readOnly;
-    const reads: typeof Ember.computed.reads;
-    const setDiff: typeof Ember.computed.setDiff;
-    const sort: typeof Ember.computed.sort;
-    const sum: typeof Ember.computed.sum;
-    const union: typeof Ember.computed.union;
-    const uniq: typeof Ember.computed.uniq;
-    const uniqBy: typeof Ember.computed.uniqBy;
+    export const alias: typeof Ember.computed.alias;
+    export const and: typeof Ember.computed.and;
+    export const bool: typeof Ember.computed.bool;
+    export const collect: typeof Ember.computed.collect;
+    export const deprecatingAlias: typeof Ember.computed.deprecatingAlias;
+    export const empty: typeof Ember.computed.empty;
+    export const equal: typeof Ember.computed.equal;
+    export const expandProperties: typeof Ember.expandProperties;
+    export const filter: typeof Ember.computed.filter;
+    export const filterBy: typeof Ember.computed.filterBy;
+    export const filterProperty: typeof Ember.computed.filterProperty;
+    export const gt: typeof Ember.computed.gt;
+    export const gte: typeof Ember.computed.gte;
+    export const intersect: typeof Ember.computed.intersect;
+    export const lt: typeof Ember.computed.lt;
+    export const lte: typeof Ember.computed.lte;
+    export const map: typeof Ember.computed.map;
+    export const mapBy: typeof Ember.computed.mapBy;
+    export const mapProperty: typeof Ember.computed.mapProperty;
+    export const match: typeof Ember.computed.match;
+    export const max: typeof Ember.computed.max;
+    export const min: typeof Ember.computed.min;
+    export const none: typeof Ember.computed.none;
+    export const not: typeof Ember.computed.not;
+    export const notEmpty: typeof Ember.computed.notEmpty;
+    export const oneWay: typeof Ember.computed.oneWay;
+    export const or: typeof Ember.computed.or;
+    export const readOnly: typeof Ember.computed.readOnly;
+    export const reads: typeof Ember.computed.reads;
+    export const setDiff: typeof Ember.computed.setDiff;
+    export const sort: typeof Ember.computed.sort;
+    export const sum: typeof Ember.computed.sum;
+    export const union: typeof Ember.computed.union;
+    export const uniq: typeof Ember.computed.uniq;
+    export const uniqBy: typeof Ember.computed.uniqBy;
 }
 
 declare module '@ember/object/core' {
@@ -2838,21 +2838,21 @@ declare module '@ember/object/core' {
 declare module '@ember/object/evented' {
     import Ember from 'ember';
     export default Ember.Evented;
-    const on: typeof Ember.on;
+    export const on: typeof Ember.on;
 }
 
 declare module '@ember/object/events' {
     import Ember from 'ember';
-    const addListener: typeof Ember.addListener;
-    const removeListener: typeof Ember.removeListener;
-    const sendEvent: typeof Ember.sendEvent;
+    export const addListener: typeof Ember.addListener;
+    export const removeListener: typeof Ember.removeListener;
+    export const sendEvent: typeof Ember.sendEvent;
 }
 
 declare module '@ember/object/internals' {
     import Ember from 'ember';
-    const cacheFor: typeof Ember.cacheFor;
-    const copy: typeof Ember.copy;
-    const guidFor: typeof Ember.guidFor;
+    export const cacheFor: typeof Ember.cacheFor;
+    export const copy: typeof Ember.copy;
+    export const guidFor: typeof Ember.guidFor;
 }
 
 declare module '@ember/object/mixin' {
@@ -2867,8 +2867,8 @@ declare module '@ember/object/observable' {
 
 declare module '@ember/object/observers' {
     import Ember from 'ember';
-    const addObserver: typeof Ember.addObserver;
-    const removeObserver: typeof Ember.removeObserver;
+    export const addObserver: typeof Ember.addObserver;
+    export const removeObserver: typeof Ember.removeObserver;
 }
 
 declare module '@ember/object/promise-proxy-mixin' {
@@ -2883,11 +2883,11 @@ declare module '@ember/object/proxy' {
 
 declare module '@ember/polyfills' {
     import Ember from 'ember';
-    const assign: typeof Ember.assign;
-    const create: typeof Ember.create;
-    const hasPropertyAccessors: typeof Ember.platform.hasPropertyAccessors;
-    const keys: typeof Ember.keys;
-    const merge: typeof Ember.merge;
+    export const assign: typeof Ember.assign;
+    export const create: typeof Ember.create;
+    export const hasPropertyAccessors: typeof Ember.platform.hasPropertyAccessors;
+    export const keys: typeof Ember.keys;
+    export const merge: typeof Ember.merge;
 }
 
 declare module '@ember/routing/auto-location' {
@@ -2932,49 +2932,49 @@ declare module '@ember/routing/router' {
 
 declare module '@ember/runloop' {
     import Ember from 'ember';
-    const begin: typeof Ember.run.begin;
-    const bind: typeof Ember.run.bind;
-    const cancel: typeof Ember.run.cancel;
-    const debounce: typeof Ember.run.debounce;
-    const end: typeof Ember.run.end;
-    const join: typeof Ember.run.join;
-    const later: typeof Ember.run.later;
-    const next: typeof Ember.run.next;
-    const once: typeof Ember.run.once;
-    const run: typeof Ember.run;
-    const schedule: typeof Ember.run.schedule;
-    const scheduleOnce: typeof Ember.run.scheduleOnce;
-    const throttle: typeof Ember.run.throttle;
+    export const begin: typeof Ember.run.begin;
+    export const bind: typeof Ember.run.bind;
+    export const cancel: typeof Ember.run.cancel;
+    export const debounce: typeof Ember.run.debounce;
+    export const end: typeof Ember.run.end;
+    export const join: typeof Ember.run.join;
+    export const later: typeof Ember.run.later;
+    export const next: typeof Ember.run.next;
+    export const once: typeof Ember.run.once;
+    export const run: typeof Ember.run;
+    export const schedule: typeof Ember.run.schedule;
+    export const scheduleOnce: typeof Ember.run.scheduleOnce;
+    export const throttle: typeof Ember.run.throttle;
 }
 
 declare module '@ember/service' {
     import Ember from 'ember';
     export default Ember.Service;
-    const inject: typeof Ember.inject.service;
+    export const inject: typeof Ember.inject.service;
 }
 
 declare module '@ember/string' {
     import Ember from 'ember';
-    const camelize: typeof Ember.String.camelize;
-    const capitalize: typeof Ember.String.capitalize;
-    const classify: typeof Ember.String.classify;
-    const dasherize: typeof Ember.String.dasherize;
-    const decamelize: typeof Ember.String.decamelize;
-    const fmt: typeof Ember.String.fmt;
-    const htmlSafe: typeof Ember.String.htmlSafe;
-    const isHTMLSafe: typeof Ember.String.isHTMLSafe;
-    const loc: typeof Ember.String.loc;
-    const underscore: typeof Ember.String.underscore;
-    const w: typeof Ember.String.w;
+    export const camelize: typeof Ember.String.camelize;
+    export const capitalize: typeof Ember.String.capitalize;
+    export const classify: typeof Ember.String.classify;
+    export const dasherize: typeof Ember.String.dasherize;
+    export const decamelize: typeof Ember.String.decamelize;
+    export const fmt: typeof Ember.String.fmt;
+    export const htmlSafe: typeof Ember.String.htmlSafe;
+    export const isHTMLSafe: typeof Ember.String.isHTMLSafe;
+    export const loc: typeof Ember.String.loc;
+    export const underscore: typeof Ember.String.underscore;
+    export const w: typeof Ember.String.w;
 }
 
 declare module '@ember/test' {
     import Ember from 'ember';
-    const registerAsyncHelper: typeof Ember.Test.registerAsyncHelper;
-    const registerHelper: typeof Ember.Test.registerHelper;
-    const registerWaiter: typeof Ember.Test.registerWaiter;
-    const unregisterHelper: typeof Ember.Test.unregisterHelper;
-    const unregisterWaiter: typeof Ember.Test.unregisterWaiter;
+    export const registerAsyncHelper: typeof Ember.Test.registerAsyncHelper;
+    export const registerHelper: typeof Ember.Test.registerHelper;
+    export const registerWaiter: typeof Ember.Test.registerWaiter;
+    export const unregisterHelper: typeof Ember.Test.unregisterHelper;
+    export const unregisterWaiter: typeof Ember.Test.unregisterWaiter;
 }
 
 declare module '@ember/test/adapter' {
@@ -2984,12 +2984,12 @@ declare module '@ember/test/adapter' {
 
 declare module '@ember/utils' {
     import Ember from 'ember';
-    const compare: typeof Ember.compare;
-    const isBlank: typeof Ember.isBlank;
-    const isEmpty: typeof Ember.isEmpty;
-    const isEqual: typeof Ember.isEqual;
-    const isNone: typeof Ember.isNone;
-    const isPresent: typeof Ember.isPresent;
-    const tryInvoke: typeof Ember.tryInvoke;
-    const typeOf: typeof Ember.typeOf;
+    export const compare: typeof Ember.compare;
+    export const isBlank: typeof Ember.isBlank;
+    export const isEmpty: typeof Ember.isEmpty;
+    export const isEqual: typeof Ember.isEqual;
+    export const isNone: typeof Ember.isNone;
+    export const isPresent: typeof Ember.isPresent;
+    export const tryInvoke: typeof Ember.tryInvoke;
+    export const typeOf: typeof Ember.typeOf;
 }
