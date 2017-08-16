@@ -1,4 +1,6 @@
 import Ember from 'ember';
+import Component from '@ember/component';
+import { or } from '@ember/object/computed';
 
 let App: any;
 
@@ -235,4 +237,8 @@ const objectWithComputedProperties = Ember.Object.extend({
     union: Ember.computed.union('foo', 'bar', 'baz', 'qux'),
     uniq: Ember.computed.uniq('foo'),
     uniqBy: Ember.computed.uniqBy('foo', 'bar')
+});
+
+const component2 = Component.extend({
+    isAnimal: or('isDog', 'isCat')
 });
