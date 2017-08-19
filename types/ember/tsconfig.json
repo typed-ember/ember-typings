@@ -21,6 +21,8 @@
         "test/object.ts",
         "test/mixin.ts",
         "test/reopen.ts",
+        "test/detect.ts",
+        "test/detect-instance.ts",
         "test/array.ts",
         "test/array-proxy.ts",
         "test/get.ts",

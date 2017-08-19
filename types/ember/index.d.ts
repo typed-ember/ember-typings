@@ -200,57 +200,74 @@ type EmberClassArguments<T> = Partial<T> & {
 
 type EmberMixin<T> = Ember.Mixin<T> | T;
 
-interface EmberClassConstructor<T> {
-    new (...args: any[]): T;
-    prototype: T;
+type Create = <Instance, Extensions extends EmberClassArguments<Instance>>(
+    this: new () => Instance,
+    args?: Extensions & ThisType<Extensions & Instance>)
+    => Extensions & Instance;
 
-    create<Instance, Extensions extends EmberClassArguments<T>>(
-        this: EmberClassConstructor<Instance>,
-        args?: Extensions & ThisType<Extensions & Instance>): Extensions & Instance;
+type CreateWithMixins = <Instance, M1, Extensions extends EmberClassArguments<Instance>>(
+    this: new () => Instance,
+    mixin1: EmberMixin<M1>,
+    args?: Extensions & ThisType<Extensions & Instance & M1>)
+    => Extensions & Instance & M1;
 
-    createWithMixins<Instance, M1, Extensions extends EmberClassArguments<T>>(
-        this: EmberClassConstructor<Instance>,
+type Extend =
+    (<Instance, Extensions extends EmberClassArguments<Instance>>(
+        this: new () => Instance,
+        args?: Extensions & ThisType<Extensions & Instance>)
+        => EmberClassConstructor<Instance & Extensions>)
+    &
+    (<Instance, M1, Extensions extends EmberClassArguments<Instance>>(
+        this: new () => Instance,
         mixin1: EmberMixin<M1>,
-        args?: Extensions & ThisType<Extensions & Instance & M1>): Extensions & Instance & M1;
-}
-
-interface EmberClass<T> extends EmberClassConstructor<T> {
-    extend<Statics, Instance, Extensions extends EmberClassArguments<T>>(
-        this: EmberClass<Instance> & Statics,
-        args?: Extensions & ThisType<Extensions & Instance>): EmberClass<Extensions & Instance>;
-
-    extend<Statics, Instance, M1, Extensions extends EmberClassArguments<T>>(
-        this: EmberClass<Instance> & Statics,
-        mixin1: EmberMixin<M1>,
-        args?: Extensions & ThisType<Extensions & Instance & M1>): EmberClass<Extensions & Instance & M1>;
-
-    extend<Statics, Instance, M1, M2, Extensions extends EmberClassArguments<T>>(
-        this: EmberClass<Instance> & Statics,
+        args?: Extensions & ThisType<Extensions & Instance & M1>)
+        => EmberClassConstructor<Instance & Extensions & M1>)
+    &
+    (<Instance, M1, M2, Extensions extends EmberClassArguments<Instance>>(
+        this: new () => Instance,
         mixin1: EmberMixin<M1>, mixin2: EmberMixin<M2>,
-        args?: Extensions & ThisType<Extensions & Instance & M1 & M2>): EmberClass<Extensions & Instance & M1 & M2>;
-
-    extend<Statics, Instance, M1, M2, M3, Extensions extends EmberClassArguments<T>>(
-        this: EmberClass<Instance> & Statics,
+        args?: Extensions & ThisType<Extensions & Instance & M1 & M2>)
+        => EmberClassConstructor<Instance & Extensions & M1 & M2>)
+    &
+    (<Instance, M1, M2, M3, Extensions extends EmberClassArguments<Instance>>(
+        this: new () => Instance,
         mixin1: EmberMixin<M1>, mixin2: EmberMixin<M2>, mixin3: EmberMixin<M3>,
-        args?: Extensions & ThisType<Extensions & Instance & M1 & M2 & M3>): EmberClass<Extensions & Instance & M1 & M2 & M3>;
+        args?: Extensions & ThisType<Extensions & Instance & M1 & M2 & M3>)
+        => EmberClassConstructor<Instance & Extensions & M1 & M2 & M3>);
 
-    reopen<Extra>(args?: Extra & ThisType<T & Extra>): EmberClass<T & Extra>;
+type Reopen = <Instance, Extra>(
+    this: new () => Instance,
+    args?: Extra & ThisType<Instance & Extra>)
+    => EmberClassConstructor<Instance & Extra>;
 
-    reopenClass<Extra>(args?: Extra): EmberClass<T> & Extra;
+type ReopenClass = <Class, Extra>(
+    this: Class,
+    args?: Extra)
+    => Class & Extra;
 
-    // TODO: remove private API?
+type Detect = <Instance>(
+    this: new () => Instance,
+    obj: any)
+    => obj is EmberClassConstructor<Instance>;
 
-    detect(obj: any): obj is EmberClass<T>;
-    detectInstance(obj: any): obj is T;
-    /**
-     Iterate over each computed property for the class, passing its name and any
-     associated metadata (see metaForProperty) to the callback.
-     **/
+type DetectInstance = <Instance>(
+    this: new () => Instance,
+    obj: any)
+    => obj is Instance;
+
+interface EmberClassConstructor<Instance> {
+    new (...params: any[]): Instance;
+    create: Create;
+    createWithMixins: CreateWithMixins;
+    extend: Extend;
+
+    reopen: Reopen;
+    reopenClass: ReopenClass;
+
+    detect: Detect;
+    detectInstance: DetectInstance;
+
     eachComputedProperty(callback: Function, binding: {}): void;
-    /**
-     Returns the original hash that was passed to meta().
-     @param key property name
-     **/
     metaForProperty(key: string): {};
     isClass: boolean;
     isMethod: boolean;
@@ -326,7 +343,7 @@ namespace Ember {
     An instance of Ember.Application is the starting point for every Ember application. It helps to
     instantiate, initialize and coordinate the many objects that make up your app.
     **/
-    interface Application extends Namespace {
+    class Application extends Namespace {
         /**
         Call advanceReadiness after any asynchronous setup logic has completed.
         Each call to deferReadiness must be matched by a call to advanceReadiness
@@ -410,7 +427,6 @@ namespace Ember {
         Router: Router;
         registry: Registry;
     }
-    const Application: EmberClass<Application>;
     /**
     The `ApplicationInstance` encapsulates all of the stateful aspects of a
     running `Application`.
@@ -440,12 +456,12 @@ namespace Ember {
     forwarding all requests. This makes it very useful for a number of binding use cases or other cases
     where being able to swap out the underlying array is useful.
     **/
-    interface ArrayProxy extends Object, MutableArray {
+    interface ArrayProxy extends MutableArray {}
+    class ArrayProxy extends Object {
         content: NativeArray;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
-    const ArrayProxy: EmberClass<ArrayProxy>;
     /**
     AutoLocation will select the best location option based off browser support with the priority order: history, hash, none.
     **/
@@ -465,17 +481,16 @@ namespace Ember {
         to(path: string | any[]): Binding;
         toString(): string;
     }
-    interface Button extends Component, TargetActionSupport {
+    interface Button extends TargetActionSupport {}
+    class Button extends Component {
         triggerAction(opts: {}): boolean;
     }
-    const Button: EmberClass<Button>;
     /**
     The internal class used to create text inputs when the {{input}} helper is used
     with type of checkbox. See Handlebars.helpers.input for usage details.
     **/
-    interface Checkbox extends Component {
+    class Checkbox extends Component {
     }
-    const Checkbox: EmberClass<Checkbox>;
     /**
     Implements some standard methods for comparing objects. Add this mixin to any class
     you create that can compare its instances.
@@ -488,11 +503,10 @@ namespace Ember {
     and actions are targeted at the view object. There is no access to the surrounding context or
     outer controller; all contextual information is passed in.
     **/
-    interface Component extends Object {
+    class Component extends Object {
         sendAction(action: string, context: any): void;
         targetObject: Controller;
     }
-    const Component: EmberClass<Component>;
     /**
     A computed property transforms an objects function into a property.
     By default the function backing the computed property will only be called once and the result
@@ -544,7 +558,8 @@ namespace Ember {
       catalogEntriesByType(type: string): any[];
     }
 
-    interface Controller extends Object, ControllerMixin {
+    interface Controller extends ControllerMixin {}
+    class Controller extends Object {
         replaceRoute(name: string, ...args: any[]): void;
         transitionToRoute(name: string, ...args: any[]): void;
         controllers: {};
@@ -555,7 +570,6 @@ namespace Ember {
         send(name: string, ...args: any[]): void;
         actions: ActionsHash;
     }
-    const Controller: EmberClass<Controller>;
     /**
     Additional methods for the ControllerMixin.
     **/
@@ -578,7 +592,7 @@ namespace Ember {
         copy(deep: boolean): Copyable;
         frozenCopy(): Copyable;
     }
-    interface CoreObject {
+    class CoreObject {
         _super(...args: any[]): any;
 
         /**
@@ -636,8 +650,31 @@ namespace Ember {
         @return {String} string representation
         **/
         toString(): string;
+
+        static create: Create;
+        static createWithMixins: CreateWithMixins;
+        static extend: Extend;
+
+        static reopen: Reopen;
+        static reopenClass: ReopenClass;
+
+        // TODO: remove private API?
+        static detect: Detect;
+        static detectInstance: DetectInstance;
+
+        /**
+         Iterate over each computed property for the class, passing its name and any
+         associated metadata (see metaForProperty) to the callback.
+         **/
+        static eachComputedProperty(callback: Function, binding: {}): void;
+        /**
+         Returns the original hash that was passed to meta().
+         @param key property name
+         **/
+        static metaForProperty(key: string): {};
+        static isClass: boolean;
+        static isMethod: boolean;
     }
-    const CoreObject: EmberClass<CoreObject>;
     class DAG {
         add(name: string): any;
         map(name: string, value: any): void;
@@ -909,25 +946,23 @@ namespace Ember {
     }
     const MutableEnumerable: Mixin<MutableEnumberable>;
     const NAME_KEY: string;
-    interface Namespace extends Object {
+    class Namespace extends Object {
     }
-    const Namespace: EmberClass<Namespace>;
     interface NativeArray extends MutableArray, Observable, Copyable {
     }
     const NativeArray: Mixin<NativeArray>;
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
-    interface Object extends CoreObject, Observable {
+    interface Object extends Observable {}
+    class Object extends CoreObject {
     }
-    const Object: EmberClass<Object>;
-    interface ObjectProxy extends Object {
+    class ObjectProxy extends Object {
         /**
         The object whose properties will be forwarded.
         **/
         content: Object;
     }
-    const ObjectProxy: EmberClass<ObjectProxy>;
     interface Observable {
         addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
         beginPropertyChanges(): Observable;
@@ -987,7 +1022,8 @@ namespace Ember {
       The `Ember.Route` class is used to define individual routes. Refer to
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
-    interface Route extends Object, ActionHandlerMixin, Evented {
+    interface Route extends ActionHandlerMixin, Evented {}
+    class Route extends Object {
         /**
         This hook is executed when the router enters the route. It is not executed
         when the model for the route changes.
@@ -1501,12 +1537,10 @@ namespace Ember {
         */
         has(name: string): boolean;
     }
-    const Route: EmberClass<Route>;
 
-    interface Router extends Object {
+    class Router extends Object {
         map(callback: Function): Router;
     }
-    const Router: EmberClass<Router>;
     class RouterDSL {
         resource(name: string, options?: {}, callback?: Function): void;
         resource(name: string, callback: Function): void;
@@ -1515,9 +1549,8 @@ namespace Ember {
         router: Router;
         options: any;
     }
-    interface Service extends Object {
+    class Service extends Object {
     }
-    const Service: EmberClass<Service>;
     const STRINGS: boolean;
     class State extends Object implements Evented {
         has(name: string): boolean;
@@ -1597,7 +1630,8 @@ namespace Ember {
 
         function resolve<T>(result: T): Ember.Test.Promise<T, void>;
     }
-    interface TextArea extends Component, TextSupport {
+    interface TextArea extends TextSupport {}
+    class TextArea extends Component {
         cancel(event: Function): void;
         focusIn(event: Function): void;
         focusOut(event: Function): void;
@@ -1607,8 +1641,8 @@ namespace Ember {
         bubbles: boolean;
         onEvent: string;
     }
-    const TextArea: EmberClass<TextArea>;
-    interface TextField extends Component, TextSupport {
+    interface TextField extends TextSupport {}
+    class TextField extends Component {
         cancel(event: Function): void;
         focusIn(event: Function): void;
         focusOut(event: Function): void;
@@ -1622,7 +1656,6 @@ namespace Ember {
         type: string;
         value: string;
     }
-    const TextField: EmberClass<TextField>;
     class TextSupport {
         cancel(event: Function): void;
         focusIn(event: Function): void;
