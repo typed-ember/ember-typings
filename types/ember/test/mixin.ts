@@ -1,20 +1,21 @@
 import Ember from 'ember';
 import { assertType } from "./lib/assert";
 
-interface EditableMixin extends Ember.Object {
+interface EditableMixin {
     edit(): void;
     isEditing: boolean;
 }
 
-const EditableMixin = Ember.Mixin.create(<EditableMixin> {
+const EditableMixin: Ember.Mixin<EditableMixin, Ember.Route> = Ember.Mixin.create({
     edit() {
+        this.get('controller');
         console.log('starting to edit');
         this.set('isEditing', true);
     },
     isEditing: false
 });
 
-const EditableComment = Ember.Object.extend(EditableMixin, {
+const EditableComment = Ember.Route.extend(EditableMixin, {
     postId: 0,
 
     canEdit() {
@@ -44,7 +45,7 @@ assertType<number>(obj.a);
 assertType<number>(obj.b);
 assertType<number>(obj.c);
 
-const Post = Ember.Object.extend({
+const Post = Ember.Route.extend({
     postId: 0
 });
 
