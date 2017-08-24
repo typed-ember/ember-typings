@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import computed from 'ember-decorators/object';
+import { computed } from 'ember-decorators/object';
 import { alias, and } from 'ember-decorators/object/computed';
 
 /** Static assertion that `value` has type `T` */
