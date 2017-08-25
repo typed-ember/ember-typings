@@ -824,18 +824,20 @@ namespace Ember {
     This mixin allows for Ember objects to subscribe to and emit events.
     You can also chain multiple event subscriptions.
     **/
-    class Evented {
+    interface Evented {
         has(name: string): boolean;
         off(name: string, target: any, method: Function): Evented;
         on(name: string, target: any, method: Function): Evented;
         one(name: string, target: any, method: Function): Evented;
-        trigger(name: string, ...args: string[]): void;
+        trigger(name: string, ...args: any[]): void;
     }
+    const Evented: Mixin<Evented>;
     const FROZEN_ERROR: string;
-    class Freezable {
+    interface Freezable {
         freeze(): Freezable;
         isFrozen: boolean;
     }
+    const Freezable: Mixin<Freezable>;
     const GUID_KEY: string;
     namespace Handlebars {
         function compile(string: string): Function;
