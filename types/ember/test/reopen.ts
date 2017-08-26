@@ -23,10 +23,10 @@ assertType<string>(Person2.create().name);
 assertType<void>(Person2.create().sayHello());
 assertType<string>(Person2.species);
 
-let tom = Person2.create({
+const tom = Person2.create({
     name: 'Tom Dale'
 });
-let yehuda = Person2.createPerson('Yehuda Katz');
+const yehuda = Person2.createPerson('Yehuda Katz');
 
 tom.sayHello(); // "Hello. My name is Tom Dale"
 yehuda.sayHello(); // "Hello. My name is Yehuda Katz"
