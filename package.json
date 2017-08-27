@@ -11,9 +11,11 @@
   },
   "scripts": {
     "test": "node node_modules/types-publisher/bin/tester/test.js --run-from-definitely-typed --all",
+    "generate": "node node_modules/dts-gen/bin/lib/run.js --dt",
     "lint": "dtslint types"
   },
   "devDependencies": {
+    "dts-gen": "^0.5.6",
     "dtslint": "Microsoft/dtslint#production",
     "types-publisher": "Microsoft/types-publisher#production"
   },
