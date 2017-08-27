@@ -1,6 +1,6 @@
 // Type definitions for ember-decorators 1.2
 // Project: https://github.com/ember-decorators/ember-decorators
-// Definitions by: Derek Wickern <dwickern@gmail.com>
+// Definitions by: Derek Wickern <https://github.com/dwickern>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
