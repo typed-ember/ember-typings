@@ -326,6 +326,7 @@ namespace Ember {
         slice(beginIndex?: number, endIndex?: number): any[];
         '@each': EachProxy;
         length: number;
+  
     }
     const Array: Mixin<Array>;
     /**
@@ -338,6 +339,7 @@ namespace Ember {
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
+
     const ArrayProxy: EmberClass<ArrayProxy>;
     /**
     AutoLocation will select the best location option based off browser support with the priority order: history, hash, none.
