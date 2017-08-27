@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { assertType } from './lib/assert';
 
 const Person = Ember.Object.extend({
     name: '',
