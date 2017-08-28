@@ -7,27 +7,19 @@
 /// <reference types="qunit" />
 /// <reference types="jquery" />
 
-interface TestContext {
-    set(key: string, value: any): void;
-    on(event: string, callback: (...args: any[]) => any): void;
-    $: JQueryStatic;
-    subject(): any;
-    render(template?: any): void;
-}
-
-interface ModuleCallbacks extends Hooks {
-    integration?: boolean;
-    unit?: boolean;
-    needs?: string[];
-
-    beforeSetup?(assert: Assert): void;
-    setup?(assert: Assert): void;
-    teardown?(assert: Assert): void;
-    afterTeardown?(assert: Assert): void;
-}
-
 declare module 'ember-qunit' {
     import Ember from 'ember';
+
+    interface ModuleCallbacks extends Hooks {
+        integration?: boolean;
+        unit?: boolean;
+        needs?: string[];
+
+        beforeSetup?(assert: Assert): void;
+        setup?(assert: Assert): void;
+        teardown?(assert: Assert): void;
+        afterTeardown?(assert: Assert): void;
+    }
 
     /**
      *
@@ -67,6 +59,16 @@ declare module 'ember-qunit' {
 }
 
 declare module 'qunit' {
+    import { TemplateFactory } from 'htmlbars-inline-precompile';
+
+    interface TestContext {
+        set(key: string, value: any): void;
+        on(event: string, callback: (...args: any[]) => any): void;
+        $: JQueryStatic;
+        subject(): any;
+        render(template?: TemplateFactory): void;
+    }
+
     export const module: typeof QUnit.module;
 
     /**

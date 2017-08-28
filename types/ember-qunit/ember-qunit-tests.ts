@@ -1,5 +1,5 @@
 import Ember from 'ember';
-// import hbs from 'htmlbars-inline-precompile';
+import hbs from 'htmlbars-inline-precompile';
 import { test, skip, moduleFor, moduleForModel, moduleForComponent, setResolver } from 'ember-qunit';
 
 moduleForComponent('x-foo', {
@@ -49,9 +49,9 @@ test('it renders', function(assert) {
     });
 
     // render the component
-    // this.render(hbs`
-    //     {{ x-foo value=value action="result" }}
-    // `);
+    this.render(hbs`
+        {{ x-foo value=value action="result" }}
+    `);
 
     assert.equal(this.$('div>.value').text(), 'cat', 'The component shows the correct value');
 
