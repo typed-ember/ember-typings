@@ -102,8 +102,7 @@ interface TransitionsHash {
 }
 
 interface ActionsHash {
-    willTransition?: Function;
-    error?: Function;
+    [index: string]: (...params: any[]) => any;
 }
 
 interface DisconnectOutletOptions {
@@ -119,7 +118,122 @@ interface RenderOptions {
     view?: string;
 }
 
-export namespace Ember {
+interface ViewMixin {
+    // methods
+    $: JQueryStatic;
+    rerender(): void;
+    // properties
+    attributeBindings: string[];
+    element: Element;
+    elementId: string;
+    tagName: string;
+    // events
+    didInsertElement(): void;
+    willClearRender(): void;
+    willDestroyElement(): void;
+    willInsertElement(): void;
+}
+const ViewMixin: Ember.Mixin<ViewMixin>;
+
+/**
+Ember.CoreView is an abstract class that exists to give view-like behavior to both Ember's main
+view class Ember.Component and other classes that don't need the full functionality of Ember.Component.
+
+Unless you have specific needs for CoreView, you will use Ember.Component in your applications.
+**/
+class CoreView extends Ember.Object.extend(Ember.Evented, ActionHandler) {}
+interface ActionSupport {
+    sendAction(action: string, ...params: any[]): void;
+}
+const ActionSupport: ActionSupport;
+
+interface ClassNamesSupport {
+    /**
+    A list of properties of the view to apply as class names. If the property is a string value,
+    the value of that string will be applied as a class name.
+
+    If the value of the property is a Boolean, the name of that property is added as a dasherized
+    class name.
+
+    If you would prefer to use a custom value instead of the dasherized property name, you can
+    pass a binding like this: `classNameBindings: ['isUrgent:urgent']`
+
+    This list of properties is inherited from the component's superclasses as well.
+    */
+    classNameBindings: string[];
+    classNames: string[];
+}
+const ClassNamesSupport: ClassNamesSupport;
+
+/**
+TextSupport is a shared mixin used by both Ember.TextField and Ember.TextArea. TextSupport
+adds a number of methods that allow you to specify a controller action to invoke when a
+certain event is fired on your text field or textarea. The specifed controller action would
+get the current value of the field passed in as the only argument unless the value of the field
+is empty. In that case, the instance of the field itself is passed in as the only argument.
+**/
+interface TextSupport extends TargetActionSupport {
+    cancel(event: Function): void;
+    focusIn(event: Function): void;
+    focusOut(event: Function): void;
+    insertNewLine(event: Function): void;
+    keyPress(event: Function): void;
+    action: string;
+    bubbles: boolean;
+    onEvent: string;
+}
+const TextSupport: Ember.Mixin<TextSupport, Ember.Component>;
+
+/**
+Ember.ActionHandler is available on some familiar classes including Ember.Route,
+Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
+Ember.ControllerMixin, and Ember.Route and available to the above classes through inheritance.)
+**/
+interface ActionHandler {
+    /**
+    Triggers a named action on the ActionHandler. Any parameters supplied after the actionName
+    string will be passed as arguments to the action target function.
+
+    If the ActionHandler has its target property set, actions may bubble to the target.
+    Bubbling happens when an actionName can not be found in the ActionHandler's actions
+    hash or if the action target function returns true.
+    **/
+    send(actionName: string, ...args: any[]): void;
+    /**
+    The collection of functions, keyed by name, available on this ActionHandler as action targets.
+    **/
+    actions: ActionsHash;
+}
+const ActionHandler: ActionHandler;
+
+interface TriggerActionOptions {
+    "action"?: string,
+    "target"?: Ember.Object,
+    "actionContext"?: Ember.Object
+}
+/**
+Ember.TargetActionSupport is a mixin that can be included in a class to add a triggerAction method
+with semantics similar to the Handlebars {{action}} helper. In normal Ember usage, the {{action}}
+helper is usually the best choice. This mixin is most often useful when you are doing more
+complex event handling in Components.
+**/
+interface TargetActionSupport {
+    triggerAction(opts: TriggerActionOptions): boolean;
+}
+
+/**
+Additional methods for the Controller.
+**/
+interface ControllerMixin extends ActionHandler {
+    replaceRoute(name: string, ...args: any[]): void;
+    transitionToRoute(name: string, ...args: any[]): void;
+    model: any;
+    queryParams: any;
+    target: any;
+}
+const ControllerMixin: Ember.Mixin<ControllerMixin>;
+
+namespace Ember {
     /**
     Alias for jQuery.
     **/
@@ -156,20 +270,6 @@ export namespace Ember {
 
     interface ArrayPrototypeExtensions<T> extends MutableArray<T>, Observable, Copyable {}
 
-    /**
-    The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
-    property at extend time, and adding _actions to the object's mergedProperties list.
-    **/
-    class ActionHandlerMixin {
-        /**
-        Triggers a named action on the ActionHandler
-        **/
-        send(name: string, ...args: any[]): void;
-        /**
-        The collection of functions, keyed by name, available on this ActionHandler as action targets.
-        **/
-        actions: ActionsHash;
-    }
     /**
     An instance of Ember.Application is the starting point for every Ember application. It helps to
     instantiate, initialize and coordinate the many objects that make up your app.
@@ -376,9 +476,6 @@ export namespace Ember {
         to(path: string | any[]): Binding;
         toString(): string;
     }
-    class Button extends Component.extend(TargetActionSupport) {
-        triggerAction(opts: {}): boolean;
-    }
     /**
     The internal class used to create text inputs when the {{input}} helper is used
     with type of checkbox. See Handlebars.helpers.input for usage details.
@@ -397,10 +494,73 @@ export namespace Ember {
     and actions are targeted at the view object. There is no access to the surrounding context or
     outer controller; all contextual information is passed in.
     **/
-    class Component extends Object {
-        sendAction(action: string, context: any): void;
-        targetObject: Controller;
-        static positionalParams: string | string[];
+    class Component extends CoreView.extend(ViewMixin, ActionSupport, ClassNamesSupport) {
+        // methods
+        readDOMAttr(name: string): string;
+        // properties
+        /**
+        The WAI-ARIA role of the control represented by this view. For example, a button may have a
+        role of type 'button', or a pane may have a role of type 'alertdialog'. This property is
+        used by assistive software to help visually challenged users navigate rich web applications.
+        **/
+        ariaRole: string;
+        /**
+        The HTML id of the component's element in the DOM. You can provide this value yourself but
+        it must be unique (just as in HTML):
+
+        If not manually set a default value will be provided by the framework. Once rendered an
+        element's elementId is considered immutable and you should never change it. If you need
+        to compute a dynamic value for the elementId, you should do this when the component or
+        element is being instantiated:
+        **/
+        elementId: string;
+        /**
+        If false, the view will appear hidden in DOM.
+         */
+        isVisible: boolean;
+        /**
+        A component may contain a layout. A layout is a regular template but supersedes the template
+        property during rendering. It is the responsibility of the layout template to retrieve the
+        template property from the component (or alternatively, call Handlebars.helpers.yield,
+        {{yield}}) to render it in the correct location. This is useful for a component that has a
+        shared wrapper, but which delegates the rendering of the contents of the wrapper to the
+        template property on a subclass.
+        **/
+        layout: string; // @todo: https://github.com/emberjs/ember.js/blob/v2.14.1/packages/ember-glimmer/lib/component.js#L811
+        /**
+        Enables components to take a list of parameters as arguments.
+        **/
+        positionalParams: string[] | string;
+        // events
+        /**
+        Called when the attributes passed into the component have been updated. Called both during the
+        initial render of a container and during a rerender. Can be used in place of an observer; code
+        placed here will be executed every time any attribute updates.
+        **/
+        didReceiveAttrs(): void;
+        /**
+        Called after a component has been rendered, both on initial render and in subsequent rerenders.
+        **/
+        didRender(): void;
+        /**
+        Called when the component has updated and rerendered itself. Called only during a rerender,
+        not during an initial render.
+        **/
+        didUpdate(): void;
+        /**
+        Called when the attributes passed into the component have been changed. Called only during a
+        rerender, not during an initial render.
+        **/
+        didUpdateAttrs(): void;
+        /**
+        Called before a component has been rendered, both on initial render and in subsequent rerenders.
+        **/
+        willRender(): void;
+        /**
+        Called when the component is about to update and rerender itself. Called only during a rerender,
+        not during an initial render.
+        **/
+        willUpdate(): void;
     }
     /**
     A computed property transforms an objects function into a property.
@@ -479,19 +639,6 @@ export namespace Ember {
         send(name: string, ...args: any[]): void;
         actions: ActionsHash;
     }
-    /**
-    Additional methods for the ControllerMixin.
-    **/
-    interface ControllerMixin extends ActionHandlerMixin {
-        replaceRoute(name: string, ...args: any[]): void;
-        transitionToRoute(name: string, ...args: any[]): void;
-        controllers: {};
-        model: any;
-        needs: string[];
-        queryParams: any;
-        target: any;
-    }
-    const ControllerMixin: Mixin<ControllerMixin>;
     /**
     Implements some standard methods for copying an object. Add this mixin to any object you
     create that can create a copy of itself. This mixin is added automatically to the built-in array.
@@ -1028,8 +1175,6 @@ export namespace Ember {
     const K: Function;
     class LinkComponent extends Component {
       activeClass: string;
-      attributeBindings: any[] | string;
-      classNameBindings: any[];
       currentWhen: any;
       rel: string | null;
       replace: string | null;
@@ -1280,7 +1425,7 @@ export namespace Ember {
       The `Ember.Route` class is used to define individual routes. Refer to
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
-    class Route extends Object.extend(ActionHandlerMixin, Evented) {
+    interface Route extends Object, ActionHandler, Evented {
         /**
         This hook is executed when the router enters the route. It is not executed
         when the model for the route changes.
@@ -1582,7 +1727,7 @@ export namespace Ember {
         @param {Object} transition
         @since 1.7.0
         */
-        resetController(controller: Ember.Controller, isExiting: boolean, transition: any): void;
+        resetController(controller: Controller, isExiting: boolean, transition: any): void;
 
         /**
         A hook you can implement to convert the route's model into parameters
@@ -1794,6 +1939,7 @@ export namespace Ember {
         */
         has(name: string): boolean;
     }
+    const Route: Mixin<Route>;
     interface RouterMapContext {
         route(name: string, callback: (this: RouterMapContext) => void): void;
         route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterMapContext) => void): void;
@@ -1869,9 +2015,6 @@ export namespace Ember {
         function w(str: string): string[];
     }
     const TEMPLATES: {};
-    class TargetActionSupport {
-        triggerAction(opts: {}): boolean;
-    }
     namespace Test {
         class Adapter extends Ember.Object {
             constructor();
@@ -1919,17 +2062,6 @@ export namespace Ember {
         type: string;
         value: string;
     }
-    interface TextSupport {
-        cancel(event: Function): void;
-        focusIn(event: Function): void;
-        focusOut(event: Function): void;
-        insertNewLine(event: Function): void;
-        keyPress(event: Function): void;
-        action: string;
-        bubbles: boolean;
-        onEvent: string;
-    }
-    const TextSupport: Mixin<TextSupport, Component>;
     interface Transition {
         targetName: string;
         urlMethod: string;
