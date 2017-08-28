@@ -24,6 +24,11 @@ moduleFor('component:x-foo', 'TestModule callbacks', {
     },
 
     beforeEach(assert) {
+        this.registry.register('helper:i18n', {});
+        this.register('service:i18n', {});
+        this.inject.service('i18n');
+        this.inject.service('i18n', { as: 'i18n' });
+        this.factory('object:user').create();
         assert.ok(true);
     },
 
@@ -46,24 +51,42 @@ test('it renders', function(assert) {
     this.set('value', 'cat');
     this.on('action', function(result) {
         assert.equal(result, 'bar', 'The correct result was returned');
+        assert.equal(this.get('value'), 'cat');
     });
 
     // render the component
     this.render(hbs`
         {{ x-foo value=value action="result" }}
     `);
+    this.render('{{ x-foo value=value action="result" }}');
+    this.render([
+        '{{ x-foo value=value action="result" }}'
+    ]);
 
     assert.equal(this.$('div>.value').text(), 'cat', 'The component shows the correct value');
 
     this.$('button').click();
 });
 
-// run a test
 test('it renders', function(assert) {
     assert.expect(1);
 
     // creates the component instance
     const subject = this.subject();
+
+    const subject2 = this.subject({
+        item: 42
+    });
+
+    const { inputFormat } = this.setProperties({
+        inputFormat: 'M/D/YY',
+        outputFormat: 'MMMM D, YYYY',
+        date: '5/3/10'
+    });
+
+    const { inputFormat: if2, outputFormat } = this.getProperties('inputFormat', 'outputFormat');
+
+    const inputFormat2 = this.get('inputFormat');
 
     // render the component on the page
     this.render();

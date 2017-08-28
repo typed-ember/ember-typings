@@ -1010,6 +1010,8 @@ namespace Ember {
     class Registry {
         constructor(options: any);
         static set: typeof Ember.set;
+        register(fullName: string, factory: any): void;
+        unregister(fullName: string): void;
     }
     class Resolver extends Ember.Object {
     }
