@@ -1,6 +1,5 @@
 import Ember from 'ember';
-import Inflector from 'ember-inflector';
-import { singularize, pluralize } from 'ember-inflector';
+import Inflector, { singularize, pluralize } from 'ember-inflector';
 
 Inflector.inflector.singularize("tacos"); // taco
 Inflector.inflector.pluralize("taco"); // tacos

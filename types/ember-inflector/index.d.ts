@@ -44,7 +44,7 @@ declare module 'ember-inflector' {
 }
 
 declare module 'ember' {
-    import EmberInflector, { singularize } from 'ember-inflector';
+    import EmberInflector from 'ember-inflector';
 
     namespace Ember {
         export const Inflector: typeof EmberInflector;
