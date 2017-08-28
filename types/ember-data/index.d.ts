@@ -20,18 +20,23 @@ namespace DS {
    * `DS.belongsTo` is used to define One-To-One and One-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function belongsTo(modelName: string, options: {}): Ember.ComputedProperty;
+  function belongsTo(modelName: string, options?: {}): Ember.ComputedProperty;
   /**
    * `DS.hasMany` is used to define One-To-Many and Many-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function hasMany(type: string, options: {}): Ember.ComputedProperty;
+  function hasMany(type: string, options?: {}): Ember.ComputedProperty;
   /**
    * This method normalizes a modelName into the format Ember Data uses
    * internally.
    */
   function normalizeModelName(modelName: string): string;
   const VERSION: string;
+
+  interface AttrOptions {
+      defaultValue?: any | (() => any);
+  }
+
   /**
    * `DS.attr` defines an attribute on a [DS.Model](/api/data/classes/DS.Model.html).
    * By default, attributes are passed through as-is, however you can specify an
@@ -40,7 +45,8 @@ namespace DS {
    * `boolean` and `date`. You can define your own transforms by subclassing
    * [DS.Transform](/api/data/classes/DS.Transform.html).
    */
-  function attr(type: string|{}, options: {}): Ember.ComputedProperty;
+  function attr(type: string, options?: AttrOptions): Ember.ComputedProperty;
+  function attr(options?: AttrOptions): Ember.ComputedProperty;
   /**
    * WARNING: This interface is likely to change in order to accomodate https://github.com/emberjs/rfcs/pull/4
    * ## Using BuildURLMixin
@@ -240,7 +246,7 @@ namespace DS {
    * If you are working on Ember Data internals, you most likely want to be dealing
    * with `InternalModel`
    */
-  class Model {
+  class Model extends Ember.Object {
     /**
      * If this property is `true` the record is in the `empty`
      * state. Empty is the first state all records enter after they have
@@ -407,7 +413,7 @@ namespace DS {
      * Save the record and persist any changes to the record to an
      * external source via the adapter.
      */
-    save(options: {}): Promise<any>;
+    save(options?: {}): Promise<any>;
     /**
      * Reload the record from the adapter.
      */
@@ -916,7 +922,7 @@ namespace DS {
     /**
      * This method returns a record for a given type and id combination.
      */
-    findRecord(modelName: string, id: string|number, options: {}): Promise<any>;
+    findRecord(modelName: string, id: string|number, options?: {}): Promise<any>;
     /**
      * Get the reference for the specified record.
      */
@@ -1498,7 +1504,7 @@ namespace DS {
    * attributes. All subclasses of `DS.Transform` must implement a
    * `serialize` and a `deserialize` method.
    */
-  class Transform {
+  class Transform extends Ember.Object {
     /**
      * When given a deserialized value from a record attribute this
      * method must return the serialized value.
@@ -1518,7 +1524,7 @@ namespace DS {
    * adapter is not invoked directly instead its functionality is accessed
    * through the `store`.
    */
-  class Adapter {
+  class Adapter extends Ember.Object {
     /**
      * If you would like your adapter to use a custom serializer you can
      * set the `defaultSerializer` property to be the name of the custom
@@ -1620,7 +1626,7 @@ namespace DS {
    * application to customize it for your backend. The minimum set of methods
    * that you should implement is:
    */
-  class Serializer {
+  class Serializer extends Ember.Object {
     /**
      * The `store` property is the application's `store` that contains
      * all records. It can be used to look up serializers for other model

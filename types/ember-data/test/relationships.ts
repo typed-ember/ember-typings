@@ -13,12 +13,12 @@ const Polymorphic = DS.Model.extend({
 const BlogPost = DS.Model.extend({
     title: DS.attr('string'),
     tag: DS.attr('string'),
-    comments: DS.hasMany('comment', { async: true })
+    comments: DS.hasMany('comment', { async: true }),
     relatedPosts: DS.hasMany('post')
 });
 
 let blogPost = this.get('store').peekRecord('blog-post', 1);
 
-blogPost.get('comments').then((comments) => {
+blogPost.get('comments').then((comments: any[]) => {
     // now we can work with the comments
 });

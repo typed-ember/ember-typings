@@ -4,8 +4,8 @@ import DS from 'ember-data';
 const JsonApi = DS.JSONAPISerializer.extend({});
 
 const Customized = DS.JSONAPISerializer.extend({
-    serialize(snapshot, options) {
-        let json = this._super(...arguments);
+    serialize(snapshot: DS.Snapshot, options: {}) {
+        let json = this._super(...Array.from(arguments));
 
         json.data.attributes.cost = {
             amount: json.data.attributes.amount,
@@ -14,13 +14,13 @@ const Customized = DS.JSONAPISerializer.extend({
 
         return json;
     },
-    normalizeResponse(store, primaryModelClass, payload, id, requestType) {
+    normalizeResponse(store: DS.Store, primaryModelClass: DS.Model, payload: any, id: string|number, requestType: string) {
         payload.data.attributes.amount = payload.data.attributes.cost.amount;
         payload.data.attributes.currency = payload.data.attributes.cost.currency;
 
         delete payload.data.attributes.cost;
 
-        return this._super(...arguments);
+        return this._super(...Array.from(arguments));
     }
 });
 

@@ -4,6 +4,8 @@ import DS from 'ember-data';
 const Person = DS.Model.extend({
     firstName: DS.attr(),
     lastName: DS.attr(),
+    title: DS.attr({ defaultValue: "The default" }),
+    title2: DS.attr({ defaultValue: () => "The default" }),
 
     fullName: Ember.computed('firstName', 'lastName', function() {
         return `${this.get('firstName')} ${this.get('lastName')}`;

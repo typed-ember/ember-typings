@@ -26,7 +26,7 @@ const blogPosts = this.get('store').findAll('blog-post'); // => GET /blog-posts
 const blogPosts2 = this.get('store').peekAll('blog-post'); // => no network request
 
 const MyRoute = Ember.Route.extend({
-    model(params) {
+    model(params: any) {
         return this.store.findRecord('post', params.post_id, {include: 'comments,comments.author'});
     }
 });
