@@ -1,9 +1,10 @@
 import Ember from 'ember';
+import Component from '@ember/component';
+import { or } from '@ember/object/computed';
 
 let App: any;
 
-App = Ember.Application.create<Ember.Application>();
-
+App = Ember.Application.create();
 App.president = Ember.Object.create({
     name: 'Barack Obama',
 });
@@ -15,7 +16,7 @@ App.president = Ember.Object.create({
     firstName: 'Barack',
     lastName: 'Obama',
     fullName: Ember.computed(function() {
-        return this.get('firstName') + ' ' + this.get('lastName');
+        return `${this.get('firstName')} ${this.get('lastName')}`;
     }),
 });
 App.president.get('fullName');
@@ -23,8 +24,9 @@ App.president.get('fullName');
 declare class MyPerson extends Ember.Object {
     static createMan(): MyPerson;
 }
+MyPerson.createMan();
 
-const Person1 = Ember.Object.extend<typeof MyPerson>({
+const Person1 = Ember.Object.extend({
     say: (thing: string) => {
         alert(thing);
     },
@@ -33,7 +35,9 @@ const Person1 = Ember.Object.extend<typeof MyPerson>({
 declare class MyPerson2 extends Ember.Object {
     helloWorld(): void;
 }
-const tom = Person1.create<MyPerson2>({
+MyPerson2.create().helloWorld();
+
+const tom = Person1.create({
     name: 'Tom Dale',
     helloWorld() {
         this.say('Hi my name is ' + this.get('name'));
@@ -41,18 +45,10 @@ const tom = Person1.create<MyPerson2>({
 });
 tom.helloWorld();
 
-Person1.reopen({ isPerson: true });
-Person1.create<Ember.Object>().get('isPerson');
+const PersonReopened = Person1.reopen({ isPerson: true });
+PersonReopened.create().get('isPerson');
 
-Person1.reopenClass({
-    createMan: () => {
-        return Person1.create({ isMan: true });
-    },
-});
-// ReSharper disable once DuplicatingLocalDeclaration
-Person1.createMan().get('isMan');
-
-const person = Person1.create<Ember.Object>({
+const person = Person1.create({
     firstName: 'Yehuda',
     lastName: 'Katz',
 });
@@ -124,7 +120,8 @@ Handlebars.registerHelper(
 
 const coolView = App.CoolView.create();
 
-const Person2 = Ember.Object.extend<typeof Ember.Object>({
+const Person2 = Ember.Object.extend({
+    name: '',
     sayHello() {
         console.log('Hello from ' + this.get('name'));
     },
@@ -140,21 +137,22 @@ const arr = Ember.A([Ember.Object.create(), Ember.Object.create()]);
 arr.setEach('name', 'unknown');
 arr.getEach('name');
 
-const Person3 = Ember.Object.extend<typeof Ember.Object>({
-    name: null,
+const Person3 = Ember.Object.extend({
+    name: '',
     isHappy: false,
 });
 const people2 = Ember.A([
     Person3.create({ name: 'Yehuda', isHappy: true }),
     Person3.create({ name: 'Majd', isHappy: false }),
 ]);
-const isHappy = (person: Ember.Object): Boolean => {
+const isHappy = (person: typeof Person3.prototype): boolean => {
     return !!person.get('isHappy');
 };
 people2.every(isHappy);
 people2.any(isHappy);
-people2.everyProperty('isHappy', true);
-people2.someProperty('isHappy', true);
+people2.isEvery('isHappy', true);
+people2.isAny('isHappy', true);
+people2.isAny('isHappy');
 
 // Examples taken from http://emberjs.com/api/classes/Em.RSVP.Promise.html
 const promise = new Ember.RSVP.Promise<string, string>((resolve: Function, reject: Function) => {
@@ -239,4 +237,8 @@ const objectWithComputedProperties = Ember.Object.extend({
     union: Ember.computed.union('foo', 'bar', 'baz', 'qux'),
     uniq: Ember.computed.uniq('foo'),
     uniqBy: Ember.computed.uniqBy('foo', 'bar')
+});
+
+const component2 = Component.extend({
+    isAnimal: or('isDog', 'isCat')
 });

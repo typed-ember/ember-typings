@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "target": "es5",
         "lib": [
             "es6",
             "dom"
         ],
         "noImplicitAny": true,
-        "noImplicitThis": false,
+        "noImplicitThis": true,
         "strictNullChecks": true,
         "baseUrl": "../",
         "noEmit": true,
@@ -14,6 +15,21 @@
     },
     "files": [
         "index.d.ts",
-        "ember-tests.ts"
+        "test/lib/assert.ts",
+        "test/ember-tests.ts",
+        "test/extend.ts",
+        "test/object.ts",
+        "test/mixin.ts",
+        "test/reopen.ts",
+        "test/detect.ts",
+        "test/detect-instance.ts",
+        "test/array.ts",
+        "test/array-proxy.ts",
+        "test/get.ts",
+        "test/get-properties.ts",
+        "test/set.ts",
+        "test/set-properties.ts",
+        "test/computed.ts",
+        "test/component.ts"
     ]
 }
