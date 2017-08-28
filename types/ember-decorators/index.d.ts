@@ -11,4 +11,5 @@ declare module 'ember-decorators/object/computed' {
 
 declare module 'ember-decorators/object' {
     export function computed(...keys: string[]): MethodDecorator;
+    export function action(): MethodDecorator;
 }

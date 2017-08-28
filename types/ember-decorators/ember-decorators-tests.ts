@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import { computed } from 'ember-decorators/object';
+import { computed, action } from 'ember-decorators/object';
 import { alias, and } from 'ember-decorators/object/computed';
 
 /** Static assertion that `value` has type `T` */
@@ -26,6 +26,12 @@ class UserComponent extends Ember.Component {
         const [ first, last ] = value.split(' ');
         this.setProperties({ first, last });
     }
+
+    // At the moment, I cannot make TypeScript happy without the empty
+    // parenthesis after @acton. It shouts at me with a TS1241 error and I
+    // cannot figure how to change the declaration
+    @action()
+    handleSomeAction() {}
 }
 
 const component = UserComponent.create();
