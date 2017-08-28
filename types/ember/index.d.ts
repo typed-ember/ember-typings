@@ -2279,3 +2279,10 @@ declare module '@ember/utils' {
     export const tryInvoke: typeof Ember.tryInvoke;
     export const typeOf: typeof Ember.typeOf;
 }
+
+declare module 'htmlbars-inline-precompile' {
+    interface TemplateFactory {
+        __htmlbars_inline_precompile_template_factory: any;
+    }
+    export default function hbs(tagged: TemplateStringsArray): TemplateFactory;
+}
