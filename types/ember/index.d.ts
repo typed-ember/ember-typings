@@ -211,32 +211,33 @@ type CreateWithMixins = <Instance extends M1Base, M1, M1Base, Extensions extends
     args?: Extensions & ThisType<Extensions & Instance & M1>)
     => Extensions & Instance & M1;
 
-type Extend =
-    (<Instance extends B1, Args extends EmberClassArguments<Instance>, T1 extends Args, B1>(
-        this: new () => Instance,
-        arg1?: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
-        => EmberClassConstructor<T1 & Instance>)
-    &
-    (<Instance extends B1 & B2, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
-        => EmberClassConstructor<T1 & T2 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
-        => EmberClassConstructor<T1 & T2 & T3 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3 & B4, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3, T4 extends Args, B4>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
-        arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
-        => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>);
+type Extend1 = <Instance extends B1, Args extends EmberClassArguments<Instance>, T1 extends Args, B1>(
+    this: new () => Instance,
+    arg1?: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
+    => EmberClassConstructor<T1 & Instance>;
+
+type Extend2 = <Instance extends B1 & B2, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
+    => EmberClassConstructor<T1 & T2 & Instance>;
+
+type Extend3 = <Instance extends B1 & B2 & B3, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
+    => EmberClassConstructor<T1 & T2 & T3 & Instance>;
+
+type Extend4 = <Instance extends B1 & B2 & B3 & B4, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3, T4 extends Args, B4>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
+    arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
+    => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
+
+type Extend = Extend1 & Extend2 & Extend3 & Extend4;
 
 type Reopen = <Instance, Extra>(
     this: new () => Instance,
