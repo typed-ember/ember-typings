@@ -207,9 +207,9 @@ interface ActionHandler {
 const ActionHandler: Ember.Mixin<ActionHandler>;
 
 interface TriggerActionOptions {
-    "action"?: string,
-    "target"?: Ember.Object,
-    "actionContext"?: Ember.Object
+    "action"?: string;
+    "target"?: Ember.Object;
+    "actionContext"?: Ember.Object;
 }
 /**
 Ember.TargetActionSupport is a mixin that can be included in a class to add a triggerAction method

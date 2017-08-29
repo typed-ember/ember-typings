@@ -27,7 +27,7 @@ const component1 = Component.extend({
   },
 });
 class Comp1 extends Component {
-  name: string = '';
+  name = '';
   hello(name: string) {
       this.set('name', name);
   }
@@ -44,7 +44,7 @@ class Comp3 extends Component {
 class Comp4 extends Component {
   classNameBindings = ['propertyA', 'propertyB'];
   propertyA = 'from-a';
-  propertyB = computed(function() {
+  propertyB = computed(() => {
     if ('someLogic') {
       return 'from-b';
     }
@@ -100,7 +100,7 @@ class Comp12 extends Component {
 class Comp13 extends Component {
   tagName = 'input';
   attributeBindings = ['disabled'];
-  disabled = computed(function() {
+  disabled = computed(() => {
     if ('someLogic') {
       return true;
     } else {
