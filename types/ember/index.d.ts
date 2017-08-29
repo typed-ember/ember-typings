@@ -1425,7 +1425,7 @@ namespace Ember {
       The `Ember.Route` class is used to define individual routes. Refer to
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
-    interface Route extends Object, ActionHandler, Evented {
+    class Route extends Object.extend(ActionHandler, Evented) {
         /**
         This hook is executed when the router enters the route. It is not executed
         when the model for the route changes.
@@ -1939,7 +1939,6 @@ namespace Ember {
         */
         has(name: string): boolean;
     }
-    const Route: Mixin<Route>;
     interface RouterMapContext {
         route(name: string, callback: (this: RouterMapContext) => void): void;
         route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterMapContext) => void): void;
