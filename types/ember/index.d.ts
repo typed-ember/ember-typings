@@ -204,7 +204,7 @@ interface ActionHandler {
     **/
     actions: ActionsHash;
 }
-const ActionHandler: ActionHandler;
+const ActionHandler: Ember.Mixin<ActionHandler>;
 
 interface TriggerActionOptions {
     "action"?: string,
