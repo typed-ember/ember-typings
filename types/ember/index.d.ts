@@ -461,7 +461,8 @@ namespace Ember {
     forwarding all requests. This makes it very useful for a number of binding use cases or other cases
     where being able to swap out the underlying array is useful.
     **/
-    class ArrayProxy<T> extends Object.extend(MutableArray as Mixin<MutableArray<T>>) {
+    interface ArrayProxy<T> extends MutableArray<T> {}
+    class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
         content: Ember.Array<T>;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
