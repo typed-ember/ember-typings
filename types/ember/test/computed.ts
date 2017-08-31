@@ -23,7 +23,7 @@ const Person = Ember.Object.extend({
         set(key, value) {
             let [first, last] = value.split(' ');
             this.set('firstName', first);
-            this.ste('lastName', last);
+            this.set('lastName', last);
             return value;
         }
     }),
@@ -38,7 +38,7 @@ const Person = Ember.Object.extend({
         set(key, value) {
             let [first, last] = value.split(' ');
             this.set('firstName', first);
-            this.ste('lastName', last);
+            this.set('lastName', last);
             return value;
         }
     })
