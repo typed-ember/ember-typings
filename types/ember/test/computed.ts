@@ -23,7 +23,7 @@ const Person = Ember.Object.extend({
         set(key, value) {
             let [first, last] = value.split(' ');
             this.set('firstName', first);
-            this.ste('lastName', last);
+            this.set('lastName', last);
             return value;
         }
     }),
@@ -31,6 +31,15 @@ const Person = Ember.Object.extend({
     fullNameGetOnly: Ember.computed('fullName', {
         get() {
             return this.get('fullName');
+        }
+    }),
+
+    fullNameSetOnly: Ember.computed('firstName', 'lastName', {
+        set(key, value) {
+            let [first, last] = value.split(' ');
+            this.set('firstName', first);
+            this.set('lastName', last);
+            return value;
         }
     })
 });
@@ -47,4 +56,5 @@ assertType<string>(person.get('fullName'));
 assertType<string>(person.get('fullNameReadonly'));
 assertType<string>(person.get('fullNameWritable'));
 assertType<string>(person.get('fullNameGetOnly'));
+assertType<string>(person.get('fullNameSetOnly'));
 assertType<{ firstName: string, fullName: string, age: number }>(person.getProperties('firstName', 'fullName', 'age'));

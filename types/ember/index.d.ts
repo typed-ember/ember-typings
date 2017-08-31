@@ -1700,24 +1700,32 @@ namespace Ember {
     }
     // ReSharper disable once DuplicatingLocalDeclaration
 
-    type ComputedPropertyGet<T> = (this: any, key: string) => T;
+    type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
 
-    interface ComputedPropertyGetSet<T> {
+    interface ComputedPropertyGet<T> {
         get(this: any, key: string): T;
-        set?(this: any, key: string, value: T): T;
     }
 
-    type ComputedPropertyFunction<T> = ComputedPropertyGet<T> | ComputedPropertyGetSet<T>;
+    interface ComputedPropertySet<T> {
+        set(this: any, key: string, value: T): T;
+    }
+
+    type ComputedPropertyCallback<T> =
+        ComputedPropertyGetterFunction<T> |
+        ComputedPropertyGet<T> |
+        ComputedPropertySet<T> |
+        (ComputedPropertyGet<T> & ComputedPropertySet<T>);
+
     type ComputedPropertyReturn<T> = ComputedProperty & T;
 
     const computed: {
-        <T>(cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
+        <T>(cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
         (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty;
 
         alias(dependentKey: string): ComputedProperty;
