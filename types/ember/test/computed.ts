@@ -26,6 +26,12 @@ const Person = Ember.Object.extend({
             this.ste('lastName', last);
             return value;
         }
+    }),
+
+    fullNameGetOnly: Ember.computed('fullName', {
+        get() {
+            return this.get('fullName');
+        }
     })
 });
 
@@ -40,4 +46,5 @@ assertType<string>(person.get('firstName'));
 assertType<string>(person.get('fullName'));
 assertType<string>(person.get('fullNameReadonly'));
 assertType<string>(person.get('fullNameWritable'));
+assertType<string>(person.get('fullNameGetOnly'));
 assertType<{ firstName: string, fullName: string, age: number }>(person.getProperties('firstName', 'fullName', 'age'));

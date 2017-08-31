@@ -1704,7 +1704,7 @@ namespace Ember {
 
     interface ComputedPropertyGetSet<T> {
         get(this: any, key: string): T;
-        set(this: any, key: string, value: T): T;
+        set?(this: any, key: string, value: T): T;
     }
 
     type ComputedPropertyFunction<T> = ComputedPropertyGet<T> | ComputedPropertyGetSet<T>;
