@@ -938,7 +938,7 @@ namespace Ember {
         /**
          * Mixin needs to have *something* on its prototype, otherwise it's treated like an empty interface.
          */
-        __ember_mixin__: never;
+        private __ember_mixin__: never;
 
         static create<T, Base = Ember.Object>(args?: T & ThisType<T & Base>): Mixin<T, Base>;
     }
