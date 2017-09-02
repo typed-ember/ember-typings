@@ -211,10 +211,12 @@ type CreateWithMixins = <Instance extends M1Base, M1, M1Base, Extensions extends
     args?: Extensions & ThisType<Extensions & Instance & M1>)
     => Extensions & Instance & M1;
 
+type Extend0 = <Instance>(this: new () => Instance) => EmberClassConstructor<Instance>;
+
 type Extend1 = <Instance extends B1,
     T1 extends EmberClassArguments<Instance>, B1>(
     this: new () => Instance,
-    arg1?: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
     => EmberClassConstructor<T1 & Instance>;
 
 type Extend2 = <Instance extends B1 & B2,
@@ -247,7 +249,7 @@ type Extend4 = <Instance extends B1 & B2 & B3 & B4,
     arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
     => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
 
-type Extend = Extend1 & Extend2 & Extend3 & Extend4;
+type Extend = Extend0 & Extend1 & Extend2 & Extend3 & Extend4;
 
 type Reopen = <Instance, Extra>(
     this: new () => Instance,
