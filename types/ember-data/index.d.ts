@@ -463,7 +463,7 @@ namespace DS {
      * included once, regardless of the number of relationships it has with
      * the model.
      */
-    static relatedTypes: Ember.Array;
+    static relatedTypes: Ember.NativeArray<string>;
     /**
      * A map whose keys are the relationships of a model and whose values are
      * relationship descriptors.
