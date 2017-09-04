@@ -1509,12 +1509,12 @@ namespace DS {
      * When given a deserialized value from a record attribute this
      * method must return the serialized value.
      */
-    serialize(deserialized: any, options: any): void;
+    serialize(deserialized: any, options: AttrOptions): any;
     /**
      * When given a serialize value from a JSON object this method must
      * return the deserialized value for the record attribute.
      */
-    deserialize(serialized: any, options: any): void;
+    deserialize(serialized: any, options: AttrOptions): any;
   }
   /**
    * An adapter is an object that receives requests from a store and
