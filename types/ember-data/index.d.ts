@@ -772,47 +772,6 @@ namespace DS {
    */
   class PromiseManyArray {
   }
-  class RecordArrayManager {
-    /**
-     * This method is invoked if the `filterFunction` property is
-     * changed on a `DS.FilteredRecordArray`.
-     */
-    updateFilter(array: any[], modelName: string, filter: Function): any;
-    /**
-     * Get the `DS.RecordArray` for a modelName, which contains all loaded records of
-     * given modelName.
-     */
-    liveRecordArrayFor(modelName: string): RecordArray;
-    /**
-     * Get the `DS.RecordArray` for a modelName, which contains all loaded records of
-     * given modelName.
-     */
-    filteredRecordArraysFor(modelName: string): RecordArray;
-    /**
-     * Create a `DS.RecordArray` for a modelName.
-     */
-    createRecordArray(modelName: string): RecordArray;
-    /**
-     * Create a `DS.FilteredRecordArray` for a modelName and register it for updates.
-     */
-    createFilteredRecordArray(modelName: string, filter: Function, query: {}): FilteredRecordArray;
-    /**
-     * Create a `DS.AdapterPopulatedRecordArray` for a modelName with given query.
-     */
-    createAdapterPopulatedRecordArray(modelName: string, query: {}): AdapterPopulatedRecordArray;
-    /**
-     * Register a RecordArray for a given modelName to be backed by
-     * a filter function. This will cause the array to update
-     * automatically when records of that modelName change attribute
-     * values or states.
-     */
-    registerFilteredRecordArray(array: RecordArray, modelName: string, filter: Function): any;
-    /**
-     * Unregister a RecordArray.
-     * So manager will not update this array.
-     */
-    unregisterRecordArray(array: RecordArray): any;
-  }
   class SnapshotRecordArray {
     /**
      * Number of records in the array
