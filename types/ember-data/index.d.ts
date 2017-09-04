@@ -29,7 +29,7 @@ namespace DS {
       async?: true,
       inverse?: string | null,
       polymorphic?: boolean
-  }): DS.PromiseObject<T> & T;
+  }): PromiseObject<T> & T;
   /**
    * `DS.hasMany` is used to define One-To-Many and Many-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
@@ -38,12 +38,12 @@ namespace DS {
       async: false,
       inverse?: string | null,
       polymorphic?: boolean
-  }): DS.ManyArray<T>;
+  }): ManyArray<T>;
   function hasMany<T extends Model>(type: string, options?: {
       async?: true,
       inverse?: string | null,
       polymorphic?: boolean
-  }): DS.PromiseManyArray<T>;
+  }): PromiseManyArray<T>;
   /**
    * This method normalizes a modelName into the format Ember Data uses
    * internally.
@@ -760,7 +760,7 @@ namespace DS {
      * Ember Data will revisit the original links url to repopulate the
      * relationship.
      */
-    reload(): DS.PromiseArray<T>;
+    reload(): PromiseArray<T>;
     /**
      * Saves all of the records in the `ManyArray`.
      */
@@ -795,14 +795,14 @@ namespace DS {
    * to the underlying manyArray.
    * Right now we proxy:
    */
-  class PromiseManyArray<T extends DS.Model> extends PromiseArray<T> {
+  class PromiseManyArray<T extends Model> extends PromiseArray<T> {
       /**
        * Reloads all of the records in the manyArray. If the manyArray
        * holds a relationship that was originally fetched using a links url
        * Ember Data will revisit the original links url to repopulate the
        * relationship.
        */
-      reload(): DS.PromiseManyArray<T>;
+      reload(): PromiseManyArray<T>;
       /**
        * Create a child record within the owner
        */
