@@ -19,7 +19,6 @@
         "test/serializer.ts",
         "test/transform.ts",
         "test/relationships.ts",
-        "test/store.ts",
-        "test/inflector.ts"
+        "test/store.ts"
     ]
 }
