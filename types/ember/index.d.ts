@@ -724,7 +724,7 @@ export namespace Ember {
     other names are looked up on the application after converting the name.
     For example, controller:post looks up App.PostController by default.
     **/
-    class DefaultResolver {
+    class DefaultResolver extends Resolver {
         resolve(fullName: string): {};
         namespace: Application;
     }
@@ -1032,8 +1032,10 @@ export namespace Ember {
     class Registry {
         constructor(options: any);
         static set: typeof Ember.set;
+        register(fullName: string, factory: any): void;
+        unregister(fullName: string): void;
     }
-    class Resolver {
+    class Resolver extends Ember.Object {
     }
 
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
