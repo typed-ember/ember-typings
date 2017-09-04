@@ -328,7 +328,7 @@ interface RenderOptions {
     view?: string;
 }
 
-namespace Ember {
+export namespace Ember {
     /**
     Alias for jQuery.
     **/
