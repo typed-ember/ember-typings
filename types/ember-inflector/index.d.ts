@@ -34,7 +34,7 @@ declare module 'ember-inflector' {
         irregular(singular: string, plural: string): void;
         pluralize(word: string): string;
         singularize(word: string): string;
-        inflect(word: string, typeRules: {}, irregular: {}): string;
+        protected inflect(word: string, typeRules: {}, irregular: {}): string;
     }
 
     export function pluralize(word: string): string;
