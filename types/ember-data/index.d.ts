@@ -33,8 +33,8 @@ namespace DS {
   function normalizeModelName(modelName: string): string;
   const VERSION: string;
 
-  interface AttrOptions {
-      defaultValue?: any | (() => any);
+  interface AttrOptions<T = any> {
+      defaultValue?: T | (() => T);
   }
 
   /**
@@ -45,8 +45,12 @@ namespace DS {
    * `boolean` and `date`. You can define your own transforms by subclassing
    * [DS.Transform](/api/data/classes/DS.Transform.html).
    */
-  function attr(type: string, options?: AttrOptions): Ember.ComputedProperty;
-  function attr(options?: AttrOptions): Ember.ComputedProperty;
+  function attr(type: 'string', options?: AttrOptions<string>): string;
+  function attr(type: 'boolean', options?: AttrOptions<boolean>): boolean;
+  function attr(type: 'number', options?: AttrOptions<number>): number;
+  function attr(type: 'date', options?: AttrOptions<Date>): Date;
+  function attr<T>(type: string, options?: AttrOptions<T>): T;
+  function attr<T>(options?: AttrOptions<T>): T;
   /**
    * WARNING: This interface is likely to change in order to accomodate https://github.com/emberjs/rfcs/pull/4
    * ## Using BuildURLMixin

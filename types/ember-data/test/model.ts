@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import { assertType } from "./lib/assert";
 
 const Person = DS.Model.extend({
     firstName: DS.attr(),
@@ -20,3 +21,9 @@ const User = DS.Model.extend({
         defaultValue() { return new Date(); }
     })
 });
+
+const user = User.create({ username: 'dwickern' });
+assertType<string>(user.get('id'));
+assertType<string>(user.get('username'));
+assertType<boolean>(user.get('verified'));
+assertType<Date>(user.get('createdAt'));
