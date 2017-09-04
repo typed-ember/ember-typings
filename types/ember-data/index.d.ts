@@ -20,12 +20,30 @@ namespace DS {
    * `DS.belongsTo` is used to define One-To-One and One-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function belongsTo(modelName: string, options?: {}): Ember.ComputedProperty;
+  function belongsTo<T extends Model>(modelName: string, options: {
+      async: false,
+      inverse?: string | null,
+      polymorphic?: boolean
+  }): T;
+  function belongsTo<T extends Model>(modelName: string, options?: {
+      async?: true,
+      inverse?: string | null,
+      polymorphic?: boolean
+  }): DS.PromiseObject<T> & T;
   /**
    * `DS.hasMany` is used to define One-To-Many and Many-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
    */
-  function hasMany(type: string, options?: {}): Ember.ComputedProperty;
+  function hasMany<T extends Model>(type: string, options: {
+      async: false,
+      inverse?: string | null,
+      polymorphic?: boolean
+  }): DS.ManyArray<T>;
+  function hasMany<T extends Model>(type: string, options?: {
+      async?: true,
+      inverse?: string | null,
+      polymorphic?: boolean
+  }): DS.PromiseManyArray<T>;
   /**
    * This method normalizes a modelName into the format Ember Data uses
    * internally.
@@ -429,7 +447,7 @@ namespace DS {
     /**
      * Get the reference for the specified hasMany relationship.
      */
-    hasMany(name: string): HasManyReference;
+    hasMany(name: string): HasManyReference<any>;
     /**
      * Given a callback, iterates over each of the relationships in the model,
      * invoking the callback with the name of each relationship and its relationship
@@ -537,7 +555,7 @@ namespace DS {
    * may trigger a search on the server, whose results would be loaded
    * into an instance of the `AdapterPopulatedRecordArray`.
    */
-  class AdapterPopulatedRecordArray extends RecordArray {
+  class AdapterPopulatedRecordArray<T> extends RecordArray<T> {
   }
   /**
    * Represents a list of records whose membership is determined by the
@@ -545,7 +563,7 @@ namespace DS {
    * evaluates them to determine if they should be part of the record
    * array.
    */
-  class FilteredRecordArray extends RecordArray {
+  class FilteredRecordArray<T> extends RecordArray<T> {
     /**
      * The filterFunction is a function used to test records from the store to
      * determine if they should be part of the record array.
@@ -559,7 +577,7 @@ namespace DS {
    * `DS.RecordArray` or its subclasses will be returned by your application's store
    * in response to queries.
    */
-  class RecordArray {
+  class RecordArray<T> {
     /**
      * The flag to signal a `RecordArray` is finished loading data.
      */
@@ -580,7 +598,7 @@ namespace DS {
     /**
      * Saves all of the records in the `RecordArray`.
      */
-    save(): PromiseArray;
+    save(): PromiseArray<T>;
   }
   /**
    * A BelongsToReference is a low level API that allows users and
@@ -643,7 +661,7 @@ namespace DS {
    * A HasManyReference is a low level API that allows users and addon
    * author to perform meta-operations on a has-many relationship.
    */
-  class HasManyReference {
+  class HasManyReference<T> {
     /**
      * `ids()` returns an array of the record ids in this relationship.
      */
@@ -663,7 +681,7 @@ namespace DS {
      * Data will treat the new data as the canonical value of this
      * relationship on the backend.
      */
-    push(objectOrPromise: any[]|Promise<any>): ManyArray;
+    push(objectOrPromise: T[] | Promise<T[]>): ManyArray<T>;
     /**
      * `value()` sycronously returns the current value of the has-many
      * relationship. Unlike `record.get('relationshipName')`, calling
@@ -671,7 +689,7 @@ namespace DS {
      * relationship is not yet loaded. If the relationship is not loaded
      * it will always return `null`.
      */
-    value(): ManyArray;
+    value(): ManyArray<T>;
     /**
      * Loads the relationship if it is not already loaded.  If the
      * relationship is already loaded this method does not trigger a new
@@ -726,7 +744,8 @@ namespace DS {
    * A `ManyArray` is a `MutableArray` that represents the contents of a has-many
    * relationship.
    */
-  class ManyArray {
+  interface ManyArray<T> extends Ember.MutableArray<T> {}
+  class ManyArray<T> extends Ember.Object.extend(Ember.MutableArray as {}, Ember.Evented) {
     /**
      * The loading state of this array
      */
@@ -741,11 +760,15 @@ namespace DS {
      * Ember Data will revisit the original links url to repopulate the
      * relationship.
      */
-    reload(): any;
+    reload(): DS.PromiseArray<T>;
     /**
      * Saves all of the records in the `ManyArray`.
      */
-    save(): PromiseArray;
+    save(): PromiseArray<T>;
+    /**
+     * Create a child record within the owner
+     */
+    createRecord(inputProperties?: {}): T;
   }
   /**
    * A `PromiseArray` is an object that acts like both an `Ember.Array`
@@ -754,7 +777,8 @@ namespace DS {
    * it easy to create data bindings with the `PromiseArray` that will be
    * updated when the promise resolves.
    */
-  class PromiseArray {
+  interface PromiseArray<T> extends Ember.ArrayProxy<T>, Ember.PromiseProxyMixin<PromiseArray<T>> {}
+  class PromiseArray<T> {
   }
   /**
    * A `PromiseObject` is an object that acts like both an `Ember.Object`
@@ -763,14 +787,26 @@ namespace DS {
    * it easy to create data bindings with the `PromiseObject` that will
    * be updated when the promise resolves.
    */
-  class PromiseObject {
+  interface PromiseObject<T> extends Ember.ObjectProxy, Ember.PromiseProxyMixin<PromiseObject<T> & T> {}
+  class PromiseObject<T> {
   }
   /**
    * A PromiseManyArray is a PromiseArray that also proxies certain method calls
    * to the underlying manyArray.
    * Right now we proxy:
    */
-  class PromiseManyArray {
+  class PromiseManyArray<T extends DS.Model> extends PromiseArray<T> {
+      /**
+       * Reloads all of the records in the manyArray. If the manyArray
+       * holds a relationship that was originally fetched using a links url
+       * Ember Data will revisit the original links url to repopulate the
+       * relationship.
+       */
+      reload(): DS.PromiseManyArray<T>;
+      /**
+       * Create a child record within the owner
+       */
+      createRecord(inputProperties?: {}): T;
   }
   class SnapshotRecordArray {
     /**
@@ -872,7 +908,7 @@ namespace DS {
      * Create a new record in the current store. The properties passed
      * to this method are set on the newly created record.
      */
-    createRecord(modelName: string, inputProperties: {}): Model;
+    createRecord(modelName: string, inputProperties?: {}): Model;
     /**
      * For symmetry, a record can be deleted via the store.
      */
@@ -922,7 +958,7 @@ namespace DS {
      * This method returns a filtered array that contains all of the
      * known records for a given type in the store.
      */
-    peekAll(modelName: string): RecordArray;
+    peekAll(modelName: string): RecordArray<any>;
     /**
      * This method unloads all records in the store.
      * It schedules unloading to happen during the next run loop.
@@ -1509,7 +1545,7 @@ namespace DS {
     /**
      * This method is called when you call `query` on the store.
      */
-    query(store: Store, type: Model, query: {}, recordArray: AdapterPopulatedRecordArray): Promise<any>;
+    query(store: Store, type: Model, query: {}, recordArray: AdapterPopulatedRecordArray<any>): Promise<any>;
     /**
      * The `queryRecord()` method is invoked when the store is asked for a single
      * record through a query object.

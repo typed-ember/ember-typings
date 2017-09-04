@@ -14,11 +14,14 @@
     },
     "files": [
         "index.d.ts",
+        "test/lib/assert.ts",
         "test/model.ts",
         "test/adapter.ts",
         "test/serializer.ts",
         "test/transform.ts",
         "test/relationships.ts",
-        "test/store.ts"
+        "test/store.ts",
+        "test/has-many.ts",
+        "test/belongs-to.ts"
     ]
 }
