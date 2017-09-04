@@ -211,32 +211,45 @@ type CreateWithMixins = <Instance extends M1Base, M1, M1Base, Extensions extends
     args?: Extensions & ThisType<Extensions & Instance & M1>)
     => Extensions & Instance & M1;
 
-type Extend =
-    (<Instance extends B1, Args extends EmberClassArguments<Instance>, T1 extends Args, B1>(
-        this: new () => Instance,
-        arg1?: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
-        => EmberClassConstructor<T1 & Instance>)
-    &
-    (<Instance extends B1 & B2, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
-        => EmberClassConstructor<T1 & T2 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
-        => EmberClassConstructor<T1 & T2 & T3 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3 & B4, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3, T4 extends Args, B4>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
-        arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
-        => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>);
+type Extend0 = <Instance>(this: new () => Instance) => EmberClassConstructor<Instance>;
+
+type Extend1 = <Instance extends B1,
+    T1 extends EmberClassArguments<Instance>, B1>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
+    => EmberClassConstructor<T1 & Instance>;
+
+type Extend2 = <Instance extends B1 & B2,
+    T1 extends EmberClassArguments<Instance>, B1,
+    T2 extends EmberClassArguments<Instance>, B2>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
+    => EmberClassConstructor<T1 & T2 & Instance>;
+
+type Extend3 = <Instance extends B1 & B2 & B3,
+    T1 extends EmberClassArguments<Instance>, B1,
+    T2 extends EmberClassArguments<Instance>, B2,
+    T3 extends EmberClassArguments<Instance>, B3>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
+    => EmberClassConstructor<T1 & T2 & T3 & Instance>;
+
+type Extend4 = <Instance extends B1 & B2 & B3 & B4,
+    T1 extends EmberClassArguments<Instance>, B1,
+    T2 extends EmberClassArguments<Instance>, B2,
+    T3 extends EmberClassArguments<Instance>, B3,
+    T4 extends EmberClassArguments<Instance>, B4>(
+    this: new () => Instance,
+    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
+    arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
+    => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
+
+type Extend = Extend0 & Extend1 & Extend2 & Extend3 & Extend4;
 
 type Reopen = <Instance, Extra>(
     this: new () => Instance,
@@ -281,14 +294,14 @@ interface EnumerableConfigurationOptions {
     didChange?: boolean;
 }
 
-type ItemIndexEnumerableCallback = (item: any, index: number, enumerable: Ember.Enumerable) => void;
+type ItemIndexEnumerableCallback<T, U, This> = (item: T, index: number, enumerable: This) => U;
 
-type ReduceCallback = (
-    previousValue: any,
-    item: any,
+type ReduceCallback<T, U, This> = (
+    previousValue: U,
+    item: T,
     index: number,
-    enumerable: Ember.Enumerable
-) => void;
+    enumerable: This
+) => U;
 
 interface TransitionsHash {
     contexts: any[];
@@ -327,7 +340,7 @@ export namespace Ember {
     recommended that you use Ember.A when creating addons for ember or when you can not garentee
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
-    function A(arr?: any[]): NativeArray;
+    function A<T>(arr?: T[]): NativeArray<T>;
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
@@ -440,27 +453,30 @@ export namespace Ember {
     This module implements Observer-friendly Array-like behavior. This mixin is picked up by the
     Array class as well as other controllers, etc. that want to appear to be arrays.
     **/
-    interface Array extends Enumerable {
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        indexOf(object: any, startAt: number): number;
-        lastIndexOf(object: any, startAt: number): number;
-        objectAt(idx: number): any;
-        objectsAt(...args: number[]): any[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-        slice(beginIndex?: number, endIndex?: number): any[];
+    interface Array<T> extends Enumerable<T> {
+        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): this;
+        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        indexOf(object: T, startAt?: number): number;
+        lastIndexOf(object: T, startAt?: number): number;
+        objectAt(idx: number): T;
+        objectsAt(...args: number[]): T[];
+        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        slice(beginIndex?: number, endIndex?: number): T[];
         '@each': EachProxy;
         length: number;
     }
-    const Array: Mixin<Ember.Array>;
+    // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
+    const Array: Mixin<Ember.Array<any>>;
+
     /**
     An ArrayProxy wraps any other object that implements Ember.Array and/or Ember.MutableArray,
     forwarding all requests. This makes it very useful for a number of binding use cases or other cases
     where being able to swap out the underlying array is useful.
     **/
-    class ArrayProxy extends Object.extend(MutableArray) {
-        content: NativeArray;
+    interface ArrayProxy<T> extends MutableArray<T> {}
+    class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
+        content: Ember.Array<T>;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
@@ -708,7 +724,7 @@ export namespace Ember {
     other names are looked up on the application after converting the name.
     For example, controller:post looks up App.PostController by default.
     **/
-    class DefaultResolver {
+    class DefaultResolver extends Resolver {
         resolve(fullName: string): {};
         namespace: Application;
     }
@@ -760,53 +776,54 @@ export namespace Ember {
     This mixin is applied automatically to the Array class on page load, so you can use any of these methods
     on simple arrays. If Array already implements one of these methods, the mixin will not override them.
     **/
-    interface Enumerable {
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
+    interface Enumerable<T> {
+        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        any(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
         anyBy(key: string, value?: string): boolean;
         isAny(key: string, value?: boolean): boolean;
         someProperty(key: string, value?: string): boolean;
-        compact(): any[];
-        contains(obj: any): boolean;
+        compact(): T[];
+        contains(obj: T): boolean;
         enumerableContentDidChange(
             start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
+            removing: Enumerable<T> | number,
+            adding: Enumerable<T> | number
+        ): this;
+        enumerableContentDidChange(removing: Enumerable<T> | number, adding: Enumerable<T> | number): this;
         enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
+            removing: Enumerable<T> | number,
+            adding: Enumerable<T> | number
+        ): this;
+        every(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
         isEvery(key: string, value?: boolean): boolean;
         everyBy(key: string, value?: string): boolean;
         everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
+        filter(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T[];
+        filterBy(key: string, value?: string): T[];
+        find(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T | undefined;
+        findBy(key: string, value?: string): T | undefined;
+        forEach(callback: ItemIndexEnumerableCallback<T, void, this>, target?: any): void;
         getEach(key: string): any[];
         invoke(methodName: string, ...args: any[]): any[];
-        map(callback: ItemIndexEnumerableCallback, target?: any): any[];
+        map<U>(callback: ItemIndexEnumerableCallback<T, U, this>, target?: any): U[];
+        mapBy<K extends keyof T>(key: K): GlobalArray<T[K]>;
         mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject(callback: ItemIndexEnumerableCallback, target?: any): any[];
-        rejectBy(key: string, value?: string): any[];
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        setEach(key: string, value?: any): any;
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        without(value: any): Enumerable;
-        '[]': any[];
-        firstObject: any;
+        nextObject(index: number, previousObject: T, context: any): T | undefined;
+        reduce<U>(callback: ReduceCallback<T, U, this>, initialValue: U, reducerProperty: string): U;
+        reject(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): T[];
+        rejectBy(key: string, value?: string): T[];
+        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        setEach(key: string, value?: any): this;
+        some(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
+        toArray(): T[];
+        uniq(): Enumerable<T>;
+        without(value: T): Enumerable<T>;
+        '[]': T[];
+        firstObject: T;
         hasEnumerableObservers: boolean;
-        lastObject: any;
+        lastObject: T;
     }
-    const Enumerable: Mixin<Enumerable>;
+    const Enumerable: Mixin<Enumerable<any>>;
     /**
     A subclass of the JavaScript Error object for use in Ember.
     **/
@@ -924,36 +941,41 @@ export namespace Ember {
         static create(): MapWithDefault;
     }
     class Mixin<T, Base = Ember.Object> {
+        /**
+         * Mixin needs to have *something* on its prototype, otherwise it's treated like an empty interface.
+         */
+        private __ember_mixin__: never;
+
         static create<T, Base = Ember.Object>(args?: T & ThisType<T & Base>): Mixin<T, Base>;
     }
-    interface MutableArray extends Array, MutableEnumberable {
-        clear(): any[];
-        insertAt(idx: number, object: any): any[];
-        popObject(): any;
-        pushObject(obj: any): any;
-        pushObjects(...args: any[]): any[];
-        removeAt(start: number, len: number): any;
-        replace(idx: number, amt: number, objects: any[]): any;
-        reverseObjects(): any[];
-        setObjects(objects: any[]): any[];
-        shiftObject(): any;
-        unshiftObject(object: any): any;
-        unshiftObjects(objects: any[]): any[];
+    interface MutableArray<T> extends Array<T>, MutableEnumberable<T> {
+        clear(): this;
+        insertAt(idx: number, object: T): this;
+        popObject(): T;
+        pushObject(obj: T): T;
+        pushObjects(...args: T[]): this;
+        removeAt(start: number, len: number): this;
+        replace(idx: number, amt: number, objects: T[]): this;
+        reverseObjects(): this;
+        setObjects(objects: T[]): this;
+        shiftObject(): T;
+        unshiftObject(object: T): T;
+        unshiftObjects(objects: T[]): this;
     }
-    const MutableArray: Mixin<MutableArray>;
-    interface MutableEnumberable extends Enumerable {
-        addObject(object: any): any;
-        addObjects(objects: Enumerable): MutableEnumberable;
-        removeObject(object: any): any;
-        removeObjects(objects: Enumerable): MutableEnumberable;
+    const MutableArray: Mixin<MutableArray<any>>;
+    interface MutableEnumberable<T> extends Enumerable<T> {
+        addObject(object: T): T;
+        addObjects(objects: Enumerable<T>): this;
+        removeObject(object: T): T;
+        removeObjects(objects: Enumerable<T>): this;
     }
-    const MutableEnumerable: Mixin<MutableEnumberable>;
+    const MutableEnumerable: Mixin<MutableEnumberable<any>>;
     const NAME_KEY: string;
     class Namespace extends Object {
     }
-    interface NativeArray extends MutableArray, Observable, Copyable {
+    interface NativeArray<T> extends MutableArray<T>, Observable, Copyable {
     }
-    const NativeArray: Mixin<NativeArray>;
+    const NativeArray: Mixin<NativeArray<any>>;
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
@@ -1010,8 +1032,10 @@ export namespace Ember {
     class Registry {
         constructor(options: any);
         static set: typeof Ember.set;
+        register(fullName: string, factory: any): void;
+        unregister(fullName: string): void;
     }
-    class Resolver {
+    class Resolver extends Ember.Object {
     }
 
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
@@ -1700,24 +1724,32 @@ export namespace Ember {
     }
     // ReSharper disable once DuplicatingLocalDeclaration
 
-    type ComputedPropertyGet<T> = (this: any, key: string) => T;
+    type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
 
-    interface ComputedPropertyGetSet<T> {
+    interface ComputedPropertyGet<T> {
         get(this: any, key: string): T;
+    }
+
+    interface ComputedPropertySet<T> {
         set(this: any, key: string, value: T): T;
     }
 
-    type ComputedPropertyFunction<T> = ComputedPropertyGet<T> | ComputedPropertyGetSet<T>;
+    type ComputedPropertyCallback<T> =
+        ComputedPropertyGetterFunction<T> |
+        ComputedPropertyGet<T> |
+        ComputedPropertySet<T> |
+        (ComputedPropertyGet<T> & ComputedPropertySet<T>);
+
     type ComputedPropertyReturn<T> = ComputedProperty & T;
 
     const computed: {
-        <T>(cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
+        <T>(cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
         (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty;
 
         alias(dependentKey: string): ComputedProperty;
