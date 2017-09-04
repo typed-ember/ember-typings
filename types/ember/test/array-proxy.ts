@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { assertType } from './lib/assert';
 
 const pets = ['dog', 'cat', 'fish'];
 const proxy = Ember.ArrayProxy.create({ content: Ember.A(pets) });
@@ -15,3 +16,11 @@ const overridden = Ember.ArrayProxy.create({
 });
 
 overridden.get('firstObject'); // 'DOG'
+
+class MyNewProxy<T> extends Ember.ArrayProxy<T> {
+    isNew = true;
+}
+
+let x: MyNewProxy<number> = MyNewProxy.create({ content: Ember.A([1, 2, 3]) });
+assertType<number>(x.get('firstObject'));
+assertType<boolean>(x.isNew);
