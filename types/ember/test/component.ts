@@ -45,7 +45,7 @@ class Comp4 extends Component {
   classNameBindings = ['propertyA', 'propertyB'];
   propertyA = 'from-a';
   propertyB = computed(() => {
-    if ('someLogic') {
+    if (!this.get('propertyA')) {
       return 'from-b';
     }
   });
