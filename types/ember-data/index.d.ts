@@ -435,7 +435,7 @@ namespace DS {
      * Save the record and persist any changes to the record to an
      * external source via the adapter.
      */
-    save(options?: {}): Promise<any>;
+    save(options?: {}): Promise<this>;
     /**
      * Reload the record from the adapter.
      */
@@ -577,6 +577,7 @@ namespace DS {
    * `DS.RecordArray` or its subclasses will be returned by your application's store
    * in response to queries.
    */
+  interface RecordArray<T> extends Ember.ArrayProxy<T>, Ember.Evented {}
   class RecordArray<T> {
     /**
      * The flag to signal a `RecordArray` is finished loading data.
@@ -705,7 +706,7 @@ namespace DS {
    * An RecordReference is a low level API that allows users and
    * addon author to perform meta-operations on a record.
    */
-  class RecordReference {
+  class RecordReference<T extends Model> {
     /**
      * The `id` of the record that this reference refers to.
      */
@@ -722,23 +723,23 @@ namespace DS {
      * normalized hash of data and the object represented by the reference
      * will update.
      */
-    push(UNKNOWN: Promise<any>|{}): void;
+    push(payload: Promise<any>|{}): PromiseObject<T> & T;
     /**
      * If the entity referred to by the reference is already loaded, it is
      * present as `reference.value`. Otherwise the value returned by this function
      * is `null`.
      */
-    value(): Model;
+    value(): T | null;
     /**
      * Triggers a fetch for the backing entity based on its `remoteType`
      * (see `remoteType` definitions per reference type).
      */
-    load(): Promise<any>;
+    load(): PromiseObject<T> & T;
     /**
      * Reloads the record if it is already loaded. If the record is not
      * loaded it will load the record via `store.findRecord`
      */
-    reload(): Promise<any>;
+    reload(): PromiseObject<T> & T;
   }
   /**
    * A `ManyArray` is a `MutableArray` that represents the contents of a has-many
@@ -908,28 +909,28 @@ namespace DS {
      * Create a new record in the current store. The properties passed
      * to this method are set on the newly created record.
      */
-    createRecord(modelName: string, inputProperties?: {}): Model;
+    createRecord<T extends Model>(modelName: string, inputProperties?: {}): T;
     /**
      * For symmetry, a record can be deleted via the store.
      */
-    deleteRecord(record: Model): any;
+    deleteRecord(record: Model): void;
     /**
      * For symmetry, a record can be unloaded via the store.
      * This will cause the record to be destroyed and freed up for garbage collection.
      */
-    unloadRecord(record: Model): any;
+    unloadRecord(record: Model): void;
     /**
      * This method returns a record for a given type and id combination.
      */
-    findRecord(modelName: string, id: string|number, options?: {}): Promise<any>;
+    findRecord<T extends Model>(modelName: string, id: string|number, options?: {}): PromiseObject<T> & T;
     /**
      * Get the reference for the specified record.
      */
-    getReference(modelName: string, id: string|number): RecordReference;
+    getReference<T extends Model>(modelName: string, id: string|number): RecordReference<T>;
     /**
      * Get a record by a given type and ID without triggering a fetch.
      */
-    peekRecord(modelName: string, id: string|number): Model|null;
+    peekRecord<T extends Model>(modelName: string, id: string|number): T|null;
     /**
      * This method returns true if a record for a given modelName and id is already
      * loaded in the store. Use this function to know beforehand if a findRecord()
@@ -940,30 +941,35 @@ namespace DS {
      * This method delegates a query to the adapter. This is the one place where
      * adapter-level semantics are exposed to the application.
      */
-    query(modelName: string, query: any): Promise<any>;
+    query<T extends Model>(modelName: string, query: any): PromiseArray<T> & AdapterPopulatedRecordArray<T>;
     /**
      * This method makes a request for one record, where the `id` is not known
      * beforehand (if the `id` is known, use [`findRecord`](#method_findRecord)
      * instead).
      */
-    queryRecord(modelName: string, query: any): Promise<any>;
+    queryRecord<T extends Model>(modelName: string, query: any): Promise<T>;
     /**
      * `findAll` asks the adapter's `findAll` method to find the records for the
      * given type, and returns a promise which will resolve with all records of
      * this type present in the store, even if the adapter only returns a subset
      * of them.
      */
-    findAll(modelName: string, options: {}): Promise<any>;
+    findAll<T extends Model>(modelName: string, options?: {
+        reload?: boolean,
+        backgroundReload?: boolean,
+        include?: string,
+        adapterOptions?: any
+    }): PromiseArray<T>;
     /**
      * This method returns a filtered array that contains all of the
      * known records for a given type in the store.
      */
-    peekAll(modelName: string): RecordArray<any>;
+    peekAll<T extends Model>(modelName: string): RecordArray<T>;
     /**
      * This method unloads all records in the store.
      * It schedules unloading to happen during the next run loop.
      */
-    unloadAll(modelName: string): any;
+    unloadAll(modelName: string): void;
     /**
      * DEPRECATED:
      * This method has been deprecated and is an alias for store.hasRecordForId, which should
@@ -992,7 +998,7 @@ namespace DS {
      * example, `adapterFor('person')` will return an instance of
      * `App.PersonAdapter`.
      */
-    adapterFor(modelName: string): void;
+    adapterFor(modelName: string): Adapter;
     /**
      * Returns an instance of the serializer for a given type. For
      * example, `serializerFor('person')` will return an instance of

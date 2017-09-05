@@ -22,6 +22,7 @@
         "test/relationships.ts",
         "test/store.ts",
         "test/has-many.ts",
-        "test/belongs-to.ts"
+        "test/belongs-to.ts",
+        "test/record-reference.ts"
     ]
 }
