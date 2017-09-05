@@ -260,20 +260,20 @@ type Extend4 = <Statics, Instance extends B1 & B2 & B3 & B4,
 
 type Extend = Extend0 & Extend1 & Extend2 & Extend3 & Extend4;
 
-type Reopen = <Instance, Extra extends EmberClassArguments<Instance>>(
-    this: EmberClassConstructor<Instance>,
+type Reopen = <Statics, Instance, Extra extends EmberClassArguments<Instance>>(
+    this: Statics & EmberClassConstructor<Instance>,
     args?: Extra & ThisType<Instance & Extra>)
-    => EmberClassConstructor<Instance & Extra>;
+    => Objectify<Statics> & EmberClassConstructor<Instance & Extra>;
 
 type ReopenClass = <Class, Extra extends EmberClassArguments<Class>>(
     this: Class,
     args?: Extra)
     => Class & Extra;
 
-type Detect = <Instance>(
-    this: EmberClassConstructor<Instance>,
+type Detect = <Statics, Instance>(
+    this: Statics & EmberClassConstructor<Instance>,
     obj: any)
-    => obj is EmberClassConstructor<Instance>;
+    => obj is Objectify<Statics> & EmberClassConstructor<Instance>;
 
 type DetectInstance = <Instance>(
     this: EmberClassConstructor<Instance>,
@@ -283,20 +283,6 @@ type DetectInstance = <Instance>(
 interface EmberClassConstructor<Instance> {
     new (): Instance;
     new (...params: any[]): Instance; // tslint:disable-line:unified-signatures
-    create: Create;
-    createWithMixins: CreateWithMixins;
-    extend: Extend;
-
-    reopen: Reopen;
-    reopenClass: ReopenClass;
-
-    detect: Detect;
-    detectInstance: DetectInstance;
-
-    eachComputedProperty(callback: Function, binding: {}): void;
-    metaForProperty(key: string): {};
-    isClass: boolean;
-    isMethod: boolean;
 }
 
 interface EnumerableConfigurationOptions {
