@@ -234,7 +234,7 @@ interface ControllerMixin extends ActionHandler {
     replaceRoute(name: string, ...args: any[]): void;
     transitionToRoute(name: string, ...args: any[]): void;
     model: any;
-    queryParams: string[] | { [key: string]: { type: string } }[];
+    queryParams: string[] | Array<{ [key: string]: { type: string } }>;
     target: Object;
 }
 const ControllerMixin: Ember.Mixin<ControllerMixin>;
