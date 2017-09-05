@@ -234,8 +234,8 @@ interface ControllerMixin extends ActionHandler {
     replaceRoute(name: string, ...args: any[]): void;
     transitionToRoute(name: string, ...args: any[]): void;
     model: any;
-    queryParams: any;
-    target: any;
+    queryParams: string[] | { [key: string]: { type: string } }[];
+    target: Object;
 }
 const ControllerMixin: Ember.Mixin<ControllerMixin>;
 
@@ -634,17 +634,7 @@ namespace Ember {
       catalogEntriesByType(type: string): any[];
     }
 
-    class Controller extends Object.extend(ControllerMixin) {
-        replaceRoute(name: string, ...args: any[]): void;
-        transitionToRoute(name: string, ...args: any[]): void;
-        controllers: {};
-        model: any;
-        needs: string[];
-        queryParams: any;
-        target: any;
-        send(name: string, ...args: any[]): void;
-        actions: ActionsHash;
-    }
+    class Controller extends Object.extend(ControllerMixin) {}
     /**
     Implements some standard methods for copying an object. Add this mixin to any object you
     create that can create a copy of itself. This mixin is added automatically to the built-in array.
