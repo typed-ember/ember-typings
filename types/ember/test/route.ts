@@ -70,7 +70,7 @@ Route.extend({
       into: 'application', // the template to render into, referenced by name
       outlet: 'anOutletName', // the outlet inside `options.into` to render into.
       controller: 'someControllerName', // the controller to use for this template, referenced by name
-      model: model, // the model to set on `options.controller`.
+      model, // the model to set on `options.controller`.
     });
   },
 });

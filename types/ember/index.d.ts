@@ -1432,7 +1432,7 @@ namespace Ember {
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
     class Route extends Object.extend(ActionHandler, Evented) {
-      //methods
+      // methods
       /**
         This hook is called after this route's model has resolved.
         It follows identical async/promise semantics to `beforeModel`
