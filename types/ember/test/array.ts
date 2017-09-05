@@ -20,7 +20,7 @@ assertType<Person[]>(people.filterBy('isHappy'));
 assertType<typeof people>(people.get('[]'));
 assertType<Person>(people.get('[]').get('firstObject'));
 
-assertType<boolean[]>(people.mapBy('isHappy'));
+assertType<Ember.Array<boolean>>(people.mapBy('isHappy'));
 assertType<any[]>(people.mapBy('name.length'));
 
 const last = people.get('lastObject');
