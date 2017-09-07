@@ -194,23 +194,47 @@ interface String {
     w(): string[];
 }
 
+/**
+ * Check that any arguments to `create()` and `extend()` match the type's properties.
+ *
+ * Accept any additional properties and add merge them into the prototype.
+ */
 type EmberClassArguments<T> = Partial<T> & {
     [key: string]: any
 };
 
 /**
- * Map type T to a plain object hash with the identity mapping
+ * Map type `T` to a plain object hash with the identity mapping.
+ *
+ * Discards any additional object identity like the ability to `new()` up the class.
+ * The `new()` capability is added back later by merging `EmberClassConstructor<T>`
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
  */
-type Objectify<T> = {
-    [K in keyof T]: T[K];
-};
+type Objectify<T> = Readonly<T>;
 
+/**
+ * Ember.Object.extend(...) accepts any number of mixins or literals.
+ */
 type MixinOrLiteral<T, Base> = Ember.Mixin<T, Base> | T;
 
-interface EmberClassConstructor<Instance> {
-    new (): Instance;
-    new (...params: any[]): Instance; // tslint:disable-line:unified-signatures
-}
+/**
+ * Used to infer the type of ember classes of type `T`.
+ *
+ * Generally you would use `EmberClass.create()` instead of `new EmberClass()`.
+ *
+ * The no-arg constructor is required by the typescript compiler.
+ * The multi-arg constructor is included for better ergonomics.
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
+ */
+type EmberClassConstructor<T> = (
+    new () => T
+) & (
+    new (...args: any[]) => T
+);
 
 interface EnumerableConfigurationOptions {
     willChange?: boolean;
