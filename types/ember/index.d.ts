@@ -195,6 +195,13 @@ interface String {
 }
 
 /**
+ * Deconstructs computed properties into the types which would be returned by `.get()`.
+ */
+type ComputedProperties<T> = {
+    [K in keyof T]: Ember.ComputedProperty<T[K]> | T[K];
+};
+
+/**
  * Check that any arguments to `create()` and `extend()` match the type's properties.
  *
  * Accept any additional properties and add merge them into the prototype.
@@ -213,6 +220,10 @@ type EmberClassArguments<T> = Partial<T> & {
  * https://github.com/typed-ember/ember-typings/pull/29
  */
 type Objectify<T> = Readonly<T>;
+
+type Fix<T> = {
+    [K in keyof T]: T[K];
+};
 
 /**
  * Ember.Object.extend(...) accepts any number of mixins or literals.
@@ -410,8 +421,8 @@ export namespace Ember {
         objectsAt(...args: number[]): T[];
         removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): this;
         slice(beginIndex?: number, endIndex?: number): T[];
-        '@each': EachProxy;
-        length: number;
+        '@each': ComputedProperty<EachProxy>;
+        length: number | ComputedProperty<number>;
     }
     // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
     const Array: Mixin<Ember.Array<any>>;
@@ -424,6 +435,7 @@ export namespace Ember {
     interface ArrayProxy<T> extends MutableArray<T> {}
     class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
         content: Ember.Array<T>;
+        length: ComputedProperty<number>;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
@@ -478,15 +490,30 @@ export namespace Ember {
     will be cached. You can specify various properties that your computed property is dependent on.
     This will force the cached result to be recomputed if the dependencies are modified.
     **/
-    class ComputedProperty {
-        get(keyName: string): any;
-        meta(meta: {}): ComputedProperty;
-        property(...args: string[]): ComputedProperty;
-        readOnly(): ComputedProperty;
-        set(keyName: string, newValue: any, oldValue: string): any;
-        // ReSharper disable UsingOfReservedWord
-        volatile(): ComputedProperty;
-        // ReSharper restore UsingOfReservedWord
+    class ComputedProperty<T> {
+        /**
+         * Call on a computed property to set it into non-cached mode. When in this
+         * mode the computed property will not automatically cache the return value.
+         */
+        volatile(): this;
+        /**
+         * Call on a computed property to set it into read-only mode. When in this
+         * mode the computed property will throw an error when set.
+         */
+        readOnly(): this;
+        /**
+         * Sets the dependent keys on this computed property. Pass any number of
+         * arguments containing key paths that this computed property depends on.
+         */
+        property(...path: string[]): this;
+        /**
+         * In some cases, you may want to annotate computed properties with additional
+         * metadata about how they function or what values they operate on. For example,
+         * computed property functions may close over variables that are then no longer
+         * available for introspection.
+         */
+        meta(meta: {}): this;
+        meta(): {};
     }
     class Container {
         constructor(parent: Container);
@@ -616,15 +643,19 @@ export namespace Ember {
         **/
         toString(): string;
 
+        static create<Instance>(
+            this: EmberClassConstructor<Instance>
+        ): Fix<Instance>;
+
         static create<Instance, Extensions extends EmberClassArguments<Instance>>(
             this: EmberClassConstructor<Instance>,
-            args?: Extensions & ThisType<Extensions & Instance>
-        ): Extensions & Instance;
+            args: Extensions & ThisType<Fix<Extensions & Instance>>
+        ): Fix<Instance & Extensions>;
 
         static createWithMixins<Instance extends M1Base, M1, M1Base, Extensions extends EmberClassArguments<Instance>>(
             this: EmberClassConstructor<Instance>,
             mixin1: MixinOrLiteral<M1, M1Base>,
-            args?: Extensions & ThisType<Extensions & Instance & M1>
+            args?: Extensions & ThisType<Fix<Extensions & Instance & M1>>
         ): Extensions & Instance & M1;
 
         static extend<Statics, Instance>(
@@ -634,15 +665,15 @@ export namespace Ember {
         static extend<Statics, Instance extends B1,
             T1 extends EmberClassArguments<Instance>, B1>(
             this: Statics & EmberClassConstructor<Instance>,
-            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & Instance>;
 
         static extend<Statics, Instance extends B1 & B2,
             T1 extends EmberClassArguments<Instance>, B1,
             T2 extends EmberClassArguments<Instance>, B2>(
             this: Statics & EmberClassConstructor<Instance>,
-            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & Instance>;
 
         static extend<Statics, Instance extends B1 & B2 & B3,
@@ -650,9 +681,9 @@ export namespace Ember {
             T2 extends EmberClassArguments<Instance>, B2,
             T3 extends EmberClassArguments<Instance>, B3>(
             this: Statics & EmberClassConstructor<Instance>,
-            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-            arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & Instance>;
 
         static extend<Statics, Instance extends B1 & B2 & B3 & B4,
@@ -661,15 +692,15 @@ export namespace Ember {
             T3 extends EmberClassArguments<Instance>, B3,
             T4 extends EmberClassArguments<Instance>, B4>(
             this: Statics & EmberClassConstructor<Instance>,
-            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-            arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
-            arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>,
+            arg4: MixinOrLiteral<T4, B4> & ThisType<Fix<Instance & T1 & T2 & T3 & T4>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
 
         static reopen<Statics, Instance, Extra extends EmberClassArguments<Instance>>(
             this: Statics & EmberClassConstructor<Instance>,
-            args?: Extra & ThisType<Instance & Extra>
+            args?: Extra & ThisType<Fix<Instance & Extra>>
         ): Objectify<Statics> & EmberClassConstructor<Instance & Extra>;
 
         static reopenClass<Class, Extra extends EmberClassArguments<Class>>(
@@ -822,10 +853,10 @@ export namespace Ember {
         toArray(): T[];
         uniq(): Enumerable<T>;
         without(value: T): Enumerable<T>;
-        '[]': T[];
-        firstObject: T;
-        hasEnumerableObservers: boolean;
-        lastObject: T;
+        '[]': ComputedProperty<this>;
+        firstObject: ComputedProperty<T>;
+        hasEnumerableObservers: ComputedProperty<boolean>;
+        lastObject: ComputedProperty<T>;
     }
     const Enumerable: Mixin<Enumerable<any>>;
     /**
@@ -950,7 +981,7 @@ export namespace Ember {
          */
         private __ember_mixin__: never;
 
-        static create<T, Base = Ember.Object>(args?: T & ThisType<T & Base>): Mixin<T, Base>;
+        static create<T, Base = Ember.Object>(args?: T & ThisType<Fix<T & Base>>): Mixin<T, Base>;
     }
     interface MutableArray<T> extends Array<T>, MutableEnumberable<T> {
         clear(): this;
@@ -991,15 +1022,16 @@ export namespace Ember {
         **/
         content: Object;
     }
+
     interface Observable {
         addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
         beginPropertyChanges(): Observable;
         cacheFor(keyName: string): any;
         decrementProperty(keyName: string, decrement?: number): number;
         endPropertyChanges(): Observable;
-        get<K extends keyof this>(key: K): this[K];
-        getProperties<K extends keyof this>(list: K[]): Pick<this, K>;
-        getProperties<K extends keyof this>(...list: K[]): Pick<this, K>;
+        get<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K];
+        getProperties<T, K extends keyof T>(this: ComputedProperties<T>, list: K[]): Pick<T, K>;
+        getProperties<T, K extends keyof T>(this: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
         getWithDefault(keyName: string, defaultValue: any): any;
         hasObserverFor(key: string): boolean;
         incrementProperty(keyName: string, increment?: number): number;
@@ -1007,8 +1039,9 @@ export namespace Ember {
         propertyDidChange(keyName: string): Observable;
         propertyWillChange(keyName: string): Observable;
         removeObserver(key: string, target: {}, method: Function | string): void;
-        set<K extends keyof this>(key: K, value: this[K]): this[K];
-        setProperties<K extends keyof this>(hash: Pick<this, K>): Pick<this, K>;
+        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
+        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+
         /**
         Set the value of a boolean property to the opposite of its current value.
         */
@@ -1744,63 +1777,63 @@ export namespace Ember {
         ComputedPropertySet<T> |
         (ComputedPropertyGet<T> & ComputedPropertySet<T>);
 
-    type ComputedPropertyReturn<T> = ComputedProperty & T;
+    type ComputedPropertyReturn<T> = ComputedProperty<T>;
 
     const computed: {
-        <T>(cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedPropertyReturn<T>;
-        (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty;
+        <T>(cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty<any>;
 
-        alias(dependentKey: string): ComputedProperty;
-        and(...args: string[]): ComputedProperty;
-        any(...args: string[]): ComputedProperty;
-        bool(dependentKey: string): ComputedProperty;
-        collect(...dependentKeys: string[]): ComputedProperty;
-        defaultTo(defaultPath: string): ComputedProperty;
-        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty;
-        empty(dependentKey: string): ComputedProperty;
-        equal(dependentKey: string, value: any): ComputedProperty;
+        alias(dependentKey: string): ComputedProperty<any>;
+        and(...args: string[]): ComputedProperty<any>;
+        any(...args: string[]): ComputedProperty<any>;
+        bool(dependentKey: string): ComputedProperty<any>;
+        collect(...dependentKeys: string[]): ComputedProperty<any>;
+        defaultTo(defaultPath: string): ComputedProperty<any>;
+        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty<any>;
+        empty(dependentKey: string): ComputedProperty<any>;
+        equal(dependentKey: string, value: any): ComputedProperty<any>;
         filter(
             dependentKey: string,
             callback: (item: any, index?: number, array?: any[]) => boolean
-        ): ComputedProperty;
-        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty;
+        ): ComputedProperty<any>;
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any>;
         filterProperty(key: string, value?: string): any[];
-        gt(dependentKey: string, value: number): ComputedProperty;
-        gte(dependentKey: string, value: number): ComputedProperty;
-        intersect(...args: string[]): ComputedProperty;
-        lt(dependentKey: string, value: number): ComputedProperty;
-        lte(dependentKey: string, value: number): ComputedProperty;
-        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty;
-        mapBy(dependentKey: string, propertyKey: string): ComputedProperty;
+        gt(dependentKey: string, value: number): ComputedProperty<any>;
+        gte(dependentKey: string, value: number): ComputedProperty<any>;
+        intersect(...args: string[]): ComputedProperty<any>;
+        lt(dependentKey: string, value: number): ComputedProperty<any>;
+        lte(dependentKey: string, value: number): ComputedProperty<any>;
+        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty<any>;
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
         mapProperty(key: string): any[];
-        match(dependentKey: string, regexp: RegExp): ComputedProperty;
-        max(dependentKey: string): ComputedProperty;
-        min(dependentKey: string): ComputedProperty;
-        none(dependentKey: string): ComputedProperty;
-        not(dependentKey: string): ComputedProperty;
-        notEmpty(dependentKey: string): ComputedProperty;
-        oneWay(dependentKey: string): ComputedProperty;
-        or(...args: string[]): ComputedProperty;
-        readOnly(dependentString: string): ComputedProperty;
-        reads(dependentKey: string): ComputedProperty;
-        setDiff(setAProperty: string, setBProperty: string): ComputedProperty;
-        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty;
-        sum(dependentKey: string): ComputedProperty;
-        union(...args: string[]): ComputedProperty;
-        uniq(...args: string[]): ComputedProperty;
-        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty;
+        match(dependentKey: string, regexp: RegExp): ComputedProperty<any>;
+        max(dependentKey: string): ComputedProperty<any>;
+        min(dependentKey: string): ComputedProperty<any>;
+        none(dependentKey: string): ComputedProperty<any>;
+        not(dependentKey: string): ComputedProperty<any>;
+        notEmpty(dependentKey: string): ComputedProperty<any>;
+        oneWay(dependentKey: string): ComputedProperty<any>;
+        or(...args: string[]): ComputedProperty<any>;
+        readOnly(dependentString: string): ComputedProperty<any>;
+        reads(dependentKey: string): ComputedProperty<any>;
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any>;
+        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty<any>;
+        sum(dependentKey: string): ComputedProperty<any>;
+        union(...args: string[]): ComputedProperty<any>;
+        uniq(...args: string[]): ComputedProperty<any>;
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
     };
-    function get<T, K extends keyof T>(obj: T, key: K): T[K];
-    function getProperties<T, K extends keyof T>(obj: T, list: K[]): Pick<T, K>;
-    function getProperties<T, K extends keyof T>(obj: T, ...list: K[]): Pick<T, K>;
-    function set<T, K extends keyof T, V extends T[K]>(obj: T, key: K, value: V): V;
-    function setProperties<T, K extends keyof T>(obj: T, hash: Pick<T, K>): Pick<T, K>;
+    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
+    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
+    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
     // ReSharper restore DuplicatingLocalDeclaration
     function controllerFor(
         container: Container,

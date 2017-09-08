@@ -31,3 +31,17 @@ let yehuda = Person2.createPerson('Yehuda Katz');
 tom.sayHello(); // "Hello. My name is Tom Dale"
 yehuda.sayHello(); // "Hello. My name is Yehuda Katz"
 alert(Person2.species); // "Homo sapiens"
+
+const Person3 = Person2.reopen({
+    goodbyeMessage: 'goodbye',
+
+    sayGoodbye() {
+        alert(`${this.get('goodbyeMessage')}, ${this.get('name')}`);
+    }
+});
+
+const person3 = Person3.create();
+person3.get('name');
+person3.get('goodbyeMessage');
+person3.sayHello();
+person3.sayGoodbye();
