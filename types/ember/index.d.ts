@@ -194,100 +194,47 @@ interface String {
     w(): string[];
 }
 
+/**
+ * Check that any arguments to `create()` and `extend()` match the type's properties.
+ *
+ * Accept any additional properties and add merge them into the prototype.
+ */
 type EmberClassArguments<T> = Partial<T> & {
     [key: string]: any
 };
 
+/**
+ * Map type `T` to a plain object hash with the identity mapping.
+ *
+ * Discards any additional object identity like the ability to `new()` up the class.
+ * The `new()` capability is added back later by merging `EmberClassConstructor<T>`
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
+ */
+type Objectify<T> = Readonly<T>;
+
+/**
+ * Ember.Object.extend(...) accepts any number of mixins or literals.
+ */
 type MixinOrLiteral<T, Base> = Ember.Mixin<T, Base> | T;
 
-type Create = <Instance, Extensions extends EmberClassArguments<Instance>>(
-    this: new () => Instance,
-    args?: Extensions & ThisType<Extensions & Instance>)
-    => Extensions & Instance;
-
-type CreateWithMixins = <Instance extends M1Base, M1, M1Base, Extensions extends EmberClassArguments<Instance>>(
-    this: new () => Instance,
-    mixin1: MixinOrLiteral<M1, M1Base>,
-    args?: Extensions & ThisType<Extensions & Instance & M1>)
-    => Extensions & Instance & M1;
-
-type Extend0 = <Instance>(this: new () => Instance) => EmberClassConstructor<Instance>;
-
-type Extend1 = <Instance extends B1,
-    T1 extends EmberClassArguments<Instance>, B1>(
-    this: new () => Instance,
-    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
-    => EmberClassConstructor<T1 & Instance>;
-
-type Extend2 = <Instance extends B1 & B2,
-    T1 extends EmberClassArguments<Instance>, B1,
-    T2 extends EmberClassArguments<Instance>, B2>(
-    this: new () => Instance,
-    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
-    => EmberClassConstructor<T1 & T2 & Instance>;
-
-type Extend3 = <Instance extends B1 & B2 & B3,
-    T1 extends EmberClassArguments<Instance>, B1,
-    T2 extends EmberClassArguments<Instance>, B2,
-    T3 extends EmberClassArguments<Instance>, B3>(
-    this: new () => Instance,
-    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
-    => EmberClassConstructor<T1 & T2 & T3 & Instance>;
-
-type Extend4 = <Instance extends B1 & B2 & B3 & B4,
-    T1 extends EmberClassArguments<Instance>, B1,
-    T2 extends EmberClassArguments<Instance>, B2,
-    T3 extends EmberClassArguments<Instance>, B3,
-    T4 extends EmberClassArguments<Instance>, B4>(
-    this: new () => Instance,
-    arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-    arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-    arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
-    arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
-    => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
-
-type Extend = Extend0 & Extend1 & Extend2 & Extend3 & Extend4;
-
-type Reopen = <Instance, Extra>(
-    this: new () => Instance,
-    args?: Extra & ThisType<Instance & Extra>)
-    => EmberClassConstructor<Instance & Extra>;
-
-type ReopenClass = <Class, Extra>(
-    this: Class,
-    args?: Extra)
-    => Class & Extra;
-
-type Detect = <Instance>(
-    this: new () => Instance,
-    obj: any)
-    => obj is EmberClassConstructor<Instance>;
-
-type DetectInstance = <Instance>(
-    this: new () => Instance,
-    obj: any)
-    => obj is Instance;
-
-interface EmberClassConstructor<Instance> {
-    new (...params: any[]): Instance;
-    create: Create;
-    createWithMixins: CreateWithMixins;
-    extend: Extend;
-
-    reopen: Reopen;
-    reopenClass: ReopenClass;
-
-    detect: Detect;
-    detectInstance: DetectInstance;
-
-    eachComputedProperty(callback: Function, binding: {}): void;
-    metaForProperty(key: string): {};
-    isClass: boolean;
-    isMethod: boolean;
-}
+/**
+ * Used to infer the type of ember classes of type `T`.
+ *
+ * Generally you would use `EmberClass.create()` instead of `new EmberClass()`.
+ *
+ * The no-arg constructor is required by the typescript compiler.
+ * The multi-arg constructor is included for better ergonomics.
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
+ */
+type EmberClassConstructor<T> = (
+    new () => T
+) & (
+    new (...args: any[]) => T
+);
 
 interface EnumerableConfigurationOptions {
     willChange?: boolean;
@@ -523,6 +470,7 @@ export namespace Ember {
     class Component extends Object {
         sendAction(action: string, context: any): void;
         targetObject: Controller;
+        static positionalParams: string | string[];
     }
     /**
     A computed property transforms an objects function into a property.
@@ -668,16 +616,72 @@ export namespace Ember {
         **/
         toString(): string;
 
-        static create: Create;
-        static createWithMixins: CreateWithMixins;
-        static extend: Extend;
+        static create<Instance, Extensions extends EmberClassArguments<Instance>>(
+            this: EmberClassConstructor<Instance>,
+            args?: Extensions & ThisType<Extensions & Instance>
+        ): Extensions & Instance;
 
-        static reopen: Reopen;
-        static reopenClass: ReopenClass;
+        static createWithMixins<Instance extends M1Base, M1, M1Base, Extensions extends EmberClassArguments<Instance>>(
+            this: EmberClassConstructor<Instance>,
+            mixin1: MixinOrLiteral<M1, M1Base>,
+            args?: Extensions & ThisType<Extensions & Instance & M1>
+        ): Extensions & Instance & M1;
 
-        // TODO: remove private API?
-        static detect: Detect;
-        static detectInstance: DetectInstance;
+        static extend<Statics, Instance>(
+            this: Statics & EmberClassConstructor<Instance>
+        ): Objectify<Statics> & EmberClassConstructor<Instance>;
+
+        static extend<Statics, Instance extends B1,
+            T1 extends EmberClassArguments<Instance>, B1>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & Instance>;
+
+        static extend<Statics, Instance extends B1 & B2,
+            T1 extends EmberClassArguments<Instance>, B1,
+            T2 extends EmberClassArguments<Instance>, B2>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & Instance>;
+
+        static extend<Statics, Instance extends B1 & B2 & B3,
+            T1 extends EmberClassArguments<Instance>, B1,
+            T2 extends EmberClassArguments<Instance>, B2,
+            T3 extends EmberClassArguments<Instance>, B3>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & Instance>;
+
+        static extend<Statics, Instance extends B1 & B2 & B3 & B4,
+            T1 extends EmberClassArguments<Instance>, B1,
+            T2 extends EmberClassArguments<Instance>, B2,
+            T3 extends EmberClassArguments<Instance>, B3,
+            T4 extends EmberClassArguments<Instance>, B4>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
+            arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
+
+        static reopen<Statics, Instance, Extra extends EmberClassArguments<Instance>>(
+            this: Statics & EmberClassConstructor<Instance>,
+            args?: Extra & ThisType<Instance & Extra>
+        ): Objectify<Statics> & EmberClassConstructor<Instance & Extra>;
+
+        static reopenClass<Class, Extra extends EmberClassArguments<Class>>(
+            this: Class, args?: Extra): Class & Extra;
+
+        static detect<Statics, Instance>(
+            this: Statics & EmberClassConstructor<Instance>,
+            obj: any): obj is Objectify<Statics> & EmberClassConstructor<Instance>;
+
+        static detectInstance<Instance>(
+            this: EmberClassConstructor<Instance>,
+            obj: any): obj is Instance;
 
         /**
          Iterate over each computed property for the class, passing its name and any
