@@ -13,6 +13,7 @@
         "no-duplicate-imports": false,
         "no-unnecessary-qualifier": false,
         "prefer-const": false,
-        "no-void-expression": false
+        "no-void-expression": false,
+        "only-arrow-functions": false
     }
 }
