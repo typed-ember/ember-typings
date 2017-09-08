@@ -78,3 +78,9 @@ assertType<string>(person.get('fullNameSetOnly'));
 assertType<string>(person.get('combinators'));
 
 assertType<{ firstName: string, fullName: string, age: number }>(person.getProperties('firstName', 'fullName', 'age'));
+
+const person2 = Person.create({
+    fullName: 'Fred Smith'
+});
+
+assertType<string>(person2.get('fullName'));

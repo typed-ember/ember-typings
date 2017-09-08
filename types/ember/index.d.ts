@@ -647,8 +647,8 @@ export namespace Ember {
             this: EmberClassConstructor<Instance>
         ): Fix<Instance>;
 
-        static create<Instance, Extensions extends EmberClassArguments<Instance>>(
-            this: EmberClassConstructor<Instance>,
+        static create<Instance, Args, Extensions extends EmberClassArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
             args: Extensions & ThisType<Fix<Extensions & Instance>>
         ): Fix<Instance & Extensions>;
 
