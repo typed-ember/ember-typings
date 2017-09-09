@@ -29,7 +29,7 @@ namespace DS {
       async?: true,
       inverse?: string | null,
       polymorphic?: boolean
-  }): PromiseObject<T> & T;
+  }): T & PromiseObject<T>;
   /**
    * `DS.hasMany` is used to define One-To-Many and Many-To-Many
    * relationships on a [DS.Model](/api/data/classes/DS.Model.html).
@@ -788,7 +788,7 @@ namespace DS {
    * it easy to create data bindings with the `PromiseObject` that will
    * be updated when the promise resolves.
    */
-  interface PromiseObject<T> extends Ember.ObjectProxy, Ember.PromiseProxyMixin<PromiseObject<T> & T> {}
+  interface PromiseObject<T> extends Ember.ObjectProxy, Ember.PromiseProxyMixin<T & PromiseObject<T>> {}
   class PromiseObject<T> {
   }
   /**
@@ -941,7 +941,7 @@ namespace DS {
      * This method delegates a query to the adapter. This is the one place where
      * adapter-level semantics are exposed to the application.
      */
-    query<T extends Model>(modelName: string, query: any): PromiseArray<T> & AdapterPopulatedRecordArray<T>;
+    query<T extends Model>(modelName: string, query: any): AdapterPopulatedRecordArray<T> & PromiseArray<T>;
     /**
      * This method makes a request for one record, where the `id` is not known
      * beforehand (if the `id` is known, use [`findRecord`](#method_findRecord)
