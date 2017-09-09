@@ -195,11 +195,21 @@ type ComputedProperties<T> = {
 };
 
 /**
- * Check that any arguments to `create()` and `extend()` match the type's properties.
+ * Check that any arguments to `create()` match the type's properties.
  *
+ * Accept any additional properties and add merge them into the instance.
+ */
+type EmberInstanceArguments<T> = Partial<T> & {
+    [key: string]: any
+};
+
+/**
+ * Check that any arguments to `extend()` match the type's properties.
+ *
+ * For any property type `K`, `K` and `ComputedProperty<K>` are both assignable.
  * Accept any additional properties and add merge them into the prototype.
  */
-type EmberClassArguments<T> = Partial<T> & {
+type EmberClassArguments<T> = Partial<ComputedProperties<T>> & {
     [key: string]: any
 };
 
@@ -662,23 +672,23 @@ export namespace Ember {
         ): Fix<Instance>;
 
         static create<Instance, Args,
-            T1 extends EmberClassArguments<Args>>(
+            T1 extends EmberInstanceArguments<Args>>(
             this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: T1 & ThisType<Fix<T1 & Instance>>
         ): Fix<Instance & T1>;
 
         static create<Instance, Args,
-            T1 extends EmberClassArguments<Args>,
-            T2 extends EmberClassArguments<Args>>(
+            T1 extends EmberInstanceArguments<Args>,
+            T2 extends EmberInstanceArguments<Args>>(
             this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: T1 & ThisType<Fix<Instance & T1>>,
             arg2: T2 & ThisType<Fix<Instance & T1 & T2>>
         ): Fix<Instance & T1 & T2>;
 
         static create<Instance, Args,
-            T1 extends EmberClassArguments<Args>,
-            T2 extends EmberClassArguments<Args>,
-            T3 extends EmberClassArguments<Args>>(
+            T1 extends EmberInstanceArguments<Args>,
+            T2 extends EmberInstanceArguments<Args>,
+            T3 extends EmberInstanceArguments<Args>>(
             this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: T1 & ThisType<Fix<Instance & T1>>,
             arg2: T2 & ThisType<Fix<Instance & T1 & T2>>,
@@ -689,36 +699,36 @@ export namespace Ember {
             this: Statics & EmberClassConstructor<Instance>
         ): Objectify<Statics> & EmberClassConstructor<Instance>;
 
-        static extend<Statics, Instance extends B1,
-            T1 extends EmberClassArguments<Instance>, B1>(
-            this: Statics & EmberClassConstructor<Instance>,
+        static extend<Statics, Args, Instance extends B1,
+            T1 extends EmberClassArguments<Args>, B1>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & Instance>;
 
-        static extend<Statics, Instance extends B1 & B2,
-            T1 extends EmberClassArguments<Instance>, B1,
-            T2 extends EmberClassArguments<Instance>, B2>(
-            this: Statics & EmberClassConstructor<Instance>,
+        static extend<Statics, Args, Instance extends B1 & B2,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
             arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & Instance>;
 
-        static extend<Statics, Instance extends B1 & B2 & B3,
-            T1 extends EmberClassArguments<Instance>, B1,
-            T2 extends EmberClassArguments<Instance>, B2,
-            T3 extends EmberClassArguments<Instance>, B3>(
-            this: Statics & EmberClassConstructor<Instance>,
+        static extend<Statics, Args, Instance extends B1 & B2 & B3,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2,
+            T3 extends EmberClassArguments<Args>, B3>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
             arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
             arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>
         ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & Instance>;
 
-        static extend<Statics, Instance extends B1 & B2 & B3 & B4,
-            T1 extends EmberClassArguments<Instance>, B1,
-            T2 extends EmberClassArguments<Instance>, B2,
-            T3 extends EmberClassArguments<Instance>, B3,
-            T4 extends EmberClassArguments<Instance>, B4>(
-            this: Statics & EmberClassConstructor<Instance>,
+        static extend<Statics, Args, Instance extends B1 & B2 & B3 & B4,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2,
+            T3 extends EmberClassArguments<Args>, B3,
+            T4 extends EmberClassArguments<Args>, B4>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
             arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
             arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
             arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>,

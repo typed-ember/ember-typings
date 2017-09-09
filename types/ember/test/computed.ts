@@ -83,4 +83,21 @@ const person2 = Person.create({
     fullName: 'Fred Smith'
 });
 
+assertType<string>(person2.get('firstName'));
 assertType<string>(person2.get('fullName'));
+
+const person3 = Person.extend({
+    firstName: 'Fred',
+    fullName: 'Fred Smith'
+}).create();
+
+assertType<string>(person3.get('firstName'));
+assertType<string>(person3.get('fullName'));
+
+const person4 = Person.extend({
+    firstName: Ember.computed(() => 'Fred'),
+    fullName: Ember.computed(() => 'Fred Smith')
+}).create();
+
+assertType<string>(person4.get('firstName'));
+assertType<string>(person4.get('fullName'));
