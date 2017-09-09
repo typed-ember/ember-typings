@@ -542,7 +542,7 @@ namespace DS {
      * This Ember.js hook allows an object to be notified when a property
      * is defined.
      */
-    didDefineProperty(proto: {}, key: string, value: Ember.ComputedProperty): any;
+    didDefineProperty(proto: {}, key: string, value: Ember.ComputedProperty<any>): any;
   }
   /**
    * ### State
