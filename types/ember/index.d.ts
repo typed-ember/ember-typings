@@ -661,10 +661,29 @@ export namespace Ember {
             this: EmberClassConstructor<Instance>
         ): Fix<Instance>;
 
-        static create<Instance, Args, Extensions extends EmberClassArguments<Args>>(
+        static create<Instance, Args,
+            T1 extends EmberClassArguments<Args>>(
             this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
-            args: Extensions & ThisType<Fix<Extensions & Instance>>
-        ): Fix<Instance & Extensions>;
+            arg1: T1 & ThisType<Fix<T1 & Instance>>
+        ): Fix<Instance & T1>;
+
+        static create<Instance, Args,
+            T1 extends EmberClassArguments<Args>,
+            T2 extends EmberClassArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: T1 & ThisType<Fix<Instance & T1>>,
+            arg2: T2 & ThisType<Fix<Instance & T1 & T2>>
+        ): Fix<Instance & T1 & T2>;
+
+        static create<Instance, Args,
+            T1 extends EmberClassArguments<Args>,
+            T2 extends EmberClassArguments<Args>,
+            T3 extends EmberClassArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: T1 & ThisType<Fix<Instance & T1>>,
+            arg2: T2 & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: T3 & ThisType<Fix<Instance & T1 & T2 & T3>>
+        ): Fix<Instance & T1 & T2 & T3>;
 
         static extend<Statics, Instance>(
             this: Statics & EmberClassConstructor<Instance>
