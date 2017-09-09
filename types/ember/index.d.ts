@@ -666,12 +666,6 @@ export namespace Ember {
             args: Extensions & ThisType<Fix<Extensions & Instance>>
         ): Fix<Instance & Extensions>;
 
-        static createWithMixins<Instance extends M1Base, M1, M1Base, Extensions extends EmberClassArguments<Instance>>(
-            this: EmberClassConstructor<Instance>,
-            mixin1: MixinOrLiteral<M1, M1Base>,
-            args?: Extensions & ThisType<Fix<Extensions & Instance & M1>>
-        ): Extensions & Instance & M1;
-
         static extend<Statics, Instance>(
             this: Statics & EmberClassConstructor<Instance>
         ): Objectify<Statics> & EmberClassConstructor<Instance>;
