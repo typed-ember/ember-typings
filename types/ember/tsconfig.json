@@ -30,6 +30,7 @@
         "test/set.ts",
         "test/set-properties.ts",
         "test/computed.ts",
-        "test/component.ts"
+        "test/component.ts",
+        "test/function-ext.ts"
     ]
 }

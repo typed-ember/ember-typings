@@ -174,13 +174,6 @@ namespace EmberTesting {
     }
 }
 
-interface Function {
-    observes(...args: string[]): Function;
-    observesBefore(...args: string[]): Function;
-    on(...args: string[]): Function;
-    property(...args: string[]): Function;
-}
-
 interface String {
     camelize(): string;
     capitalize(): string;
@@ -299,6 +292,27 @@ export namespace Ember {
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
     function A<T>(arr?: T[]): NativeArray<T>;
+
+    interface FunctionPrototypeExtensions {
+        /**
+         * The `property` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * `true`, which is the default.
+         */
+        property(...args: string[]): ComputedProperty;
+        /**
+         * The `observes` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * true, which is the default.
+         */
+        observes(...args: string[]): this;
+        /**
+         * The `on` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * true, which is the default.
+         */
+        on(...args: string[]): this;
+    }
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
