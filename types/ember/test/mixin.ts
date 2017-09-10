@@ -44,11 +44,3 @@ const obj = LiteralMixins.create();
 assertType<number>(obj.a);
 assertType<number>(obj.b);
 assertType<number>(obj.c);
-
-const Post = Ember.Route.extend({
-    postId: 0
-});
-
-const editablePost = Post.createWithMixins(EditableMixin);
-assertType<number>(editablePost.postId);
-editablePost.edit();
