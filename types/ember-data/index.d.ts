@@ -1656,16 +1656,6 @@ namespace DS {
      */
     normalize(typeClass: Model, hash: {}): {};
   }
-  class String {
-    /**
-     * See {{#crossLink "Ember.String/pluralize"}}{{/crossLink}}
-     */
-    pluralize(): any;
-    /**
-     * See {{#crossLink "Ember.String/singularize"}}{{/crossLink}}
-     */
-    singularize(): any;
-  }
 }
 /**
  * Manages relationship payloads for a given store, for uninitialized
