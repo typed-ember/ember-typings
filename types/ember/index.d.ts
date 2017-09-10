@@ -995,10 +995,21 @@ export namespace Ember {
         rootURL: string;
     }
     const IS_BINDING: RegExp;
-    const inject: {
-        controller(name?: string): Controller;
-        service(name?: string): Service;
-    };
+    /**
+     * Namespace for injection helper methods.
+     */
+    namespace inject {
+        /**
+         * Creates a property that lazily looks up another controller in the container.
+         * Can only be used when defining another controller.
+         */
+        function controller<T extends Controller>(name?: string): ComputedProperty<T>;
+        /**
+         * Creates a property that lazily looks up a service in the container. There
+         * are no restrictions as to what objects a service can be injected into.
+         */
+        function service<T extends Service>(name?: string): ComputedProperty<T>;
+    }
     class Helper extends Object {
         static helper(h: (params: any, hash?: any) => any): Helper;
         compute(params: any[], hash: any): any;

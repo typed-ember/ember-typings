@@ -33,6 +33,7 @@
         "test/set-properties.ts",
         "test/computed.ts",
         "test/component.ts",
-        "test/function-ext.ts"
+        "test/function-ext.ts",
+        "test/inject.ts"
     ]
 }
