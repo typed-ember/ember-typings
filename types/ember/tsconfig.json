@@ -25,6 +25,7 @@
         "test/detect.ts",
         "test/detect-instance.ts",
         "test/array.ts",
+        "test/array-ext.ts",
         "test/array-proxy.ts",
         "test/get.ts",
         "test/get-properties.ts",
