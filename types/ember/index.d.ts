@@ -13,12 +13,8 @@ declare module 'ember' {
 // the Ember namespace.
 import Rsvp from 'rsvp';
 
-interface Function {
-    observes(...args: string[]): Function;
-    observesBefore(...args: string[]): Function;
-    on(...args: string[]): Function;
-    property(...args: string[]): Function;
-}
+// Get an alias to the global Array type to use in inner scope below.
+type GlobalArray<T> = T[];
 
 interface String {
     camelize(): string;
@@ -33,101 +29,82 @@ interface String {
     w(): string[];
 }
 
-type EmberClassArguments<T> = Partial<T> & {
+/**
+ * Deconstructs computed properties into the types which would be returned by `.get()`.
+ */
+type ComputedProperties<T> = {
+    [K in keyof T]: Ember.ComputedProperty<T[K]> | T[K];
+};
+
+/**
+ * Check that any arguments to `create()` match the type's properties.
+ *
+ * Accept any additional properties and add merge them into the instance.
+ */
+type EmberInstanceArguments<T> = Partial<T> & {
     [key: string]: any
 };
 
+/**
+ * Check that any arguments to `extend()` match the type's properties.
+ *
+ * For any property type `K`, `K` and `ComputedProperty<K>` are both assignable.
+ * Accept any additional properties and add merge them into the prototype.
+ */
+type EmberClassArguments<T> = Partial<ComputedProperties<T>> & {
+    [key: string]: any
+};
+
+/**
+ * Map type `T` to a plain object hash with the identity mapping.
+ *
+ * Discards any additional object identity like the ability to `new()` up the class.
+ * The `new()` capability is added back later by merging `EmberClassConstructor<T>`
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
+ */
+type Objectify<T> = Readonly<T>;
+
+type Fix<T> = {
+    [K in keyof T]: T[K];
+};
+
+/**
+ * Ember.Object.extend(...) accepts any number of mixins or literals.
+ */
 type MixinOrLiteral<T, Base> = Ember.Mixin<T, Base> | T;
 
-type Create = <Instance, Extensions extends EmberClassArguments<Instance>>(
-    this: new () => Instance,
-    args?: Extensions & ThisType<Extensions & Instance>)
-    => Extensions & Instance;
-
-type CreateWithMixins = <Instance extends M1Base, M1, M1Base, Extensions extends EmberClassArguments<Instance>>(
-    this: new () => Instance,
-    mixin1: MixinOrLiteral<M1, M1Base>,
-    args?: Extensions & ThisType<Extensions & Instance & M1>)
-    => Extensions & Instance & M1;
-
-type Extend =
-    (<Instance extends B1, Args extends EmberClassArguments<Instance>, T1 extends Args, B1>(
-        this: new () => Instance,
-        arg1?: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>)
-        => EmberClassConstructor<T1 & Instance>)
-    &
-    (<Instance extends B1 & B2, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>)
-        => EmberClassConstructor<T1 & T2 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>)
-        => EmberClassConstructor<T1 & T2 & T3 & Instance>)
-    &
-    (<Instance extends B1 & B2 & B3 & B4, Args extends EmberClassArguments<Instance>, T1 extends Args, B1, T2 extends Args, B2, T3 extends Args, B3, T4 extends Args, B4>(
-        this: new () => Instance,
-        arg1: MixinOrLiteral<T1, B1> & ThisType<Instance & T1>,
-        arg2: MixinOrLiteral<T2, B2> & ThisType<Instance & T1 & T2>,
-        arg3: MixinOrLiteral<T3, B3> & ThisType<Instance & T1 & T2 & T3>,
-        arg4: MixinOrLiteral<T4, B4> & ThisType<Instance & T1 & T2 & T3 & T4>)
-        => EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>);
-
-type Reopen = <Instance, Extra>(
-    this: new () => Instance,
-    args?: Extra & ThisType<Instance & Extra>)
-    => EmberClassConstructor<Instance & Extra>;
-
-type ReopenClass = <Class, Extra>(
-    this: Class,
-    args?: Extra)
-    => Class & Extra;
-
-type Detect = <Instance>(
-    this: new () => Instance,
-    obj: any)
-    => obj is EmberClassConstructor<Instance>;
-
-type DetectInstance = <Instance>(
-    this: new () => Instance,
-    obj: any)
-    => obj is Instance;
-
-interface EmberClassConstructor<Instance> {
-    new (...params: any[]): Instance;
-    create: Create;
-    createWithMixins: CreateWithMixins;
-    extend: Extend;
-
-    reopen: Reopen;
-    reopenClass: ReopenClass;
-
-    detect: Detect;
-    detectInstance: DetectInstance;
-
-    eachComputedProperty(callback: Function, binding: {}): void;
-    metaForProperty(key: string): {};
-    isClass: boolean;
-    isMethod: boolean;
-}
+/**
+ * Used to infer the type of ember classes of type `T`.
+ *
+ * Generally you would use `EmberClass.create()` instead of `new EmberClass()`.
+ *
+ * The no-arg constructor is required by the typescript compiler.
+ * The multi-arg constructor is included for better ergonomics.
+ *
+ * Implementation is carefully chosen for the reasons described in
+ * https://github.com/typed-ember/ember-typings/pull/29
+ */
+type EmberClassConstructor<T> = (
+    new () => T
+) & (
+    new (...args: any[]) => T
+);
 
 interface EnumerableConfigurationOptions {
     willChange?: boolean;
     didChange?: boolean;
 }
 
-type ItemIndexEnumerableCallback = (item: any, index: number, enumerable: Ember.Enumerable) => void;
+type ItemIndexEnumerableCallback<T, U, This> = (item: T, index: number, enumerable: This) => U;
 
-type ReduceCallback = (
-    previousValue: any,
-    item: any,
+type ReduceCallback<T, U, This> = (
+    previousValue: U,
+    item: T,
     index: number,
-    enumerable: Ember.Enumerable
-) => void;
+    enumerable: This
+) => U;
 
 interface TransitionsHash {
     contexts: any[];
@@ -154,7 +131,7 @@ interface RenderOptions {
     view?: string;
 }
 
-namespace Ember {
+export namespace Ember {
     /**
     Alias for jQuery.
     **/
@@ -166,7 +143,28 @@ namespace Ember {
     recommended that you use Ember.A when creating addons for ember or when you can not garentee
     that Ember.EXTEND_PROTOTYPES will be true.
     **/
-    function A(arr?: any[]): NativeArray;
+    function A<T>(arr?: T[]): NativeArray<T>;
+
+    interface FunctionPrototypeExtensions {
+        /**
+         * The `property` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * `true`, which is the default.
+         */
+        property(...args: string[]): ComputedProperty<any>;
+        /**
+         * The `observes` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * true, which is the default.
+         */
+        observes(...args: string[]): this;
+        /**
+         * The `on` extension of Javascript's Function prototype is available
+         * when `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Function` is
+         * true, which is the default.
+         */
+        on(...args: string[]): this;
+    }
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
@@ -279,27 +277,31 @@ namespace Ember {
     This module implements Observer-friendly Array-like behavior. This mixin is picked up by the
     Array class as well as other controllers, etc. that want to appear to be arrays.
     **/
-    interface Array extends Enumerable {
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): any[];
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): any[];
-        indexOf(object: any, startAt: number): number;
-        lastIndexOf(object: any, startAt: number): number;
-        objectAt(idx: number): any;
-        objectsAt(...args: number[]): any[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): any[];
-        slice(beginIndex?: number, endIndex?: number): any[];
-        '@each': EachProxy;
-        length: number;
+    interface Array<T> extends Enumerable<T> {
+        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): this;
+        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        indexOf(object: T, startAt?: number): number;
+        lastIndexOf(object: T, startAt?: number): number;
+        objectAt(idx: number): T;
+        objectsAt(...args: number[]): T[];
+        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        slice(beginIndex?: number, endIndex?: number): T[];
+        '@each': ComputedProperty<EachProxy>;
+        length: number | ComputedProperty<number>;
     }
-    const Array: Mixin<Ember.Array>;
+    // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
+    const Array: Mixin<Ember.Array<any>>;
+
     /**
     An ArrayProxy wraps any other object that implements Ember.Array and/or Ember.MutableArray,
     forwarding all requests. This makes it very useful for a number of binding use cases or other cases
     where being able to swap out the underlying array is useful.
     **/
-    class ArrayProxy extends Object.extend(MutableArray) {
-        content: NativeArray;
+    interface ArrayProxy<T> extends MutableArray<T> {}
+    class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
+        content: Ember.Array<T>;
+        length: ComputedProperty<number>;
         objectAtContent(idx: number): any;
         replaceContent(idx: number, amt: number, objects: any[]): void;
     }
@@ -346,6 +348,7 @@ namespace Ember {
     class Component extends Object {
         sendAction(action: string, context: any): void;
         targetObject: Controller;
+        static positionalParams: string | string[];
     }
     /**
     A computed property transforms an objects function into a property.
@@ -353,15 +356,30 @@ namespace Ember {
     will be cached. You can specify various properties that your computed property is dependent on.
     This will force the cached result to be recomputed if the dependencies are modified.
     **/
-    class ComputedProperty {
-        get(keyName: string): any;
-        meta(meta: {}): ComputedProperty;
-        property(...args: string[]): ComputedProperty;
-        readOnly(): ComputedProperty;
-        set(keyName: string, newValue: any, oldValue: string): any;
-        // ReSharper disable UsingOfReservedWord
-        volatile(): ComputedProperty;
-        // ReSharper restore UsingOfReservedWord
+    class ComputedProperty<T> {
+        /**
+         * Call on a computed property to set it into non-cached mode. When in this
+         * mode the computed property will not automatically cache the return value.
+         */
+        volatile(): this;
+        /**
+         * Call on a computed property to set it into read-only mode. When in this
+         * mode the computed property will throw an error when set.
+         */
+        readOnly(): this;
+        /**
+         * Sets the dependent keys on this computed property. Pass any number of
+         * arguments containing key paths that this computed property depends on.
+         */
+        property(...path: string[]): this;
+        /**
+         * In some cases, you may want to annotate computed properties with additional
+         * metadata about how they function or what values they operate on. For example,
+         * computed property functions may close over variables that are then no longer
+         * available for introspection.
+         */
+        meta(meta: {}): this;
+        meta(): {};
     }
     class Container {
         constructor(parent: Container);
@@ -491,16 +509,131 @@ namespace Ember {
         **/
         toString(): string;
 
-        static create: Create;
-        static createWithMixins: CreateWithMixins;
-        static extend: Extend;
+        static create<Instance>(
+            this: EmberClassConstructor<Instance>
+        ): Fix<Instance>;
 
-        static reopen: Reopen;
-        static reopenClass: ReopenClass;
+        static create<Instance, Args,
+            T1 extends EmberInstanceArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: T1 & ThisType<Fix<T1 & Instance>>
+        ): Fix<Instance & T1>;
 
-        // TODO: remove private API?
-        static detect: Detect;
-        static detectInstance: DetectInstance;
+        static create<Instance, Args,
+            T1 extends EmberInstanceArguments<Args>,
+            T2 extends EmberInstanceArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: T1 & ThisType<Fix<Instance & T1>>,
+            arg2: T2 & ThisType<Fix<Instance & T1 & T2>>
+        ): Fix<Instance & T1 & T2>;
+
+        static create<Instance, Args,
+            T1 extends EmberInstanceArguments<Args>,
+            T2 extends EmberInstanceArguments<Args>,
+            T3 extends EmberInstanceArguments<Args>>(
+            this: EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: T1 & ThisType<Fix<Instance & T1>>,
+            arg2: T2 & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: T3 & ThisType<Fix<Instance & T1 & T2 & T3>>
+        ): Fix<Instance & T1 & T2 & T3>;
+
+        static extend<Statics, Instance>(
+            this: Statics & EmberClassConstructor<Instance>
+        ): Objectify<Statics> & EmberClassConstructor<Instance>;
+
+        static extend<Statics, Args, Instance extends B1,
+            T1 extends EmberClassArguments<Args>, B1>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & Instance>;
+
+        static extend<Statics, Args, Instance extends B1 & B2,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & Instance>;
+
+        static extend<Statics, Args, Instance extends B1 & B2 & B3,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2,
+            T3 extends EmberClassArguments<Args>, B3>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & Instance>;
+
+        static extend<Statics, Args, Instance extends B1 & B2 & B3 & B4,
+            T1 extends EmberClassArguments<Args>, B1,
+            T2 extends EmberClassArguments<Args>, B2,
+            T3 extends EmberClassArguments<Args>, B3,
+            T4 extends EmberClassArguments<Args>, B4>(
+            this: Statics & EmberClassConstructor<Instance & ComputedProperties<Args>>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>,
+            arg4: MixinOrLiteral<T4, B4> & ThisType<Fix<Instance & T1 & T2 & T3 & T4>>
+        ): Objectify<Statics> & EmberClassConstructor<T1 & T2 & T3 & T4 & Instance>;
+
+        static reopen<Statics, Instance>(
+            this: Statics & EmberClassConstructor<Instance>
+        ): Objectify<Statics> & EmberClassConstructor<Instance>;
+
+        static reopen<Statics, Instance,
+            T1 extends EmberClassArguments<Instance>, B1>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>
+        ): Objectify<Statics> & EmberClassConstructor<Instance & T1>;
+
+        static reopen<Statics, Instance,
+            T1 extends EmberClassArguments<Instance>, B1,
+            T2 extends EmberClassArguments<Instance>, B2>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>
+        ): Objectify<Statics> & EmberClassConstructor<Instance & T1 & T2>;
+
+        static reopen<Statics, Instance,
+            T1 extends EmberClassArguments<Instance>, B1,
+            T2 extends EmberClassArguments<Instance>, B2,
+            T3 extends EmberClassArguments<Instance>, B3>(
+            this: Statics & EmberClassConstructor<Instance>,
+            arg1: MixinOrLiteral<T1, B1> & ThisType<Fix<Instance & T1>>,
+            arg2: MixinOrLiteral<T2, B2> & ThisType<Fix<Instance & T1 & T2>>,
+            arg3: MixinOrLiteral<T3, B3> & ThisType<Fix<Instance & T1 & T2 & T3>>
+        ): Objectify<Statics> & EmberClassConstructor<Instance & T1 & T2 & T3>;
+
+        static reopenClass<Statics>(
+            this: Statics
+        ): Statics;
+
+        static reopenClass<Statics,
+            T1 extends EmberClassArguments<Statics>>(
+            this: Statics, arg1: T1
+        ): Statics & T1;
+
+        static reopenClass<Statics,
+            T1 extends EmberClassArguments<Statics>,
+            T2 extends EmberClassArguments<Statics>>(
+            this: Statics, arg1: T1, arg2: T2
+        ): Statics & T1 & T2;
+
+        static reopenClass<Statics,
+            T1 extends EmberClassArguments<Statics>,
+            T2 extends EmberClassArguments<Statics>,
+            T3 extends EmberClassArguments<Statics>>(
+            this: Statics, arg1: T1, arg2: T2, arg3: T3
+        ): Statics & T1 & T2 & T3;
+
+        static detect<Statics, Instance>(
+            this: Statics & EmberClassConstructor<Instance>,
+            obj: any): obj is Objectify<Statics> & EmberClassConstructor<Instance>;
+
+        static detectInstance<Instance>(
+            this: EmberClassConstructor<Instance>,
+            obj: any): obj is Instance;
 
         /**
          Iterate over each computed property for the class, passing its name and any
@@ -547,7 +680,7 @@ namespace Ember {
     other names are looked up on the application after converting the name.
     For example, controller:post looks up App.PostController by default.
     **/
-    class DefaultResolver {
+    class DefaultResolver extends Resolver {
         resolve(fullName: string): {};
         namespace: Application;
     }
@@ -599,53 +732,54 @@ namespace Ember {
     This mixin is applied automatically to the Array class on page load, so you can use any of these methods
     on simple arrays. If Array already implements one of these methods, the mixin will not override them.
     **/
-    interface Enumerable {
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        any(callback: ItemIndexEnumerableCallback, target?: any): boolean;
+    interface Enumerable<T> {
+        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        any(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
         anyBy(key: string, value?: string): boolean;
         isAny(key: string, value?: boolean): boolean;
         someProperty(key: string, value?: string): boolean;
-        compact(): any[];
-        contains(obj: any): boolean;
+        compact(): T[];
+        contains(obj: T): boolean;
         enumerableContentDidChange(
             start: number,
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): any;
-        enumerableContentDidChange(removing: Enumerable | number, adding: Enumerable | number): any;
+            removing: Enumerable<T> | number,
+            adding: Enumerable<T> | number
+        ): this;
+        enumerableContentDidChange(removing: Enumerable<T> | number, adding: Enumerable<T> | number): this;
         enumerableContentWillChange(
-            removing: Enumerable | number,
-            adding: Enumerable | number
-        ): Enumerable;
-        every(callback: ItemIndexEnumerableCallback, target?: any): boolean;
+            removing: Enumerable<T> | number,
+            adding: Enumerable<T> | number
+        ): this;
+        every(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
         isEvery(key: string, value?: boolean): boolean;
         everyBy(key: string, value?: string): boolean;
         everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback, target: any): any[];
-        filterBy(key: string, value?: string): any[];
-        find(callback: ItemIndexEnumerableCallback, target: any): any;
-        findBy(key: string, value?: string): any;
-        forEach(callback: ItemIndexEnumerableCallback, target?: any): any;
+        filter(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T[];
+        filterBy(key: string, value?: string): T[];
+        find(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T | undefined;
+        findBy(key: string, value?: string): T | undefined;
+        forEach(callback: ItemIndexEnumerableCallback<T, void, this>, target?: any): void;
         getEach(key: string): any[];
         invoke(methodName: string, ...args: any[]): any[];
-        map(callback: ItemIndexEnumerableCallback, target?: any): any[];
+        map<U>(callback: ItemIndexEnumerableCallback<T, U, this>, target?: any): U[];
+        mapBy<K extends keyof T>(key: K): GlobalArray<T[K]>;
         mapBy(key: string): any[];
-        nextObject(index: number, previousObject: any, context: any): any;
-        reduce(callback: ReduceCallback, initialValue: any, reducerProperty: string): any;
-        reject(callback: ItemIndexEnumerableCallback, target?: any): any[];
-        rejectBy(key: string, value?: string): any[];
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): Enumerable;
-        setEach(key: string, value?: any): any;
-        some(callback: ItemIndexEnumerableCallback, target?: any): boolean;
-        toArray(): any[];
-        uniq(): Enumerable;
-        without(value: any): Enumerable;
-        '[]': any[];
-        firstObject: any;
-        hasEnumerableObservers: boolean;
-        lastObject: any;
+        nextObject(index: number, previousObject: T, context: any): T | undefined;
+        reduce<U>(callback: ReduceCallback<T, U, this>, initialValue: U, reducerProperty: string): U;
+        reject(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): T[];
+        rejectBy(key: string, value?: string): T[];
+        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
+        setEach(key: string, value?: any): this;
+        some(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
+        toArray(): T[];
+        uniq(): Enumerable<T>;
+        without(value: T): Enumerable<T>;
+        '[]': ComputedProperty<this>;
+        firstObject: ComputedProperty<T>;
+        hasEnumerableObservers: ComputedProperty<boolean>;
+        lastObject: ComputedProperty<T>;
     }
-    const Enumerable: Mixin<Enumerable>;
+    const Enumerable: Mixin<Enumerable<any>>;
     /**
     A subclass of the JavaScript Error object for use in Ember.
     **/
@@ -763,36 +897,41 @@ namespace Ember {
         static create(): MapWithDefault;
     }
     class Mixin<T, Base = Ember.Object> {
-        static create<T, Base = Ember.Object>(args?: T & ThisType<T & Base>): Mixin<T, Base>;
+        /**
+         * Mixin needs to have *something* on its prototype, otherwise it's treated like an empty interface.
+         */
+        private __ember_mixin__: never;
+
+        static create<T, Base = Ember.Object>(args?: T & ThisType<Fix<T & Base>>): Mixin<T, Base>;
     }
-    interface MutableArray extends Array, MutableEnumberable {
-        clear(): any[];
-        insertAt(idx: number, object: any): any[];
-        popObject(): any;
-        pushObject(obj: any): any;
-        pushObjects(...args: any[]): any[];
-        removeAt(start: number, len: number): any;
-        replace(idx: number, amt: number, objects: any[]): any;
-        reverseObjects(): any[];
-        setObjects(objects: any[]): any[];
-        shiftObject(): any;
-        unshiftObject(object: any): any;
-        unshiftObjects(objects: any[]): any[];
+    interface MutableArray<T> extends Array<T>, MutableEnumberable<T> {
+        clear(): this;
+        insertAt(idx: number, object: T): this;
+        popObject(): T;
+        pushObject(obj: T): T;
+        pushObjects(...args: T[]): this;
+        removeAt(start: number, len: number): this;
+        replace(idx: number, amt: number, objects: T[]): this;
+        reverseObjects(): this;
+        setObjects(objects: T[]): this;
+        shiftObject(): T;
+        unshiftObject(object: T): T;
+        unshiftObjects(objects: T[]): this;
     }
-    const MutableArray: Mixin<MutableArray>;
-    interface MutableEnumberable extends Enumerable {
-        addObject(object: any): any;
-        addObjects(objects: Enumerable): MutableEnumberable;
-        removeObject(object: any): any;
-        removeObjects(objects: Enumerable): MutableEnumberable;
+    const MutableArray: Mixin<MutableArray<any>>;
+    interface MutableEnumberable<T> extends Enumerable<T> {
+        addObject(object: T): T;
+        addObjects(objects: Enumerable<T>): this;
+        removeObject(object: T): T;
+        removeObjects(objects: Enumerable<T>): this;
     }
-    const MutableEnumerable: Mixin<MutableEnumberable>;
+    const MutableEnumerable: Mixin<MutableEnumberable<any>>;
     const NAME_KEY: string;
     class Namespace extends Object {
     }
-    interface NativeArray extends MutableArray, Observable, Copyable {
+    interface NativeArray<T> extends MutableArray<T>, Observable, Copyable {
     }
-    const NativeArray: Mixin<NativeArray>;
+    const NativeArray: Mixin<NativeArray<any>>;
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
@@ -804,15 +943,16 @@ namespace Ember {
         **/
         content: Object;
     }
+
     interface Observable {
         addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
         beginPropertyChanges(): Observable;
         cacheFor(keyName: string): any;
         decrementProperty(keyName: string, decrement?: number): number;
         endPropertyChanges(): Observable;
-        get<K extends keyof this>(key: K): this[K];
-        getProperties<K extends keyof this>(list: K[]): Pick<this, K>;
-        getProperties<K extends keyof this>(...list: K[]): Pick<this, K>;
+        get<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K];
+        getProperties<T, K extends keyof T>(this: ComputedProperties<T>, list: K[]): Pick<T, K>;
+        getProperties<T, K extends keyof T>(this: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
         getWithDefault(keyName: string, defaultValue: any): any;
         hasObserverFor(key: string): boolean;
         incrementProperty(keyName: string, increment?: number): number;
@@ -820,8 +960,9 @@ namespace Ember {
         propertyDidChange(keyName: string): Observable;
         propertyWillChange(keyName: string): Observable;
         removeObserver(key: string, target: {}, method: Function | string): void;
-        set<K extends keyof this>(key: K, value: this[K]): this[K];
-        setProperties<K extends keyof this>(hash: Pick<this, K>): Pick<this, K>;
+        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
+        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+
         /**
         Set the value of a boolean property to the opposite of its current value.
         */
@@ -849,8 +990,10 @@ namespace Ember {
     class Registry {
         constructor(options: any);
         static set: typeof Ember.set;
+        register(fullName: string, factory: any): void;
+        unregister(fullName: string): void;
     }
-    class Resolver {
+    class Resolver extends Ember.Object {
     }
 
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
@@ -1682,71 +1825,79 @@ namespace Ember {
     }
     // ReSharper disable once DuplicatingLocalDeclaration
 
-    type ComputedPropertyGet<T> = (this: any, key: string) => T;
+    type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
 
-    interface ComputedPropertyGetSet<T> {
+    interface ComputedPropertyGet<T> {
         get(this: any, key: string): T;
+    }
+
+    interface ComputedPropertySet<T> {
         set(this: any, key: string, value: T): T;
     }
 
-    type ComputedPropertyFunction<T> = ComputedPropertyGet<T> | ComputedPropertyGetSet<T>;
-    type ComputedPropertyReturn<T> = ComputedProperty & T;
+    type ComputedPropertyCallback<T> =
+        ComputedPropertyGetterFunction<T> |
+        ComputedPropertyGet<T> |
+        ComputedPropertySet<T> |
+        (ComputedPropertyGet<T> & ComputedPropertySet<T>);
+
+    type ComputedPropertyReturn<T> = ComputedProperty<T>;
 
     const computed: {
-        <T>(cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyFunction<T>): ComputedPropertyReturn<T>;
-        (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty;
+        <T>(cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
+        (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty<any>;
 
-        alias(dependentKey: string): ComputedProperty;
-        and(...args: string[]): ComputedProperty;
-        any(...args: string[]): ComputedProperty;
-        bool(dependentKey: string): ComputedProperty;
-        collect(...dependentKeys: string[]): ComputedProperty;
-        defaultTo(defaultPath: string): ComputedProperty;
-        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty;
-        empty(dependentKey: string): ComputedProperty;
-        equal(dependentKey: string, value: any): ComputedProperty;
+        alias(dependentKey: string): ComputedProperty<any>;
+        and(...args: string[]): ComputedProperty<any>;
+        any(...args: string[]): ComputedProperty<any>;
+        bool(dependentKey: string): ComputedProperty<any>;
+        collect(...dependentKeys: string[]): ComputedProperty<any>;
+        defaultTo(defaultPath: string): ComputedProperty<any>;
+        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty<any>;
+        empty(dependentKey: string): ComputedProperty<any>;
+        equal(dependentKey: string, value: any): ComputedProperty<any>;
         filter(
             dependentKey: string,
             callback: (item: any, index?: number, array?: any[]) => boolean
-        ): ComputedProperty;
-        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty;
+        ): ComputedProperty<any>;
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any>;
         filterProperty(key: string, value?: string): any[];
-        gt(dependentKey: string, value: number): ComputedProperty;
-        gte(dependentKey: string, value: number): ComputedProperty;
-        intersect(...args: string[]): ComputedProperty;
-        lt(dependentKey: string, value: number): ComputedProperty;
-        lte(dependentKey: string, value: number): ComputedProperty;
-        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty;
-        mapBy(dependentKey: string, propertyKey: string): ComputedProperty;
+        gt(dependentKey: string, value: number): ComputedProperty<any>;
+        gte(dependentKey: string, value: number): ComputedProperty<any>;
+        intersect(...args: string[]): ComputedProperty<any>;
+        lt(dependentKey: string, value: number): ComputedProperty<any>;
+        lte(dependentKey: string, value: number): ComputedProperty<any>;
+        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty<any>;
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
         mapProperty(key: string): any[];
-        match(dependentKey: string, regexp: RegExp): ComputedProperty;
-        max(dependentKey: string): ComputedProperty;
-        min(dependentKey: string): ComputedProperty;
-        none(dependentKey: string): ComputedProperty;
-        not(dependentKey: string): ComputedProperty;
-        notEmpty(dependentKey: string): ComputedProperty;
-        oneWay(dependentKey: string): ComputedProperty;
-        or(...args: string[]): ComputedProperty;
-        readOnly(dependentString: string): ComputedProperty;
-        reads(dependentKey: string): ComputedProperty;
-        setDiff(setAProperty: string, setBProperty: string): ComputedProperty;
-        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty;
-        sum(dependentKey: string): ComputedProperty;
-        union(...args: string[]): ComputedProperty;
-        uniq(...args: string[]): ComputedProperty;
-        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty;
+        match(dependentKey: string, regexp: RegExp): ComputedProperty<any>;
+        max(dependentKey: string): ComputedProperty<any>;
+        min(dependentKey: string): ComputedProperty<any>;
+        none(dependentKey: string): ComputedProperty<any>;
+        not(dependentKey: string): ComputedProperty<any>;
+        notEmpty(dependentKey: string): ComputedProperty<any>;
+        oneWay(dependentKey: string): ComputedProperty<any>;
+        or(...args: string[]): ComputedProperty<any>;
+        readOnly(dependentString: string): ComputedProperty<any>;
+        reads(dependentKey: string): ComputedProperty<any>;
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any>;
+        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty<any>;
+        sum(dependentKey: string): ComputedProperty<any>;
+        union(...args: string[]): ComputedProperty<any>;
+        uniq(...args: string[]): ComputedProperty<any>;
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
     };
-    function get<T, K extends keyof T>(obj: T, key: K): T[K];
-    function getProperties<T, K extends keyof T>(obj: T, list: K[]): Pick<T, K>;
-    function getProperties<T, K extends keyof T>(obj: T, ...list: K[]): Pick<T, K>;
-    function set<T, K extends keyof T, V extends T[K]>(obj: T, key: K, value: V): V;
-    function setProperties<T, K extends keyof T>(obj: T, hash: Pick<T, K>): Pick<T, K>;
+    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
+    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
+    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
     // ReSharper restore DuplicatingLocalDeclaration
     function controllerFor(
         container: Container,
@@ -2260,4 +2411,11 @@ declare module '@ember/utils' {
     export const isPresent: typeof Ember.isPresent;
     export const tryInvoke: typeof Ember.tryInvoke;
     export const typeOf: typeof Ember.typeOf;
+}
+
+declare module 'htmlbars-inline-precompile' {
+    interface TemplateFactory {
+        __htmlbars_inline_precompile_template_factory: any;
+    }
+    export default function hbs(tagged: TemplateStringsArray): TemplateFactory;
 }

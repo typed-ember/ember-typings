@@ -6,27 +6,49 @@ const Person = Ember.Object.extend({
     lastName: '',
     age: 0,
 
-    noArgs: Ember.computed(() => 'test'),
+    noArgs: Ember.computed<string>(() => 'test'),
 
-    fullName: Ember.computed('firstName', 'lastName', function() {
+    fullName: Ember.computed<string>('firstName', 'lastName', function() {
         return `${this.get('firstName')} ${this.get('lastName')}`;
     }),
 
-    fullNameReadonly: Ember.computed('fullName', function() {
+    fullNameReadonly: Ember.computed<string>('fullName', function() {
         return this.get('fullName');
     }).readOnly(),
 
-    fullNameWritable: Ember.computed('firstName', 'lastName', {
+    fullNameWritable: Ember.computed<string>('firstName', 'lastName', {
         get() {
             return this.get('fullName');
         },
         set(key, value) {
             let [first, last] = value.split(' ');
             this.set('firstName', first);
-            this.ste('lastName', last);
+            this.set('lastName', last);
             return value;
         }
-    })
+    }),
+
+    fullNameGetOnly: Ember.computed<string>('fullName', {
+        get() {
+            return this.get('fullName');
+        }
+    }),
+
+    fullNameSetOnly: Ember.computed<string>('firstName', 'lastName', {
+        set(key, value) {
+            let [first, last] = value.split(' ');
+            this.set('firstName', first);
+            this.set('lastName', last);
+            return value;
+        }
+    }),
+
+    combinators: Ember.computed<string>(function() {
+        return this.get('firstName');
+    }).property('firstName')
+      .meta({ foo: 'bar' })
+      .volatile()
+      .readOnly()
 });
 
 const person = Person.create({
@@ -35,9 +57,47 @@ const person = Person.create({
     age: 29,
 });
 
-assertType<string>(person.get('noArgs'));
+assertType<string>(person.firstName);
+assertType<number>(person.age);
+assertType<Ember.ComputedProperty<string>>(person.noArgs);
+assertType<Ember.ComputedProperty<string>>(person.fullName);
+assertType<Ember.ComputedProperty<string>>(person.fullNameReadonly);
+assertType<Ember.ComputedProperty<string>>(person.fullNameWritable);
+assertType<Ember.ComputedProperty<string>>(person.fullNameGetOnly);
+assertType<Ember.ComputedProperty<string>>(person.fullNameSetOnly);
+assertType<Ember.ComputedProperty<string>>(person.combinators);
+
 assertType<string>(person.get('firstName'));
+assertType<number>(person.get('age'));
+assertType<string>(person.get('noArgs'));
 assertType<string>(person.get('fullName'));
 assertType<string>(person.get('fullNameReadonly'));
 assertType<string>(person.get('fullNameWritable'));
+assertType<string>(person.get('fullNameGetOnly'));
+assertType<string>(person.get('fullNameSetOnly'));
+assertType<string>(person.get('combinators'));
+
 assertType<{ firstName: string, fullName: string, age: number }>(person.getProperties('firstName', 'fullName', 'age'));
+
+const person2 = Person.create({
+    fullName: 'Fred Smith'
+});
+
+assertType<string>(person2.get('firstName'));
+assertType<string>(person2.get('fullName'));
+
+const person3 = Person.extend({
+    firstName: 'Fred',
+    fullName: 'Fred Smith'
+}).create();
+
+assertType<string>(person3.get('firstName'));
+assertType<string>(person3.get('fullName'));
+
+const person4 = Person.extend({
+    firstName: Ember.computed(() => 'Fred'),
+    fullName: Ember.computed(() => 'Fred Smith')
+}).create();
+
+assertType<string>(person4.get('firstName'));
+assertType<string>(person4.get('fullName'));

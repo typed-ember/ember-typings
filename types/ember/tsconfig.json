@@ -18,17 +18,21 @@
         "test/lib/assert.ts",
         "test/ember-tests.ts",
         "test/extend.ts",
+        "test/create.ts",
         "test/object.ts",
         "test/mixin.ts",
         "test/reopen.ts",
         "test/detect.ts",
         "test/detect-instance.ts",
         "test/array.ts",
+        "test/array-ext.ts",
         "test/array-proxy.ts",
         "test/get.ts",
         "test/get-properties.ts",
         "test/set.ts",
         "test/set-properties.ts",
-        "test/computed.ts"
+        "test/computed.ts",
+        "test/component.ts",
+        "test/function-ext.ts"
     ]
 }
