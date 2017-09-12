@@ -239,7 +239,7 @@ interface ControllerMixin extends ActionHandler {
 }
 const ControllerMixin: Ember.Mixin<ControllerMixin>;
 
-namespace Ember {
+export namespace Ember {
     /**
     Alias for jQuery.
     **/
@@ -1561,7 +1561,7 @@ namespace Ember {
         Beside that, it is identical to `transitionTo` in all other respects. See
         'transitionTo' for additional information regarding multiple models.
         */
-      replaceWith(name: string, ...modelsAndOrOptions: any[]): Transition;
+      replaceWith(name: string, ...args: any[]): Transition;
 
       /**
         A hook you can use to reset controller values either when the model
