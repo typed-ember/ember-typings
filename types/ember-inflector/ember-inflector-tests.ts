@@ -11,12 +11,12 @@ Ember.String.singularize("tacos"); // taco
 Ember.String.pluralize("taco"); // tacos
 
 // or if not using Ember CLI/ES6
-Inflector.inflector.pluralize("taco"); // tacos
+Ember.Inflector.inflector.pluralize("taco"); // tacos
 
 const inflector = Inflector.inflector;
 const inflector2 = new Inflector();
-const inflector3 = new Inflector();
-const inflector4 = new Inflector(Inflector.defaultRules);
+const inflector3 = new Ember.Inflector();
+const inflector4 = new Ember.Inflector(Ember.Inflector.defaultRules);
 
 const customRules = {
     plurals:  [
@@ -31,7 +31,7 @@ const customRules = {
     uncountable: [ 'fish' ]
 };
 
-const inflector5 = new Inflector(customRules);
+const inflector5 = new Ember.Inflector(customRules);
 
 inflector.irregular('formula', 'formulae');
 inflector.uncountable('advice');

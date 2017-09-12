@@ -1,14 +1,11 @@
 import Route from '@ember/routing/route';
 import Object from '@ember/object';
 import Array from '@ember/array';
-import Ember from 'ember'; // Transition isn't currently exposed
+import Ember from 'ember'; // currently needed for Transition
 
 interface Post extends Object {}
 
-interface Posts extends Array<Post> {
-    length: number;
-    firstObject: Post;
-}
+interface Posts extends Array<Post> {}
 
 Route.extend({
   beforeModel(transition: Ember.Transition) {
@@ -19,7 +16,7 @@ Route.extend({
 Route.extend({
   afterModel(posts: Posts, transition: Ember.Transition) {
     if (posts.length === 1) {
-    //   this.transitionTo('post.show', posts.get('firstObject'));
+      this.transitionTo('post.show', posts.firstObject);
     }
   },
 });
@@ -66,7 +63,7 @@ Route.extend({
 Route.extend({
   renderTemplate(controller: Ember.Controller, model: {}) {
     this.render('posts', {
-      // the template to render, referenced by name
+      view: 'someView', // the template to render, referenced by name
       into: 'application', // the template to render into, referenced by name
       outlet: 'anOutletName', // the outlet inside `options.into` to render into.
       controller: 'someControllerName', // the controller to use for this template, referenced by name
