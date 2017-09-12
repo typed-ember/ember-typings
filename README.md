@@ -19,7 +19,7 @@ The tests do *not* run, the code is only type-checked.
 To use `ember-typings` instead of `@types/ember`, first run:
 
 ```
-yarn add typed-ember/ember-typings
+yarn add typed-ember/ember-typings -D
 ```
 
 Then add a `paths` entry to your `tsconfig.json`:
