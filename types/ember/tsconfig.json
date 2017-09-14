@@ -35,6 +35,7 @@
         "test/component.ts",
         "test/function-ext.ts",
         "test/inject.ts",
-        "test/utils.ts"
+        "test/utils.ts",
+        "test/transition.ts"
     ]
 }
