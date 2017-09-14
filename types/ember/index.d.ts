@@ -991,9 +991,9 @@ export namespace Ember {
     A low level mixin making ObjectProxy promise-aware.
     */
     class PromiseProxyMixin {
-      catch(callback: Function): Rsvp.Promise<any, any>;
-      finally(callback: Function): Rsvp.Promise<any, any>;
-      then(callback: Function): Rsvp.Promise<any, any>;
+      catch(callback: Function): Rsvp.Promise<any>;
+      finally(callback: Function): Rsvp.Promise<any>;
+      then(callback: Function): Rsvp.Promise<any>;
     }
     class Registry {
         constructor(options: any);
@@ -1007,7 +1007,7 @@ export namespace Ember {
     // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
     const RSVP: typeof Rsvp;
     namespace RSVP {
-        type Promise<T, C> = Rsvp.Promise<T, C>;
+        type Promise<T> = Rsvp.Promise<T>;
     }
 
     /**
@@ -1042,7 +1042,7 @@ export namespace Ember {
             resolves. Otherwise, non-promise return values are not
             utilized in any way.
         */
-        afterModel(resolvedModel: any, transition: Transition): Rsvp.Promise<any, any>;
+        afterModel(resolvedModel: any, transition: Transition): Rsvp.Promise<any>;
 
         /**
         This hook is the first of the route entry validation hooks
@@ -1071,7 +1071,7 @@ export namespace Ember {
             resolves. Otherwise, non-promise return values are not
             utilized in any way.
         */
-        beforeModel(transition: Transition): Rsvp.Promise<any, any>;
+        beforeModel(transition: Transition): Rsvp.Promise<any>;
 
         /**
         The controller associated with this route.
@@ -1184,7 +1184,7 @@ export namespace Ember {
             the promise resolves, and the resolved value of the promise
             will be used as the model for this route.
         */
-        model(params: {}, transition: Transition): any | Rsvp.Promise<any, any>;
+        model(params: {}, transition: Transition): any | Rsvp.Promise<any>;
 
         /**
         Returns the model of a parent (or any ancestor) route
@@ -1602,11 +1602,11 @@ export namespace Ember {
         class Adapter extends Ember.Object {
             constructor();
         }
-        class Promise<T, U> extends Rsvp.Promise<T, U> {
+        class Promise<T> extends Rsvp.Promise<T> {
             constructor();
         }
         function oninjectHelpers(callback: Function): void;
-        function promise<T, U>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T, U>;
+        function promise<T>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T>;
         function unregisterHelper(name: string): void;
         function registerHelper(name: string, helperMethod: Function): void;
         function registerAsyncHelper(name: string, helperMethod: Function): void;
@@ -1619,7 +1619,7 @@ export namespace Ember {
         function unregisterWaiter(callback: Function): void;
         function unregisterWaiter(context: any, callback: Function): void;
 
-        function resolve<T>(result: T): Ember.Test.Promise<T, void>;
+        function resolve<T>(result: T): Ember.Test.Promise<T>;
     }
     class TextArea extends Component.extend(TextSupport) {
         cancel(event: Function): void;
@@ -1680,7 +1680,7 @@ export namespace Ember {
           Transition object can be externally `abort`ed, while the promise
           cannot.
          */
-        promise: Rsvp.Promise<any, any>;
+        promise: Rsvp.Promise<any>;
 
         /**
           Custom state can be stored on a Transition's `data` object.
@@ -1704,7 +1704,7 @@ export namespace Ember {
           @arg {String} label optional string for labeling the promise. Useful for tooling.
           @return {Promise}
          */
-        then(onFulfilled: Function, onRejected?: Function, label?: string): Rsvp.Promise<any, any>;
+        then(onFulfilled: Function, onRejected?: Function, label?: string): Rsvp.Promise<any>;
 
         /**
           Forwards to the internal `promise` property which you can
@@ -1717,7 +1717,7 @@ export namespace Ember {
           Useful for tooling.
           @return {Promise}
          */
-        catch(onRejection: Function, label?: string): Rsvp.Promise<any, any>;
+        catch(onRejection: Function, label?: string): Rsvp.Promise<any>;
 
         /**
           Forwards to the internal `promise` property which you can
@@ -1730,7 +1730,7 @@ export namespace Ember {
           Useful for tooling.
           @return {Promise}
          */
-        finally(callback: Function, label?: string): Rsvp.Promise<any, any>;
+        finally(callback: Function, label?: string): Rsvp.Promise<any>;
 
         /**
          Aborts the Transition. Note you can also implicitly abort a transition
@@ -1797,7 +1797,7 @@ export namespace Ember {
           @return {Promise} a promise that fulfills with the same
             value that the final redirecting transition fulfills with
          */
-        followRedirects(): Rsvp.Promise<any, any>;
+        followRedirects(): Rsvp.Promise<any>;
     }
     const VERSION: string;
     interface ViewTargetActionSupport {
