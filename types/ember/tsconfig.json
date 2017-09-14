@@ -34,6 +34,7 @@
         "test/computed.ts",
         "test/component.ts",
         "test/function-ext.ts",
-        "test/inject.ts"
+        "test/inject.ts",
+        "test/utils.ts"
     ]
 }
