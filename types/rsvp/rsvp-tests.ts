@@ -14,8 +14,6 @@ async function testAsyncAwait() {
 }
 
 function testPromise() {
-    assertType<RSVP.Promise<void>>(new RSVP.Promise());
-
     const promiseOfString = new RSVP.Promise<string>((resolve, reject) => resolve('some string'));
     assertType<RSVP.Promise<number>>(promiseOfString.then(s => s.length));
 }
@@ -61,7 +59,7 @@ function testReject() {
     assertType<RSVP.Promise<never>>(RSVP.reject('this is a string'));
 
     RSVP.reject({ ok: false }).catch(reason => { console.log(`${reason} could be anything`); });
-    RSVP.reject({ ok: false }, 'some label').catch(reason => reason.ok)
+    RSVP.reject({ ok: false }, 'some label').catch((reason: any) => reason.ok)
 }
 
 function testResolve() {
