@@ -15,6 +15,9 @@ declare module 'rsvp' {
         | undefined
         | null;
 
+    type Resolver<T> =
+        (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void;
+
     namespace RSVP {
         /**
           Promise objects represent the eventual result of an asynchronous operation. The
@@ -114,21 +117,283 @@ declare module 'rsvp' {
           });
           ```
         */
-        class Promise<T> implements PromiseLike<T> {
-            then<TResolved = T, TRejected = never>(
-                onfulfilled?: OnFulfilled<T, TResolved>,
-                onrejected?: OnRejected<TRejected>,
-                label?: string
-            ): PromiseLike<TResolved | TRejected>;
+        class Promise<T, E = Error> implements PromiseLike<T> {
+            /**
+              @param {function} resolver
+              @param {String} label optional string for labeling the promise.
+              Useful for tooling.
+             */
+            constructor(resolver?: Resolver<T>);
 
-            catch<TRejected = never>(
-                onrejected?: OnRejected<TRejected>,
+            /**
+              The primary way of interacting with a promise is through its `then` method,
+              which registers callbacks to receive either a promise's eventual value or the
+              reason why the promise cannot be fulfilled.
+
+              ```js
+              findUser().then(function(user){
+                // user is available
+              }, function(reason){
+                // user is unavailable, and you are given the reason why
+              });
+              ```
+
+              Chaining
+              --------
+
+              The return value of `then` is itself a promise.  This second, 'downstream'
+              promise is resolved with the return value of the first promise's fulfillment
+              or rejection handler, or rejected if the handler throws an exception.
+
+              ```js
+              findUser().then(function (user) {
+                return user.name;
+              }, function (reason) {
+                return 'default name';
+              }).then(function (userName) {
+                // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+                // will be `'default name'`
+              });
+
+              findUser().then(function (user) {
+                throw new Error('Found user, but still unhappy');
+              }, function (reason) {
+                throw new Error('`findUser` rejected and we\'re unhappy');
+              }).then(function (value) {
+                // never reached
+              }, function (reason) {
+                // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+                // If `findUser` rejected, `reason` will be '`findUser` rejected and we\'re unhappy'.
+              });
+              ```
+              If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+
+              ```js
+              findUser().then(function (user) {
+                throw new PedagogicalException('Upstream error');
+              }).then(function (value) {
+                // never reached
+              }).then(function (value) {
+                // never reached
+              }, function (reason) {
+                // The `PedgagocialException` is propagated all the way down to here
+              });
+              ```
+
+              Assimilation
+              ------------
+
+              Sometimes the value you want to propagate to a downstream promise can only be
+              retrieved asynchronously. This can be achieved by returning a promise in the
+              fulfillment or rejection handler. The downstream promise will then be pending
+              until the returned promise is settled. This is called *assimilation*.
+
+              ```js
+              findUser().then(function (user) {
+                return findCommentsByAuthor(user);
+              }).then(function (comments) {
+                // The user's comments are now available
+              });
+              ```
+
+              If the assimliated promise rejects, then the downstream promise will also reject.
+
+              ```js
+              findUser().then(function (user) {
+                return findCommentsByAuthor(user);
+              }).then(function (comments) {
+                // If `findCommentsByAuthor` fulfills, we'll have the value here
+              }, function (reason) {
+                // If `findCommentsByAuthor` rejects, we'll have the reason here
+              });
+              ```
+
+              Simple Example
+              --------------
+
+              Synchronous Example
+
+              ```javascript
+              let result;
+
+              try {
+                result = findResult();
+                // success
+              } catch(reason) {
+                // failure
+              }
+              ```
+
+              Errback Example
+
+              ```js
+              findResult(function(result, err){
+                if (err) {
+                  // failure
+                } else {
+                  // success
+                }
+              });
+              ```
+
+              Promise Example;
+
+              ```javascript
+              findResult().then(function(result){
+                // success
+              }, function(reason){
+                // failure
+              });
+              ```
+
+              Advanced Example
+              --------------
+
+              Synchronous Example
+
+              ```javascript
+              let author, books;
+
+              try {
+                author = findAuthor();
+                books  = findBooksByAuthor(author);
+                // success
+              } catch(reason) {
+                // failure
+              }
+              ```
+
+              Errback Example
+
+              ```js
+
+              function foundBooks(books) {
+
+              }
+
+              function failure(reason) {
+
+              }
+
+              findAuthor(function(author, err){
+                if (err) {
+                  failure(err);
+                  // failure
+                } else {
+                  try {
+                    findBoooksByAuthor(author, function(books, err) {
+                      if (err) {
+                        failure(err);
+                      } else {
+                        try {
+                          foundBooks(books);
+                        } catch(reason) {
+                          failure(reason);
+                        }
+                      }
+                    });
+                  } catch(error) {
+                    failure(err);
+                  }
+                  // success
+                }
+              });
+              ```
+
+              Promise Example;
+
+              ```javascript
+              findAuthor().
+                then(findBooksByAuthor).
+                then(function(books){
+                  // found books
+              }).catch(function(reason){
+                // something went wrong
+              });
+              ```
+            */
+            then<Fulfilled = T, Rejected = never>(
+                onFulfilled?: OnFulfilled<T, Fulfilled>,
+                onRejected?: OnRejected<Rejected>,
                 label?: string
-            ): PromiseLike<TRejected>;
+            ): Promise<Fulfilled | Rejected>;
+
+            /**
+              `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+              as the catch block of a try/catch statement.
+
+              ```js
+              function findAuthor(){
+                  throw new Error('couldn\'t find that author');
+              }
+
+              // synchronous
+              try {
+                  findAuthor();
+              } catch(reason) {
+                  // something went wrong
+              }
+
+              // async with promises
+              findAuthor().catch(function(reason){
+                  // something went wrong
+              });
+              ```
+             */
+            catch<Rejection = never>(
+                onRejected?: OnRejected<Rejection>,
+                label?: string
+            ): Promise<Rejection>;
+
+            /**
+             `finally` will be invoked regardless of the promise's fate just as native
+              try/catch/finally behaves
+
+              Synchronous example:
+
+              ```js
+              findAuthor() {
+                  if (Math.random() > 0.5) {
+                  throw new Error();
+                  }
+                  return new Author();
+              }
+
+              try {
+                  return findAuthor(); // succeed or fail
+              } catch(error) {
+                  return findOtherAuthor();
+              } finally {
+                  // always runs
+                  // doesn't affect the return value
+              }
+              ```
+
+              Asynchronous example:
+
+              ```js
+              findAuthor().catch(function(reason){
+                  return findOtherAuthor();
+              }).finally(function(){
+                  // author was either found, or not
+              });
+              ```
+
+              @method finally
+              @param {Function} callback
+              @param {String} label optional string for labeling the promise.
+              Useful for tooling.
+              @return {Promise}
+              */
+            finally<U>(onFinally?: U | PromiseLike<U>): Promise<T>;
+
+            static resolve: typeof resolve;
+            static reject: typeof reject;
         }
 
-        function resolve(): PromiseLike<void>;
-        function resolve<T>(t: T): PromiseLike<T>;
+        function resolve<T>(value?: T, label?: string): Promise<T>;
+
+        function reject<E = Error>(reason?: E, label?: string): Promise<never, E>;
     }
 
     export default RSVP;

@@ -14,7 +14,10 @@ async function testAsyncAwait() {
 }
 
 function testPromise() {
-    // TODO: add test
+    assertType<RSVP.Promise<void>>(new RSVP.Promise());
+
+    const promiseOfString = new RSVP.Promise<string>((resolve, reject) => resolve('some string'));
+    assertType<RSVP.Promise<number>>(promiseOfString.then(s => s.length));
 }
 
 function testAll() {
@@ -54,11 +57,13 @@ function testRace() {
 }
 
 function testReject() {
-    // TODO: add test
+    assertType<RSVP.Promise<never>>(RSVP.reject());
+    assertType<RSVP.Promise<never, string>>(RSVP.reject('this is a string'));
 }
 
 function testResolve() {
-    // TODO: add test
+    assertType<RSVP.Promise<void>>(RSVP.resolve());
+    assertType<RSVP.Promise<string>>(RSVP.resolve('this is a string'));
 }
 
 function testRethrow() {
