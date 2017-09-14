@@ -155,7 +155,7 @@ people2.isAny('isHappy', true);
 people2.isAny('isHappy');
 
 // Examples taken from http://emberjs.com/api/classes/Em.RSVP.Promise.html
-const promise = new Ember.RSVP.Promise<string, string>((resolve: Function, reject: Function) => {
+const promise = new Ember.RSVP.Promise<string>((resolve: Function, reject: Function) => {
     // on success
     resolve('ok!');
 
@@ -173,7 +173,7 @@ promise.then(
 );
 
 // make sure Ember.RSVP.Promise can be reference as a type
-declare function promiseReturningFunction(urn: string): Ember.RSVP.Promise<string, any>;
+declare function promiseReturningFunction(urn: string): Ember.RSVP.Promise<string>;
 
 const mix1 = Ember.Mixin.create({
     foo: 1,
