@@ -58,7 +58,10 @@ function testRace() {
 
 function testReject() {
     assertType<RSVP.Promise<never>>(RSVP.reject());
-    assertType<RSVP.Promise<never, string>>(RSVP.reject('this is a string'));
+    assertType<RSVP.Promise<never>>(RSVP.reject('this is a string'));
+
+    RSVP.reject({ ok: false }).catch(reason => { console.log(`${reason} could be anything`); });
+    RSVP.reject({ ok: false }, 'some label').catch(reason => reason.ok)
 }
 
 function testResolve() {

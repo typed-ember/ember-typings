@@ -117,7 +117,7 @@ declare module 'rsvp' {
           });
           ```
         */
-        class Promise<T, E = Error> implements PromiseLike<T> {
+        class Promise<T> implements PromiseLike<T> {
             /**
               @param {function} resolver
               @param {String} label optional string for labeling the promise.
@@ -340,7 +340,7 @@ declare module 'rsvp' {
               });
               ```
              */
-            catch<Rejection = never>(
+            catch<Rejection>(
                 onRejected?: OnRejected<Rejection>,
                 label?: string
             ): Promise<Rejection>;
@@ -393,7 +393,7 @@ declare module 'rsvp' {
 
         function resolve<T>(value?: T, label?: string): Promise<T>;
 
-        function reject<E = Error>(reason?: E, label?: string): Promise<never, E>;
+        function reject<E>(reason?: E, label?: string): Promise<never>;
     }
 
     export default RSVP;
