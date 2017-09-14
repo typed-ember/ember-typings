@@ -14,12 +14,19 @@ async function testAsyncAwait() {
 }
 
 function testPromise() {
-    const promiseOfString = new RSVP.Promise<string>((resolve, reject) => resolve('some string'));
-    assertType<RSVP.Promise<number>>(promiseOfString.then(s => s.length));
+    const promiseOfString = new RSVP.Promise((resolve: any, reject: any) => resolve('some string'));
+    assertType<RSVP.Promise<number>>(promiseOfString.then((s: string) => s.length));
 }
 
 function testAll() {
-    // TODO: add test
+    const everyPromise = RSVP.all(
+        ['string', RSVP.resolve(42), RSVP.resolve({ hash: 'with values' })]
+    );
+
+    assertType<RSVP.Promise<[string, number, { hash: string }]>>(everyPromise);
+
+    const anyFailure = RSVP.all([12, 'strings', RSVP.reject('anywhere')]);
+    assertType<RSVP.Promise<{}>>(anyFailure);
 }
 
 function testAllSettled() {
@@ -51,7 +58,8 @@ function testMap() {
 }
 
 function testRace() {
-    // TODO: add test
+    const firstPromise = RSVP.race([{ notAPromise: true }, RSVP.resolve({ some: 'value' })]);
+    assertType<RSVP.Promise<{ notAPromise: boolean } | { some: string }>>(firstPromise);
 }
 
 function testReject() {
