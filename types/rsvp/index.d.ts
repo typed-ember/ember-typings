@@ -1,3 +1,9 @@
+// Type definitions for RSVP 4.0
+// Project: https://github.com/tildeio/rsvp.js
+// Definitions by: Chris Krycho <https://github.com/chriskrycho>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 2.4
+
 declare module 'rsvp' {
     type OnFulfilled<T, F = T> =
         | ((value: T) => F | PromiseLike<F>)
