@@ -1971,7 +1971,7 @@ export namespace Ember {
     function isEqual(a: any, b: any): boolean;
     function isGlobalPath(path: string): boolean;
     const isNamespace: boolean;
-    function isNone(obj: any): boolean;
+    function isNone(obj: any): obj is null | undefined;
     function isPresent(obj: any): boolean;
     function isPrototypeOf(obj: {}): boolean;
     function isWatching(obj: any, key: string): boolean;
