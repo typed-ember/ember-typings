@@ -256,18 +256,20 @@ declare module 'rsvp' {
                 values: (T | PromiseLike<T>)[],
                 label?: string
             ): RSVPPromise<T>;
+
+            function reject<T>(reason?: any, label?: string): RSVPPromise<T>;
+
+            function resolve<T>(
+                value?: T | PromiseLike<T>,
+                label?: string
+            ): RSVPPromise<T>;
+            function resolve(): RSVPPromise<void>;
         }
-
-        function reject<T>(reason?: any, label?: string): RSVPPromise<T>;
-
-        function resolve<T>(
-            value?: T | PromiseLike<T>,
-            label?: string
-        ): RSVPPromise<T>;
-        function resolve(): RSVPPromise<void>;
 
         const all: typeof Promise.all;
         const race: typeof Promise.race;
+        const reject: typeof Promise.reject;
+        const resolve: typeof Promise.resolve;
     }
 
     export default RSVP;

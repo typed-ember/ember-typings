@@ -85,11 +85,15 @@ function testReject() {
 
     RSVP.reject({ ok: false }).catch(reason => { console.log(`${reason} could be anything`); });
     RSVP.reject({ ok: false }, 'some label').catch((reason: any) => reason.ok)
+
+    let promise = RSVP.Promise.reject(new Error('WHOOPS'));
 }
 
 function testResolve() {
     assertType<RSVP.Promise<void>>(RSVP.resolve());
     assertType<RSVP.Promise<string>>(RSVP.resolve('this is a string'));
+
+    let promise = RSVP.Promise.resolve(1);
 }
 
 function testRethrow() {
