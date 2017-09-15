@@ -12,6 +12,7 @@ declare module 'ember' {
 // Capitalization is intentional: this makes it much easier to re-export RSVP on
 // the Ember namespace.
 import Rsvp from 'rsvp';
+import { TemplateFactory } from 'htmlbars-inline-precompile';
 
 // Get an alias to the global Array type to use in inner scope below.
 type GlobalArray<T> = T[];
@@ -525,14 +526,14 @@ export namespace Ember {
          */
         isVisible: boolean;
         /**
-        A component may contain a layout. A layout is a regular template but supersedes the template
-        property during rendering. It is the responsibility of the layout template to retrieve the
-        template property from the component (or alternatively, call Handlebars.helpers.yield,
-        {{yield}}) to render it in the correct location. This is useful for a component that has a
-        shared wrapper, but which delegates the rendering of the contents of the wrapper to the
-        template property on a subclass.
-        **/
-        layout: string; // @todo: https://github.com/emberjs/ember.js/blob/v2.14.1/packages/ember-glimmer/lib/component.js#L811
+         * A component may contain a layout. A layout is a regular template but supersedes the template
+         * property during rendering. It is the responsibility of the layout template to retrieve the
+         * template property from the component (or alternatively, call Handlebars.helpers.yield,
+         * {{yield}}) to render it in the correct location. This is useful for a component that has a
+         * shared wrapper, but which delegates the rendering of the contents of the wrapper to the
+         * template property on a subclass.
+         */
+        layout: TemplateFactory | string;
         /**
         Enables components to take a list of parameters as arguments.
         **/
