@@ -536,7 +536,7 @@ export namespace Ember {
         /**
         Enables components to take a list of parameters as arguments.
         **/
-        positionalParams: string[] | string;
+        static positionalParams: string[] | string;
         // events
         /**
         Called when the attributes passed into the component have been updated. Called both during the
