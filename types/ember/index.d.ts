@@ -506,23 +506,23 @@ export namespace Ember {
         readDOMAttr(name: string): string;
         // properties
         /**
-        The WAI-ARIA role of the control represented by this view. For example, a button may have a
-        role of type 'button', or a pane may have a role of type 'alertdialog'. This property is
-        used by assistive software to help visually challenged users navigate rich web applications.
-        **/
+         * The WAI-ARIA role of the control represented by this view. For example, a button may have a
+         * role of type 'button', or a pane may have a role of type 'alertdialog'. This property is
+         * used by assistive software to help visually challenged users navigate rich web applications.
+         */
         ariaRole: string;
         /**
-        The HTML id of the component's element in the DOM. You can provide this value yourself but
-        it must be unique (just as in HTML):
-
-        If not manually set a default value will be provided by the framework. Once rendered an
-        element's elementId is considered immutable and you should never change it. If you need
-        to compute a dynamic value for the elementId, you should do this when the component or
-        element is being instantiated:
-        **/
+         * The HTML id of the component's element in the DOM. You can provide this value yourself but
+         * it must be unique (just as in HTML):
+         *
+         * If not manually set a default value will be provided by the framework. Once rendered an
+         * element's elementId is considered immutable and you should never change it. If you need
+         * to compute a dynamic value for the elementId, you should do this when the component or
+         * element is being instantiated:
+         */
         elementId: string;
         /**
-        If false, the view will appear hidden in DOM.
+         * If false, the view will appear hidden in DOM.
          */
         isVisible: boolean;
         /**
@@ -535,38 +535,38 @@ export namespace Ember {
          */
         layout: TemplateFactory | string;
         /**
-        Enables components to take a list of parameters as arguments.
-        **/
+         * Enables components to take a list of parameters as arguments.
+         */
         static positionalParams: string[] | string;
         // events
         /**
-        Called when the attributes passed into the component have been updated. Called both during the
-        initial render of a container and during a rerender. Can be used in place of an observer; code
-        placed here will be executed every time any attribute updates.
-        **/
+         * Called when the attributes passed into the component have been updated. Called both during the
+         * initial render of a container and during a rerender. Can be used in place of an observer; code
+         * placed here will be executed every time any attribute updates.
+         */
         didReceiveAttrs(): void;
         /**
-        Called after a component has been rendered, both on initial render and in subsequent rerenders.
-        **/
+         * Called after a component has been rendered, both on initial render and in subsequent rerenders.
+         */
         didRender(): void;
         /**
-        Called when the component has updated and rerendered itself. Called only during a rerender,
-        not during an initial render.
-        **/
+         * Called when the component has updated and rerendered itself. Called only during a rerender,
+         * not during an initial render.
+         */
         didUpdate(): void;
         /**
-        Called when the attributes passed into the component have been changed. Called only during a
-        rerender, not during an initial render.
-        **/
+         * Called when the attributes passed into the component have been changed. Called only during a
+         * rerender, not during an initial render.
+         */
         didUpdateAttrs(): void;
         /**
-        Called before a component has been rendered, both on initial render and in subsequent rerenders.
-        **/
+         * Called before a component has been rendered, both on initial render and in subsequent rerenders.
+         */
         willRender(): void;
         /**
-        Called when the component is about to update and rerender itself. Called only during a rerender,
-        not during an initial render.
-        **/
+         * Called when the component is about to update and rerender itself. Called only during a rerender,
+         * not during an initial render.
+         */
         willUpdate(): void;
     }
     /**
@@ -855,7 +855,7 @@ export namespace Ember {
     }
     /**
     The DataAdapter helps a data persistence library interface with tools
-     that debug Ember such as the Ember Extension for Chrome and Firefox.
+    that debug Ember such as the Ember Extension for Chrome and Firefox.
     */
     class DataAdapter extends Object {
         acceptsModelName: any;
@@ -1456,32 +1456,12 @@ export namespace Ember {
         */
         beforeModel(transition: Transition): Rsvp.Promise<any>;
 
-      /**
-        Returns the controller for a particular route or name.
-        The controller instance must already have been created, either through entering the
-        associated route or using `generateController`.
-        */
-      controllerFor(name: string): Controller;
-
-      /**
-        Disconnects a view that has been rendered into an outlet.
-        You may pass any or all of the following options to `disconnectOutlet`:
-        * `outlet`: the name of the outlet to clear (default: 'main')
-        * `parentView`: the name of the view containing the outlet to clear
-            (default: the view rendered by the parent route)
-        */
-      disconnectOutlet(options: DisconnectOutletOptions | string): void;
-
-      /**
-        Perform a synchronous transition into another route without attempting
-        to resolve promises, update the URL, or abort any currently active
-        asynchronous transitions (i.e. regular transitions caused by
-        `transitionTo` or URL changes).
-        This method is handy for performing intermediate transitions on the
-        way to a final destination route, and is called internally by the
-        default implementations of the `error` and `loading` handlers.
-        */
-      intermediateTransitionTo(name: string, ...models: any[]): void;
+        /**
+         * Returns the controller for a particular route or name.
+         * The controller instance must already have been created, either through entering the
+         * associated route or using `generateController`.
+         */
+        controllerFor(name: string): Controller;
 
       /**
         A hook you can implement to convert the URL into the model for
@@ -1489,228 +1469,215 @@ export namespace Ember {
         */
         model(params: {}, transition: Transition): any | Rsvp.Promise<any>;
 
-      /**
-        Returns the model of a parent (or any ancestor) route
-        in a route hierarchy.  During a transition, all routes
-        must resolve a model object, and if a route
-        needs access to a parent route's model in order to
-        resolve a model (or just reuse the model from a parent),
-        it can call `this.modelFor(theNameOfParentRoute)` to
-        retrieve it.
-        */
-      modelFor(name: string): {};
+        /**
+         * Returns the model of a parent (or any ancestor) route
+         * in a route hierarchy.  During a transition, all routes
+         * must resolve a model object, and if a route
+         * needs access to a parent route's model in order to
+         * resolve a model (or just reuse the model from a parent),
+         * it can call `this.modelFor(theNameOfParentRoute)` to
+         * retrieve it.
+         */
+        modelFor(name: string): {};
 
-      /**
-        Retrieves parameters, for current route using the state.params
-        variable and getQueryParamsFor, using the supplied routeName.
-        */
-      paramsFor(name: string): {};
+        /**
+         * Retrieves parameters, for current route using the state.params
+         * variable and getQueryParamsFor, using the supplied routeName.
+         */
+        paramsFor(name: string): {};
 
-      /**
-        Refresh the model on this route and any child routes, firing the
-        `beforeModel`, `model`, and `afterModel` hooks in a similar fashion
-        to how routes are entered when transitioning in from other route.
-        The current route params (e.g. `article_id`) will be passed in
-        to the respective model hooks, and if a different model is returned,
-        `setupController` and associated route hooks will re-fire as well.
-        An example usage of this method is re-querying the server for the
-        latest information using the same parameters as when the route
-        was first entered.
-        Note that this will cause `model` hooks to fire even on routes
-        that were provided a model object when the route was initially
-        entered.
-        */
+        /**
+         * Refresh the model on this route and any child routes, firing the
+         * `beforeModel`, `model`, and `afterModel` hooks in a similar fashion
+         * to how routes are entered when transitioning in from other route.
+         * The current route params (e.g. `article_id`) will be passed in
+         * to the respective model hooks, and if a different model is returned,
+         * `setupController` and associated route hooks will re-fire as well.
+         * An example usage of this method is re-querying the server for the
+         * latest information using the same parameters as when the route
+         * was first entered.
+         * Note that this will cause `model` hooks to fire even on routes
+         * that were provided a model object when the route was initially
+         * entered.
+         */
         redirect(): Transition;
 
-      /**
-        Refresh the model on this route and any child routes, firing the
-        `beforeModel`, `model`, and `afterModel` hooks in a similar fashion
-        to how routes are entered when transitioning in from other route.
-        The current route params (e.g. `article_id`) will be passed in
-        to the respective model hooks, and if a different model is returned,
-        `setupController` and associated route hooks will re-fire as well.
-        An example usage of this method is re-querying the server for the
-        latest information using the same parameters as when the route
-        was first entered.
-        Note that this will cause `model` hooks to fire even on routes
-        that were provided a model object when the route was initially
-        entered.
-        */
+        /**
+         * Refresh the model on this route and any child routes, firing the
+         * `beforeModel`, `model`, and `afterModel` hooks in a similar fashion
+         * to how routes are entered when transitioning in from other route.
+         * The current route params (e.g. `article_id`) will be passed in
+         * to the respective model hooks, and if a different model is returned,
+         * `setupController` and associated route hooks will re-fire as well.
+         * An example usage of this method is re-querying the server for the
+         * latest information using the same parameters as when the route
+         * was first entered.
+         * Note that this will cause `model` hooks to fire even on routes
+         * that were provided a model object when the route was initially
+         * entered.
+         */
         refresh(): Transition;
 
-      /**
-        `render` is used to render a template into a region of another template
-        (indicated by an `{{outlet}}`). `render` is used both during the entry
-        phase of routing (via the `renderTemplate` hook) and later in response to
-        user interaction.
-        */
-      render(name: string, options?: RenderOptions): void;
+        /**
+         * `render` is used to render a template into a region of another template
+         * (indicated by an `{{outlet}}`). `render` is used both during the entry
+         * phase of routing (via the `renderTemplate` hook) and later in response to
+         * user interaction.
+         */
+        render(name: string, options?: RenderOptions): void;
 
-      /**
-        A hook you can use to render the template for the current route.
-        This method is called with the controller for the current route and the
-        model supplied by the `model` hook. By default, it renders the route's
-        template, configured with the controller for the route.
-        This method can be overridden to set up and render additional or
-        alternative templates.
-        */
-      renderTemplate(controller: Controller, model: {}): void;
+        /**
+         * A hook you can use to render the template for the current route.
+         * This method is called with the controller for the current route and the
+         * model supplied by the `model` hook. By default, it renders the route's
+         * template, configured with the controller for the route.
+         * This method can be overridden to set up and render additional or
+         * alternative templates.
+         */
+        renderTemplate(controller: Controller, model: {}): void;
 
-      /**
-        Transition into another route while replacing the current URL, if possible.
-        This will replace the current history entry instead of adding a new one.
-        Beside that, it is identical to `transitionTo` in all other respects. See
-        'transitionTo' for additional information regarding multiple models.
-        */
-      replaceWith(name: string, ...args: any[]): Transition;
+        /**
+         * Transition into another route while replacing the current URL, if possible.
+         * This will replace the current history entry instead of adding a new one.
+         * Beside that, it is identical to `transitionTo` in all other respects. See
+         * 'transitionTo' for additional information regarding multiple models.
+         */
+        replaceWith(name: string, ...args: any[]): Transition;
 
-      /**
-        A hook you can use to reset controller values either when the model
-        changes or the route is exiting.
-        */
-      resetController(controller: Controller, isExiting: boolean, transition: any): void;
+        /**
+         * A hook you can use to reset controller values either when the model
+         * changes or the route is exiting.
+         */
+        resetController(controller: Controller, isExiting: boolean, transition: any): void;
 
-      /**
-        Sends an action to the router, which will delegate it to the currently active
-        route hierarchy per the bubbling rules explained under actions.
-        */
-      send(name: string, ...args: any[]): void;
+        /**
+         * Sends an action to the router, which will delegate it to the currently active
+         * route hierarchy per the bubbling rules explained under actions.
+         */
+        send(name: string, ...args: any[]): void;
 
-      /**
-        A hook you can implement to convert the route's model into parameters
-        for the URL.
+        /**
+         * A hook you can implement to convert the route's model into parameters
+         * for the URL.
+         *
+         * The default `serialize` method will insert the model's `id` into the
+         * route's dynamic segment (in this case, `:post_id`) if the segment contains '_id'.
+         * If the route has multiple dynamic segments or does not contain '_id', `serialize`
+         * will return `Ember.getProperties(model, params)`
+         * This method is called when `transitionTo` is called with a context
+         * in order to populate the URL.
+         */
+        serialize(model: {}, params: string[]): string;
 
-        The default `serialize` method will insert the model's `id` into the
-        route's dynamic segment (in this case, `:post_id`) if the segment contains '_id'.
-        If the route has multiple dynamic segments or does not contain '_id', `serialize`
-        will return `Ember.getProperties(model, params)`
-        This method is called when `transitionTo` is called with a context
-        in order to populate the URL.
-        */
-      serialize(model: {}, params: string[]): string;
+        /**
+         * A hook you can use to setup the controller for the current route.
+         * This method is called with the controller for the current route and the
+         * model supplied by the `model` hook.
+         * By default, the `setupController` hook sets the `model` property of
+         * the controller to the `model`.
+         * If you implement the `setupController` hook in your Route, it will
+         * prevent this default behavior. If you want to preserve that behavior
+         * when implementing your `setupController` function, make sure to call
+         * `_super`
+         */
+        setupController(controller: Controller, model: {}): void;
 
-      /**
-        A hook you can use to setup the controller for the current route.
-        This method is called with the controller for the current route and the
-        model supplied by the `model` hook.
-        By default, the `setupController` hook sets the `model` property of
-        the controller to the `model`.
-        If you implement the `setupController` hook in your Route, it will
-        prevent this default behavior. If you want to preserve that behavior
-        when implementing your `setupController` function, make sure to call
-        `_super`
-        */
-      setupController(controller: Controller, model: {}): void;
-
-      /**
-        Transition the application into another route. The route may
-        be either a single route or route path
-
-        @method transitionTo
-        @param {String} name the name of the route or a URL
-        @param {...Object} models the model(s) or identifier(s) to be used while
-        transitioning to the route.
-        @param {Object} [options] optional hash with a queryParams property
-        containing a mapping of query parameters
-        @return {Transition} the transition object associated with this
-        attempted transition
-        */
+        /**
+         * Transition the application into another route. The route may
+         * be either a single route or route path
+         */
         transitionTo(name: string, ...object: any[]): Transition;
 
         /**
-        The name of the view to use by default when rendering this routes template.
-        When rendering a template, the route will, by default, determine the
-        template and view to use from the name of the route itself. If you need to
-        define a specific view, set this property.
-        This is useful when multiple routes would benefit from using the same view
-        because it doesn't require a custom `renderTemplate` method.
-        @property viewName
-        @type String
-        @default null
-        @since 1.4.0
-        */
-      transitionTo(name: string, ...object: any[]): Transition;
+         * The name of the view to use by default when rendering this routes template.
+         * When rendering a template, the route will, by default, determine the
+         * template and view to use from the name of the route itself. If you need to
+         * define a specific view, set this property.
+         * This is useful when multiple routes would benefit from using the same view
+         * because it doesn't require a custom `renderTemplate` method.
+         */
+        transitionTo(name: string, ...object: any[]): Transition;
 
-      // properties
-      /**
-        The controller associated with this route.
-        */
-      controller: Controller;
+        // properties
+        /**
+         * The controller associated with this route.
+         */
+        controller: Controller;
 
-      /**
-        The name of the controller to associate with this route.
-        By default, Ember will lookup a route's controller that matches the name
-        of the route (i.e. `App.PostController` for `App.PostRoute`). However,
-        if you would like to define a specific controller to use, you can do so
-        using this property.
-        This is useful in many ways, as the controller specified will be:
-        * passed to the `setupController` method.
-        * used as the controller for the view being rendered by the route.
-        * returned from a call to `controllerFor` for the route.
-        */
-      controllerName: string;
+        /**
+         * The name of the controller to associate with this route.
+         * By default, Ember will lookup a route's controller that matches the name
+         * of the route (i.e. `App.PostController` for `App.PostRoute`). However,
+         * if you would like to define a specific controller to use, you can do so
+         * using this property.
+         * This is useful in many ways, as the controller specified will be:
+         * * p assed to the `setupController` method.
+         * * used as the controller for the view being rendered by the route.
+         * * returned from a call to `controllerFor` for the route.
+         */
+        controllerName: string;
 
-      /**
-        Configuration hash for this route's queryParams.
-        */
-      queryParams: { [key: string]: RouteQueryParam };
+        /**
+         * Configuration hash for this route's queryParams.
+         */
+        queryParams: { [key: string]: RouteQueryParam };
 
-      /**
-       * The name of the route, dot-delimited
-       */
-      routeName: string;
+        /**
+         * The name of the route, dot-delimited
+         */
+        routeName: string;
 
-      /**
-        The name of the template to use by default when rendering this routes
-        template.
-        This is similar with `viewName`, but is useful when you just want a custom
-        template without a view.
-        */
-      templateName: string;
+        /**
+         * The name of the template to use by default when rendering this routes
+         * template.
+         * This is similar with `viewName`, but is useful when you just want a custom
+         * template without a view.
+         */
+        templateName: string;
 
-      // events
-      /**
-        This hook is executed when the router enters the route. It is not executed
-        when the model for the route changes.
-        */
-      activate(): void;
+        // events
+        /**
+         * This hook is executed when the router enters the route. It is not executed
+         * when the model for the route changes.
+         */
+        activate(): void;
 
-      /**
-        This hook is executed when the router completely exits this route. It is
-        not executed when the model for the route changes.
-        */
-      deactivate(): void;
+        /**
+         * This hook is executed when the router completely exits this route. It is
+         * not executed when the model for the route changes.
+         */
+        deactivate(): void;
 
-      /**
-       * The didTransition action is fired after a transition has successfully been
-       * completed. This occurs after the normal model hooks (beforeModel, model,
-       * afterModel, setupController) have resolved. The didTransition action has
-       * no arguments, however, it can be useful for tracking page views or resetting
-       * state on the controller.
-       */
-      didTransition(): void;
+        /**
+         * The didTransition action is fired after a transition has successfully been
+         * completed. This occurs after the normal model hooks (beforeModel, model,
+         * afterModel, setupController) have resolved. The didTransition action has
+         * no arguments, however, it can be useful for tracking page views or resetting
+         * state on the controller.
+         */
+        didTransition(): void;
 
-      /**
-       * When attempting to transition into a route, any of the hooks may return a promise
-       * that rejects, at which point an error action will be fired on the partially-entered
-       * routes, allowing for per-route error handling logic, or shared error handling logic
-       * defined on a parent route.
-       */
-      error(error: Error | any, transition: Transition): void;
+        /**
+         * When attempting to transition into a route, any of the hooks may return a promise
+         * that rejects, at which point an error action will be fired on the partially-entered
+         * routes, allowing for per-route error handling logic, or shared error handling logic
+         * defined on a parent route.
+         */
+        error(error: Error | any, transition: Transition): void;
 
-      /**
-       * The loading action is fired on the route when a route's model hook returns a
-       * promise that is not already resolved. The current Transition object is the first
-       * parameter and the route that triggered the loading event is the second parameter.
-       */
-      loading(transition: Transition, route: Route): void;
+        /**
+         * The loading action is fired on the route when a route's model hook returns a
+         * promise that is not already resolved. The current Transition object is the first
+         * parameter and the route that triggered the loading event is the second parameter.
+         */
+        loading(transition: Transition, route: Route): void;
 
-      /**
-       * The willTransition action is fired at the beginning of any attempted transition
-       * with a Transition object as the sole argument. This action can be used for aborting,
-       * redirecting, or decorating the transition from the currently active routes.
-       */
-      willTransition(transition: Transition): void;
+        /**
+         * The willTransition action is fired at the beginning of any attempted transition
+         * with a Transition object as the sole argument. This action can be used for aborting,
+         * redirecting, or decorating the transition from the currently active routes.
+         */
+        willTransition(transition: Transition): void;
     }
     interface RouterMapContext {
         route(name: string, callback: (this: RouterMapContext) => void): void;
