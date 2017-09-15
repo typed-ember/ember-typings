@@ -19,6 +19,8 @@ function testPromise() {
 }
 
 function testAll() {
+    const empty = RSVP.Promise.all([]);
+
     const everyPromise = RSVP.all(
         ['string', RSVP.resolve(42), RSVP.resolve({ hash: 'with values' })]
     );
@@ -27,6 +29,15 @@ function testAll() {
 
     const anyFailure = RSVP.all([12, 'strings', RSVP.reject('anywhere')]);
     assertType<RSVP.Promise<{}>>(anyFailure);
+
+    let promise1 = RSVP.resolve(1);
+    let promise2 = RSVP.resolve('2');
+    let promise3 = RSVP.resolve({ key: 13 });
+    RSVP.Promise.all([ promise1, promise2, promise3 ], 'my label').then(function(array) {
+        assertType<number>(array[0]);
+        assertType<string>(array[1]);
+        assertType<{ key: number }>(array[2]);
+    });
 }
 
 function testAllSettled() {
