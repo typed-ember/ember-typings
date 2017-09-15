@@ -57,7 +57,18 @@ function testFilter() {
 }
 
 function testHash() {
-    // TODO: add test
+    let promises = {
+        myPromise: RSVP.resolve(1),
+        yourPromise: RSVP.resolve('2'),
+        theirPromise: RSVP.resolve({ key: 3 }),
+        notAPromise: 4
+    };
+    RSVP.hash(promises, 'my label').then(function(hash){
+        assertType<number>(hash.myPromise);
+        assertType<string>(hash.yourPromise);
+        assertType<{ key: number }>(hash.theirPromise);
+        assertType<number>(hash.notAPromise);
+    });
 }
 
 function testHashSettled() {
@@ -94,7 +105,7 @@ function testResolve() {
     assertType<RSVP.Promise<string>>(RSVP.resolve('this is a string'));
     assertType<RSVP.Promise<string>>(RSVP.resolve(RSVP.resolve('nested')));
     assertType<RSVP.Promise<string>>(RSVP.resolve(Promise.resolve('nested')));
-    
+
     let promise = RSVP.Promise.resolve(1);
 }
 

@@ -270,6 +270,8 @@ declare module 'rsvp' {
         const race: typeof Promise.race;
         const reject: typeof Promise.reject;
         const resolve: typeof Promise.resolve;
+
+        function hash<T>(object: { [P in keyof T]: (PromiseLike<T[P]> | T[P]); }, label?: string): RSVPPromise<T>;
     }
 
     export default RSVP;
