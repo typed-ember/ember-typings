@@ -19,6 +19,8 @@ function testPromise() {
 }
 
 function testAll() {
+    const empty = RSVP.Promise.all([]);
+
     const everyPromise = RSVP.all(
         ['string', RSVP.resolve(42), RSVP.resolve({ hash: 'with values' })]
     );
@@ -27,6 +29,15 @@ function testAll() {
 
     const anyFailure = RSVP.all([12, 'strings', RSVP.reject('anywhere')]);
     assertType<RSVP.Promise<{}>>(anyFailure);
+
+    let promise1 = RSVP.resolve(1);
+    let promise2 = RSVP.resolve('2');
+    let promise3 = RSVP.resolve({ key: 13 });
+    RSVP.Promise.all([ promise1, promise2, promise3 ], 'my label').then(function(array) {
+        assertType<number>(array[0]);
+        assertType<string>(array[1]);
+        assertType<{ key: number }>(array[2]);
+    });
 }
 
 function testAllSettled() {
@@ -46,7 +57,18 @@ function testFilter() {
 }
 
 function testHash() {
-    // TODO: add test
+    let promises = {
+        myPromise: RSVP.resolve(1),
+        yourPromise: RSVP.resolve('2'),
+        theirPromise: RSVP.resolve({ key: 3 }),
+        notAPromise: 4
+    };
+    RSVP.hash(promises, 'my label').then(function(hash){
+        assertType<number>(hash.myPromise);
+        assertType<string>(hash.yourPromise);
+        assertType<{ key: number }>(hash.theirPromise);
+        assertType<number>(hash.notAPromise);
+    });
 }
 
 function testHashSettled() {
@@ -60,6 +82,12 @@ function testMap() {
 function testRace() {
     const firstPromise = RSVP.race([{ notAPromise: true }, RSVP.resolve({ some: 'value' })]);
     assertType<RSVP.Promise<{ notAPromise: boolean } | { some: string }>>(firstPromise);
+
+    let promise1 = RSVP.resolve(1);
+    let promise2 = RSVP.resolve('2');
+    RSVP.Promise.race([promise1, promise2], 'my label').then(function(result){
+        assertType<string | number>(result);
+    });
 }
 
 function testReject() {
@@ -68,11 +96,17 @@ function testReject() {
 
     RSVP.reject({ ok: false }).catch(reason => { console.log(`${reason} could be anything`); });
     RSVP.reject({ ok: false }, 'some label').catch((reason: any) => reason.ok)
+
+    let promise = RSVP.Promise.reject(new Error('WHOOPS'));
 }
 
 function testResolve() {
     assertType<RSVP.Promise<void>>(RSVP.resolve());
     assertType<RSVP.Promise<string>>(RSVP.resolve('this is a string'));
+    assertType<RSVP.Promise<string>>(RSVP.resolve(RSVP.resolve('nested')));
+    assertType<RSVP.Promise<string>>(RSVP.resolve(Promise.resolve('nested')));
+
+    let promise = RSVP.Promise.resolve(1);
 }
 
 function testRethrow() {
