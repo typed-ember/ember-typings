@@ -71,6 +71,12 @@ function testMap() {
 function testRace() {
     const firstPromise = RSVP.race([{ notAPromise: true }, RSVP.resolve({ some: 'value' })]);
     assertType<RSVP.Promise<{ notAPromise: boolean } | { some: string }>>(firstPromise);
+
+    let promise1 = RSVP.resolve(1);
+    let promise2 = RSVP.resolve('2');
+    RSVP.Promise.race([promise1, promise2], 'my label').then(function(result){
+        assertType<string | number>(result);
+    });
 }
 
 function testReject() {
