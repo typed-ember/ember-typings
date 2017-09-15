@@ -92,7 +92,9 @@ function testReject() {
 function testResolve() {
     assertType<RSVP.Promise<void>>(RSVP.resolve());
     assertType<RSVP.Promise<string>>(RSVP.resolve('this is a string'));
-
+    assertType<RSVP.Promise<string>>(RSVP.resolve(RSVP.resolve('nested')));
+    assertType<RSVP.Promise<string>>(RSVP.resolve(Promise.resolve('nested')));
+    
     let promise = RSVP.Promise.resolve(1);
 }
 
