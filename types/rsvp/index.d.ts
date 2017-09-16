@@ -475,6 +475,78 @@ declare module 'rsvp' {
             label?: string
         ): RSVP.Promise<Array<U> & { length: 1 }>;
 
+        function filter<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+            entries: [
+                Arg<T1>,
+                Arg<T2>,
+                Arg<T3>,
+                Arg<T4>,
+                Arg<T5>,
+                Arg<T6>,
+                Arg<T7>,
+                Arg<T8>,
+                Arg<T9>,
+                Arg<T10>
+            ],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10>>;
+        function filter<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+            entries: [
+                Arg<T1>,
+                Arg<T2>,
+                Arg<T3>,
+                Arg<T4>,
+                Arg<T5>,
+                Arg<T6>,
+                Arg<T7>,
+                Arg<T8>,
+                Arg<T9>
+            ],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9>>;
+        function filter<T1, T2, T3, T4, T5, T6, T7, T8>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>, Arg<T7>, Arg<T8>],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8>>;
+        function filter<T1, T2, T3, T4, T5, T6, T7>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>, Arg<T7>],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5 | T6 | T7>>;
+        function filter<T1, T2, T3, T4, T5, T6>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5 | T6) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5 | T6> & { length: 6 }>;
+        function filter<T1, T2, T3, T4, T5>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>],
+            filterFn: (item: T1 | T2 | T3 | T4 | T5) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4 | T5>>;
+        function filter<T1, T2, T3, T4>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>],
+            filterFn: (item: T1 | T2 | T3 | T4) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3 | T4>>;
+        function filter<T1, T2, T3>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>],
+            filterFn: (item: T1 | T2 | T3) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2 | T3>>;
+        function filter<T1, T2>(
+            entries: [Arg<T1>, Arg<T2>],
+            filterFn: (item: T1 | T2) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T1 | T2>>;
+        function filter<T>(
+            entries: Arg<T>[],
+            filterFn: (item: T) => boolean,
+            label?: string
+        ): RSVP.Promise<Array<T>>;
+
         function defer<T>(label?: string): Deferred<T>;
 
         function asap<T, U>(callback: (callbackArg: T) => U, arg: T): void;

@@ -125,7 +125,24 @@ function testDenodeify() {
 }
 
 function testFilter() {
-    // TODO: add test
+    RSVP.filter([RSVP.resolve(1), RSVP.resolve(2)], item => item > 1, 'over one').then(results => {
+        assertType<number[]>(results);
+    });
+
+    RSVP.filter(
+        [RSVP.resolve('a string'), RSVP.resolve(112233)],
+        item => String(item).length < 10,
+        'short string'
+    ).then(results => {
+        assertType<Array<string | number>>(results);
+    });
+
+    // This is the best we can do: we can't actually write the full type here,
+    // which would be `assertType<never>(results)`, but TS can't infer that.
+    const isString = (item: any): item is string => typeof item === 'string';
+    RSVP.filter([RSVP.reject('for any reason')], isString).then(results => {
+        assertType<{}>(results);
+    });
 }
 
 function testHash() {
