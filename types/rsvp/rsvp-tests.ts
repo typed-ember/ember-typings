@@ -13,6 +13,16 @@ async function testAsyncAwait() {
     assertType<string>(await returnsAPromise());
 }
 
+function testCast() {
+    RSVP.Promise.cast('foo').then(value => {
+        assertType<string>(value);
+    });
+
+    RSVP.cast(42).then(value => {
+        assertType<number>(value);
+    });
+}
+
 function testPromise() {
     const promiseOfString = new RSVP.Promise((resolve: any, reject: any) => resolve('some string'));
     assertType<RSVP.Promise<number>>(promiseOfString.then((s: string) => s.length));

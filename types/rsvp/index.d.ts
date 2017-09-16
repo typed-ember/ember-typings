@@ -238,12 +238,19 @@ declare module 'rsvp' {
 
             static resolve<T>(value?: Arg<T>, label?: string): RSVP.Promise<T>;
             static resolve(): RSVP.Promise<void>;
+
+            /**
+             * @deprecated
+             */
+            static cast: typeof RSVP.Promise.resolve;
         }
 
         const all: typeof Promise.all;
         const race: typeof Promise.race;
         const reject: typeof Promise.reject;
         const resolve: typeof Promise.resolve;
+
+        const cast: typeof Promise.cast;
 
         const on: typeof EventTarget.on;
         const off: typeof EventTarget.off;
@@ -268,7 +275,10 @@ declare module 'rsvp' {
         ): (argument: A) => RSVP.Promise<T>;
 
         function hash<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<T>;
-        function hashSettled<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<{ [P in keyof T]: PromiseState<T[P]> }>;
+        function hashSettled<T>(
+            object: { [P in keyof T]: Arg<T[P]> },
+            label?: string
+        ): RSVP.Promise<{ [P in keyof T]: PromiseState<T[P]> }>;
 
         function allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             entries: [
