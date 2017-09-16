@@ -114,11 +114,6 @@ declare module 'rsvp' {
                 label?: string
             ): RSVP.Promise<T | TResult>;
 
-            reject<T>(reason?: any, label?: string): RSVP.Promise<T>;
-
-            resolve<T>(value?: RSVP.Arg<T>, label?: string): RSVP.Promise<T>;
-            resolve(): RSVP.Promise<void>;
-
             finally<U>(onFinally?: U | PromiseLike<U>): RSVP.Promise<T>;
 
             static all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
