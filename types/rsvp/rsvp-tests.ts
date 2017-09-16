@@ -23,6 +23,11 @@ function testCast() {
     });
 }
 
+function testConfigure() {
+    assertType<void>(RSVP.configure('name', { with: 'some value' }));
+    assertType<{}>(RSVP.configure('name'));
+}
+
 function testAsap() {
     const result = RSVP.asap(something => {
         console.log(something);
