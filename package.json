@@ -18,6 +18,7 @@
     "dts-gen": "^0.5.6",
     "dtslint": "Microsoft/dtslint#production",
     "prettier": "^1.7.0",
+    "tslint": "^5.7.0",
     "types-publisher": "Microsoft/types-publisher#production"
   },
   "dependencies": {
