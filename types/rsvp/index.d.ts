@@ -65,7 +65,7 @@ declare module 'rsvp' {
             trigger(eventName: string, options?: any, label?: string): void;
         }
 
-        export class EventTarget {
+        class EventTarget {
             /** `RSVP.EventTarget.mixin` extends an object with EventTarget methods. */
             static mixin(object: object): ObjectWithEventMixins;
 
@@ -409,6 +409,8 @@ declare module 'rsvp' {
         ): RSVP.Promise<[PromiseState<T>]>;
 
         function defer<T>(label?: string): Deferred<T>;
+
+        function asap<T, U>(callback: (callbackArg: T) => U, arg: T): void;
     }
 
     // TODO: keep default export of this wrapping namespace for backwards

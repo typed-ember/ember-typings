@@ -23,6 +23,14 @@ function testCast() {
     });
 }
 
+function testAsap() {
+    const result = RSVP.asap(something => {
+        console.log(something);
+    }, 'srsly');
+
+    assertType<void>(result);
+}
+
 function testPromise() {
     const promiseOfString = new RSVP.Promise((resolve: any, reject: any) => resolve('some string'));
     assertType<RSVP.Promise<number>>(promiseOfString.then((s: string) => s.length));
