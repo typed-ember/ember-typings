@@ -67,15 +67,15 @@ function testAllSettled() {
         states.forEach(element => {
             switch (element.state) {
                 case RSVP.State.fulfilled:
-                    console.log(element.value);
+                    assertType<RSVP.Resolved<typeof element.value>>(element);
                     break;
 
                 case RSVP.State.rejected:
-                    console.log(element.reason);
+                    assertType<RSVP.Rejected<typeof element.reason>>(element);
                     break;
 
                 case RSVP.State.pending:
-                    // Nothing to see here: pending has nothing going!
+                    assertType<RSVP.Pending>(element);
                     break;
 
                 default:
@@ -88,8 +88,8 @@ function testAllSettled() {
 
 function testDefer() {
     let deferred = RSVP.defer<string>();
-    deferred.resolve("Success!");
-    deferred.promise.then(function(value){
+    deferred.resolve('Success!');
+    deferred.promise.then(function(value) {
         assertType<string>(value);
     });
 }
@@ -125,9 +125,9 @@ function testHashSettled() {
         myPromise: RSVP.Promise.resolve(1),
         yourPromise: RSVP.Promise.resolve('2'),
         theirPromise: RSVP.Promise.resolve({ key: 3 }),
-        notAPromise: 4
+        notAPromise: 4,
     };
-    RSVP.hashSettled(promises).then(function(hash){
+    RSVP.hashSettled(promises).then(function(hash) {
         if (isFulfilled(hash.myPromise)) {
             assertType<number>(hash.myPromise.value);
         }
