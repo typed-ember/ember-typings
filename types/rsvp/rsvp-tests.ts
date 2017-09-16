@@ -118,7 +118,29 @@ function testHash() {
 }
 
 function testHashSettled() {
-    // TODO: add test
+    function isFulfilled<T>(state: RSVP.PromiseState<T>): state is RSVP.Resolved<T> {
+        return state.state === RSVP.State.fulfilled;
+    }
+    let promises = {
+        myPromise: RSVP.Promise.resolve(1),
+        yourPromise: RSVP.Promise.resolve('2'),
+        theirPromise: RSVP.Promise.resolve({ key: 3 }),
+        notAPromise: 4
+    };
+    RSVP.hashSettled(promises).then(function(hash){
+        if (isFulfilled(hash.myPromise)) {
+            assertType<number>(hash.myPromise.value);
+        }
+        if (isFulfilled(hash.yourPromise)) {
+            assertType<string>(hash.yourPromise.value);
+        }
+        if (isFulfilled(hash.theirPromise)) {
+            assertType<{ key: number }>(hash.theirPromise.value);
+        }
+        if (isFulfilled(hash.notAPromise)) {
+            assertType<number>(hash.notAPromise.value);
+        }
+    });
 }
 
 function testMap() {

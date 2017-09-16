@@ -268,6 +268,7 @@ declare module 'rsvp' {
         ): (argument: A) => RSVP.Promise<T>;
 
         function hash<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<T>;
+        function hashSettled<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<{ [P in keyof T]: PromiseState<T[P]> }>;
 
         function allSettled<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             entries: [
