@@ -249,6 +249,7 @@ declare module 'rsvp' {
         const race: typeof Promise.race;
         const reject: typeof Promise.reject;
         const resolve: typeof Promise.resolve;
+        function rethrow(reason: any): void;
 
         const cast: typeof Promise.cast;
 

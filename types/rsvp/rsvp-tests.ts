@@ -198,7 +198,16 @@ function testResolve() {
 }
 
 function testRethrow() {
-    // TODO: add test
+    RSVP.reject(new Error('all the badness'))
+        .catch(RSVP.rethrow)
+        .then(value => {
+            assertType<void>(value);
+        })
+        .catch(reason => {
+            if (reason instanceof Error) {
+                console.log(reason);
+            }
+        });
 }
 
 function testOnAndOff() {
