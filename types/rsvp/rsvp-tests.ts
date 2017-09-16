@@ -170,7 +170,21 @@ function testHashSettled() {
 }
 
 function testMap() {
-    // TODO: add test
+    RSVP.map([RSVP.resolve(1), RSVP.resolve(2)], item => item + 1, 'add one').then(results => {
+        assertType<number[]>(results);
+        assertType<{ length: 2 }>(results);
+    });
+
+    RSVP.map([RSVP.resolve('a string'), RSVP.resolve(112233)], String).then(results => {
+        assertType<string[]>(results);
+        assertType<{ length: 2 }>(results);
+    });
+
+    // This is the best we can do: we can't actually write the full type here,
+    // which would be `assertType<never>(results)`, but TS can't infer that.
+    RSVP.map([RSVP.reject('for any reason')], String).then(results => {
+        assertType<{}>(results);
+    });
 }
 
 function testRace() {

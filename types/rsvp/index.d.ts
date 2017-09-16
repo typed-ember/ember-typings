@@ -133,7 +133,7 @@ declare module 'rsvp' {
                     Arg<T7>,
                     Arg<T8>,
                     Arg<T9>,
-                    T10 | PromiseLike<T10>
+                    Arg<T10>
                 ],
                 label?: string
             ): RSVP.Promise<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
@@ -396,18 +396,84 @@ declare module 'rsvp' {
             entries: [Arg<T1>, Arg<T2>, Arg<T3>],
             label?: string
         ): RSVP.Promise<[PromiseState<T1>, PromiseState<T2>, PromiseState<T3>]>;
-        function allSettled<T1, T2, T3>(
-            entries: [Arg<T1>, Arg<T2>, Arg<T3>],
-            label?: string
-        ): RSVP.Promise<[PromiseState<T1>, PromiseState<T2>, PromiseState<T3>]>;
         function allSettled<T1, T2>(
             entries: [Arg<T1>, Arg<T2>],
             label?: string
         ): RSVP.Promise<[PromiseState<T1>, PromiseState<T2>]>;
-        function allSettled<T>(
-            entries: (Arg<T>)[],
+        function allSettled<T>(entries: Arg<T>[], label?: string): RSVP.Promise<[PromiseState<T>]>;
+
+        function map<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, U>(
+            entries: [
+                Arg<T1>,
+                Arg<T2>,
+                Arg<T3>,
+                Arg<T4>,
+                Arg<T5>,
+                Arg<T6>,
+                Arg<T7>,
+                Arg<T8>,
+                Arg<T9>,
+                Arg<T10>
+            ],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10) => U,
             label?: string
-        ): RSVP.Promise<[PromiseState<T>]>;
+        ): RSVP.Promise<Array<U> & { length: 10 }>;
+
+        function map<T1, T2, T3, T4, T5, T6, T7, T8, T9, U>(
+            entries: [
+                Arg<T1>,
+                Arg<T2>,
+                Arg<T3>,
+                Arg<T4>,
+                Arg<T5>,
+                Arg<T6>,
+                Arg<T7>,
+                Arg<T8>,
+                Arg<T9>
+            ],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 9 }>;
+        function map<T1, T2, T3, T4, T5, T6, T7, T8, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>, Arg<T7>, Arg<T8>],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 8 }>;
+        function map<T1, T2, T3, T4, T5, T6, T7, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>, Arg<T7>],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5 | T6 | T7) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 7 }>;
+        function map<T1, T2, T3, T4, T5, T6, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>, Arg<T6>],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5 | T6) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 6 }>;
+        function map<T1, T2, T3, T4, T5, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>, Arg<T5>],
+            mapFn: (item: T1 | T2 | T3 | T4 | T5) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 5 }>;
+        function map<T1, T2, T3, T4, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>, Arg<T4>],
+            mapFn: (item: T1 | T2 | T3 | T4) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 4 }>;
+        function map<T1, T2, T3, U>(
+            entries: [Arg<T1>, Arg<T2>, Arg<T3>],
+            mapFn: (item: T1 | T2 | T3) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 3 }>;
+        function map<T1, T2, U>(
+            entries: [Arg<T1>, Arg<T2>],
+            mapFn: (item: T1 | T2) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 2 }>;
+        function map<T, U>(
+            entries: Arg<T>[],
+            mapFn: (item: T) => U,
+            label?: string
+        ): RSVP.Promise<Array<U> & { length: 1 }>;
 
         function defer<T>(label?: string): Deferred<T>;
 
