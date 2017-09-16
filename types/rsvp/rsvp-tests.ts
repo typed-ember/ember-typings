@@ -156,3 +156,17 @@ function testResolve() {
 function testRethrow() {
     // TODO: add test
 }
+
+function testOnAndOff() {
+    RSVP.on('error', (reason: Error) => {
+        console.log(`it was an error: ${reason}`);
+    });
+
+    RSVP.off('whatever', (value: any) => {
+        console.log(
+            `any old value will do: ${value !== undefined && value !== null
+                ? value.toString()
+                : 'even undefined'}`
+        );
+    });
+}
