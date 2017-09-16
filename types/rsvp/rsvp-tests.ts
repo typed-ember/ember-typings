@@ -87,7 +87,11 @@ function testAllSettled() {
 }
 
 function testDefer() {
-    // TODO: add test
+    let deferred = RSVP.defer<string>();
+    deferred.resolve("Success!");
+    deferred.promise.then(function(value){
+        assertType<string>(value);
+    });
 }
 
 function testDenodeify() {

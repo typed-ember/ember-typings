@@ -39,6 +39,12 @@ declare module 'rsvp' {
 
         type PromiseState<T> = Resolved<T> | Rejected | Pending;
 
+        type Deferred<T> = {
+            promise: Promise<T>;
+            resolve: (value?: RSVP.Arg<T>) => void;
+            reject: (reason?: any) => void;
+        };
+
         interface InstrumentEvent {
             guid: string; // guid of promise. Must be globally unique, not just within the implementation
             childGuid: string; // child of child promise (for chained via `then`)
@@ -390,6 +396,8 @@ declare module 'rsvp' {
             entries: (Arg<T>)[],
             label?: string
         ): RSVP.Promise<[PromiseState<T>]>;
+
+        function defer<T>(label?: string): Deferred<T>;
     }
 
     // TODO: keep default export of this wrapping namespace for backwards
