@@ -412,6 +412,8 @@ declare module 'rsvp' {
         function defer<T>(label?: string): Deferred<T>;
 
         function asap<T, U>(callback: (callbackArg: T) => U, arg: T): void;
+
+        const async: typeof asap;
     }
 
     // TODO: keep default export of this wrapping namespace for backwards

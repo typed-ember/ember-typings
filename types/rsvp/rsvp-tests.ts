@@ -31,6 +31,14 @@ function testAsap() {
     assertType<void>(result);
 }
 
+function testAsync() {
+    const result = RSVP.async(something => {
+        console.log(something);
+    }, 'rly srsly');
+
+    assertType<void>(result);
+}
+
 function testPromise() {
     const promiseOfString = new RSVP.Promise((resolve: any, reject: any) => resolve('some string'));
     assertType<RSVP.Promise<number>>(promiseOfString.then((s: string) => s.length));
