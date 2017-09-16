@@ -41,7 +41,47 @@ function testAll() {
 }
 
 function testAllSettled() {
-    // TODO: add test
+    const resolved1 = RSVP.resolve(1);
+    const resolved2 = RSVP.resolve('wat');
+    const rejected = RSVP.reject(new Error('oh teh noes'));
+    const pending = new RSVP.Promise<{ neato: string }>((resolve, reject) => {
+        if ('something') {
+            resolve({ neato: 'yay' });
+        } else {
+            reject('nay');
+        }
+    });
+
+    // Types flow into resolution properly
+    RSVP.allSettled([resolved1, resolved2, rejected, pending]).then(states => {
+        assertType<RSVP.PromiseState<number>>(states[0]);
+        assertType<RSVP.PromiseState<string>>(states[1]);
+        assertType<RSVP.PromiseState<never>>(states[2]);
+        assertType<RSVP.PromiseState<{ neato: string }>>(states[3]);
+    });
+
+    // Switching on state gives the correctly available items.
+    RSVP.allSettled([resolved1, resolved2, rejected, pending]).then(states => {
+        states.forEach(element => {
+            switch (element.state) {
+                case RSVP.State.fulfilled:
+                    console.log(element.value);
+                    break;
+
+                case RSVP.State.rejected:
+                    console.log(element.reason);
+                    break;
+
+                case RSVP.State.pending:
+                    // Nothing to see here: pending has nothing going!
+                    break;
+
+                default:
+                    // Someday maybe TS will have exhaustiveness checks.
+                    break;
+            }
+        });
+    });
 }
 
 function testDefer() {
