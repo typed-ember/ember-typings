@@ -159,10 +159,12 @@ function testDenodeify() {
     assertType<(value: A1) => RSVP.Promise<[D1, D2]>>(RSVP.denodeify(nodeFn1Arg2CbParam, true));
     assertType<(value: A1) => RSVP.Promise<[D1, D2, D3]>>(RSVP.denodeify(nodeFn1Arg3CbParam, true));
 
-    // version with `options: string[]` and single or multiple T
-    // assertType<(value: A1) => RSVP.Promise<{ first: D1 }>>(
-    //     RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
-    // );
+    // We can't actually map the key names here, because we would need full-on
+    // dependent typing to use the *values of an array* as the keys of the
+    // resulting object.
+    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 }>>(
+        RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
+    );
 
     // assertType<
     //     (

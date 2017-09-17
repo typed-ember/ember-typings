@@ -303,6 +303,24 @@ declare module 'rsvp' {
             options: true
         ): (arg1: A) => RSVP.Promise<[T]>;
 
+        function denodeify<T1, T2, T3, A>(
+            nodeFunc: (
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: string[]
+        ): (arg1: A) => RSVP.Promise<{ [key: string]: T1 | T2 | T3 }>;
+
+        function denodeify<T1, T2, A>(
+            nodeFunc: (arg1: A, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            options: string[]
+        ): (arg1: A) => RSVP.Promise<{ [key: string]: T1 | T2 }>;
+
+        function denodeify<T, A>(
+            nodeFunc: (arg1: A, callback: (err: any, data: T) => void) => void,
+            options: string[]
+        ): (arg1: A) => RSVP.Promise<{ [key: string]: T }>;
+
         // ----- hash and hashSettled ----- //
         function hash<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<T>;
         function hashSettled<T>(
