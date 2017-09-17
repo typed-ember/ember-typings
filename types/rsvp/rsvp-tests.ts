@@ -133,11 +133,11 @@ type D3 = { some: boolean };
 
 declare const nodeFn1Arg1CbParam: (argument: A1, callback: (err: any, data: D1) => void) => void;
 declare const nodeFn1Arg2CbParam: (
-    argument: Array<{ arg: boolean }>,
+    argument: A1,
     callback: (err: any, data1: D1, data2: D2) => void
 ) => void;
 declare const nodeFn1Arg3CbParam: (
-    argument: Array<{ arg: boolean }>,
+    argument: A1,
     callback: (err: any, data1: D1, data2: D2, data3: D3) => void
 ) => void;
 
@@ -155,7 +155,7 @@ function testDenodeify() {
     // version with `options: true` and single or multiple T
     assertType<(value: A1) => RSVP.Promise<[D1]>>(RSVP.denodeify(nodeFn1Arg1CbParam, true));
     assertType<(value: A1) => RSVP.Promise<[D1, D2]>>(
-        RSVP.denodeify<string, number>(nodeFn1Arg2CbParam, true)
+        RSVP.denodeify<D1, D2>(nodeFn1Arg2CbParam, true)
     );
     assertType<(value: A1) => RSVP.Promise<[D1, D2, D3]>>(RSVP.denodeify(nodeFn1Arg3CbParam, true));
 
