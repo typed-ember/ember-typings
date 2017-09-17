@@ -110,13 +110,13 @@ declare module 'rsvp' {
             ): RSVP.Promise<T>;
 
             then<TResult1 = T, TResult2 = never>(
-                onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-                onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
+                onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+                onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
                 label?: string
             ): RSVP.Promise<TResult1 | TResult2>;
 
             catch<TResult = never>(
-                onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
+                onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null,
                 label?: string
             ): RSVP.Promise<T | TResult>;
 
@@ -256,25 +256,435 @@ declare module 'rsvp' {
         const on: typeof EventTarget.on;
         const off: typeof EventTarget.off;
 
-        // TODO: this is basically right for `NodeFunction`, but `denodeify`
-        // needs to to return the right thing
-        type NodeFunction<A, T> = (
-            argument: A,
-            callback: (err: any | undefined, ...data: T[]) => any
-        ) => void;
+        // ----- denodeify ----- //
+        // Here be absurd things because we don't have variadic types. All of
+        // this will go away if we can ever write this:
+        //
+        //     denodeify<...T, ...A>(
+        //         nodeFunc: (...args: ...A, callback: (err: any, ...cbArgs: ...T) => any) => void,
+        //         options?: false
+        //     ): (...args: ...A) => RSVP.Promise<...T>
+        //
+        // That day, however, may never come. So, in the meantime, we do this.
 
-        // TODO: version with no `options`
-        // TODO: version with `options: false` and single T
-        // TODO: version with `options: false` and multiple T
-        // TODO: version with `options: true` and single T
-        // TODO: version with `options: true` and multiple T
-        // TODO: version with `options: string[]` and single T
-        // TODO: version with `options: string[]` and multiple T
-        function denodeify<A, T>(
-            nodeFunc: NodeFunction<A, T>,
-            options: boolean | string[]
-        ): (argument: A) => RSVP.Promise<T>;
+        // -- options?: false
+        // 1T
+        function denodeify<T, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data: T) => void) => void,
+            options?: false
+        ): (arg1: A1) => RSVP.Promise<T>;
 
+        function denodeify<T, A1, A2>(
+            nodeFunc: (arg1: A1, arg2: A2, callback: (err: any, data: T) => void) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<T>;
+
+        function denodeify<T, A1, A2, A3>(
+            nodeFunc: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, data: T) => void) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<T>;
+
+        function denodeify<T, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<T>;
+
+        function denodeify<T, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<T>;
+
+        // 2T
+        function denodeify<T1, T2, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            options?: false
+        ): (arg1: A1) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<T1>;
+
+        // 3T
+        function denodeify<T1, T2, T3, A1>(
+            nodeFunc: (
+                arg1: A1,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, T3, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<T1>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<T1>;
+
+        // -- options: true
+        // 1T
+        function denodeify<T, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2>(
+            nodeFunc: (arg1: A1, arg2: A2, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2, A3>(
+            nodeFunc: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options: [string]
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<{}>;
+
+        function denodeify<T, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T]>;
+
+        // 2T
+        function denodeifyYarg<T1, T2, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T1, T2]>;
+
+        // 3T
+        function denodeify<T1, T2, T3, A1>(
+            nodeFunc: (
+                arg1: A1,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T1, T2, T3]>;
+
+        // -- `options: string[]`
+        // 1T
+        function denodeify<T, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2>(
+            nodeFunc: (arg1: A1, arg2: A2, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2, A3>(
+            nodeFunc: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<[T]>;
+
+        function denodeify<T, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T]>;
+
+        // 2T
+        function denodeify<T1, T2, A1>(
+            nodeFunc: (arg1: A1, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<[T1, T2]>;
+
+        function denodeify<T1, T2, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T1, T2]>;
+
+        // 3T
+        function denodeify<T1, T2, T3, A1>(
+            nodeFunc: (
+                arg1: A1,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => RSVP.Promise<[T1, T2, T3]>;
+
+        function denodeify<T1, T2, T3, A1, A2, A3, A4, A5>(
+            nodeFunc: (
+                arg1: A1,
+                arg2: A2,
+                arg3: A3,
+                arg4: A4,
+                arg5: A5,
+                callback: (err: any, data: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => RSVP.Promise<[T1, T2, T3]>;
+
+        // ----- hash and hashSettled ----- //
         function hash<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<T>;
         function hashSettled<T>(
             object: { [P in keyof T]: Arg<T[P]> },
