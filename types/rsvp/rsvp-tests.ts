@@ -165,13 +165,17 @@ function testDenodeify() {
     assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 }>>(
         RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
     );
-
     assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 }>>(
         RSVP.denodeify(nodeFn1Arg2CbParam, ['first', 'second'])
     );
     assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 | D3 }>>(
         RSVP.denodeify(nodeFn1Arg3CbParam, ['first', 'second', 'third'])
     );
+
+    const foo = RSVP.denodeify(nodeFn1Arg1CbParam, ['quux', 'baz']);
+    foo([{ arg: true }]).then(value => {
+        console.log(value.quux, value.baz);
+    });
 }
 
 function testFilter() {
