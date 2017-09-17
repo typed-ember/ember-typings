@@ -267,44 +267,122 @@ declare module 'rsvp' {
         //
         // That day, however, may never come. So, in the meantime, we do this.
 
+        function denodeify<This, T1, T2, T3, A>(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options?: false
+        ): (this: This, arg1: A) => RSVP.Promise<T1>;
+
         function denodeify<T1, T2, T3, A>(
             nodeFunc: (
+                this: void,
                 arg1: A,
                 callback: (err: any, data1: T1, data2: T2, data3: T3) => void
             ) => void,
             options?: false
         ): (arg1: A) => RSVP.Promise<T1>;
 
+        function denodeify<This, T1, T2, A>(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options?: false
+        ): (this: This, arg1: A) => RSVP.Promise<T1>;
+
         function denodeify<T1, T2, A>(
-            nodeFunc: (arg1: A, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            nodeFunc: (
+                this: void,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
             options?: false
         ): (arg1: A) => RSVP.Promise<T1>;
 
+        function denodeify<This, T, A>(
+            nodeFunc: (this: This, arg1: A, callback: (err: any, data: T) => void) => void,
+            options?: false
+        ): (this: This, arg1: A) => RSVP.Promise<T>;
+
         function denodeify<T, A>(
-            nodeFunc: (arg1: A, callback: (err: any, data: T) => void) => void,
+            nodeFunc: (this: void, arg1: A, callback: (err: any, data: T) => void) => void,
             options?: false
         ): (arg1: A) => RSVP.Promise<T>;
 
+        function denodeify<This, T1, T2, T3, A>(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: true
+        ): (this: This, arg1: A) => RSVP.Promise<[T1, T2, T3]>;
+
         function denodeify<T1, T2, T3, A>(
             nodeFunc: (
+                this: void,
                 arg1: A,
                 callback: (err: any, data1: T1, data2: T2, data3: T3) => void
             ) => void,
             options: true
         ): (arg1: A) => RSVP.Promise<[T1, T2, T3]>;
 
+        function denodeify<This, T1, T2, A>(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: true
+        ): (this: This, arg1: A) => RSVP.Promise<[T1, T2]>;
+
         function denodeify<T1, T2, A>(
-            nodeFunc: (arg1: A, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            nodeFunc: (
+                this: void,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
             options: true
         ): (arg1: A) => RSVP.Promise<[T1, T2]>;
 
+        function denodeify<This, T, A>(
+            nodeFunc: (this: This, arg1: A, callback: (err: any, data: T) => void) => void,
+            options: true
+        ): (this: This, arg1: A) => RSVP.Promise<[T]>;
+
         function denodeify<T, A>(
-            nodeFunc: (arg1: A, callback: (err: any, data: T) => void) => void,
+            nodeFunc: (this: void, arg1: A, callback: (err: any, data: T) => void) => void,
             options: true
         ): (arg1: A) => RSVP.Promise<[T]>;
 
+        function denodeify<
+            This,
+            T1,
+            T2,
+            T3,
+            A,
+            K1 extends string,
+            K2 extends string,
+            K3 extends string
+        >(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2, data3: T3) => void
+            ) => void,
+            options: [K1, K2, K3]
+        ): (
+            this: This,
+            arg1: A
+        ) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 } & { [K in K3]: T3 }>;
+
         function denodeify<T1, T2, T3, A, K1 extends string, K2 extends string, K3 extends string>(
             nodeFunc: (
+                this: void,
                 arg1: A,
                 callback: (err: any, data1: T1, data2: T2, data3: T3) => void
             ) => void,
@@ -312,12 +390,30 @@ declare module 'rsvp' {
         ): (arg1: A) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 } & { [K in K3]: T3 }>;
 
         function denodeify<T1, T2, A, K1 extends string, K2 extends string>(
-            nodeFunc: (arg1: A, callback: (err: any, data1: T1, data2: T2) => void) => void,
+            nodeFunc: (
+                this: void,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
             options: [K1, K2]
         ): (arg1: A) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 }>;
 
+        function denodeify<This, T1, T2, A, K1 extends string, K2 extends string>(
+            nodeFunc: (
+                this: This,
+                arg1: A,
+                callback: (err: any, data1: T1, data2: T2) => void
+            ) => void,
+            options: [K1, K2]
+        ): (this: This, arg1: A) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 }>;
+
+        function denodeify<This, T, A, K1 extends string>(
+            nodeFunc: (this: This, arg1: A, callback: (err: any, data: T) => void) => void,
+            options: [K1]
+        ): (this: This, arg1: A) => RSVP.Promise<{ [K in K1]: T }>;
+
         function denodeify<T, A, K1 extends string>(
-            nodeFunc: (arg1: A, callback: (err: any, data: T) => void) => void,
+            nodeFunc: (this: void, arg1: A, callback: (err: any, data: T) => void) => void,
             options: [K1]
         ): (arg1: A) => RSVP.Promise<{ [K in K1]: T }>;
 
