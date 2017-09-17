@@ -17,13 +17,14 @@
   "devDependencies": {
     "dts-gen": "^0.5.6",
     "dtslint": "Microsoft/dtslint#production",
+    "prettier": "^1.7.0",
+    "tslint": "^5.7.0",
     "types-publisher": "Microsoft/types-publisher#production"
   },
   "dependencies": {
     "@types/handlebars": "^4.0.35",
     "@types/jquery": "^3.2.11",
     "@types/qunit": "^2.0.31",
-    "@types/rsvp": "^3.3.1",
     "jslint": "^0.10.3"
   }
 }
