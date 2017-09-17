@@ -586,7 +586,26 @@ declare module 'rsvp' {
         const async: typeof asap;
     }
 
-    // TODO: keep default export of this wrapping namespace for backwards
-    // compatibility, but also export individual functions.
     export default RSVP;
+
+    export const asap: typeof RSVP.asap;
+    export const cast: typeof RSVP.cast;
+    export const Promise: typeof RSVP.Promise;
+    export const EventTarget: typeof RSVP.EventTarget;
+    export const all: typeof RSVP.all;
+    export const allSettled: typeof RSVP.allSettled;
+    export const race: typeof RSVP.race;
+    export const hash: typeof RSVP.hash;
+    export const hashSettled: typeof RSVP.hashSettled;
+    export const rethrow: typeof RSVP.rethrow;
+    export const defer: typeof RSVP.defer;
+    export const denodeify: typeof RSVP.denodeify;
+    export const configure: typeof RSVP.configure;
+    export const on: typeof RSVP.on;
+    export const off: typeof RSVP.off;
+    export const resolve: typeof RSVP.resolve;
+    export const reject: typeof RSVP.reject;
+    export const map: typeof RSVP.map;
+    export const async: typeof RSVP.async;
+    export const filter: typeof RSVP.filter;
 }

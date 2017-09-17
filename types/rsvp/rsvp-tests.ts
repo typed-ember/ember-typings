@@ -1,4 +1,5 @@
 import RSVP from 'rsvp';
+import { all, race, resolve } from 'rsvp';
 import { assertType } from '../ember/test/lib/assert';
 
 async function testAsyncAwait() {
@@ -50,6 +51,7 @@ function testPromise() {
 }
 
 function testAll() {
+    const imported = all([]);
     const empty = RSVP.Promise.all([]);
 
     const everyPromise = RSVP.all([
@@ -262,6 +264,7 @@ function testMap() {
 }
 
 function testRace() {
+    const imported = race([]);
     const firstPromise = RSVP.race([{ notAPromise: true }, RSVP.resolve({ some: 'value' })]);
     assertType<RSVP.Promise<{ notAPromise: boolean } | { some: string }>>(firstPromise);
 
@@ -291,6 +294,7 @@ function testResolve() {
     assertType<RSVP.Promise<string>>(RSVP.resolve(Promise.resolve('nested')));
 
     let promise = RSVP.Promise.resolve(1);
+    let imported = resolve(1);
 }
 
 function testRethrow() {
