@@ -166,23 +166,12 @@ function testDenodeify() {
         RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
     );
 
-    // assertType<
-    //     (
-    //         value: A1
-    //     ) => RSVP.Promise<{
-    //         first: D1;
-    //         second: D1;
-    //     }>
-    // >(RSVP.denodeify(nodeFn1Arg2CbParam, ['first', 'second']));
-    // assertType<
-    //     (
-    //         value: A1
-    //     ) => RSVP.Promise<{
-    //         first: D1;
-    //         second: D2;
-    //         third: D3;
-    //     }>
-    // >(RSVP.denodeify(nodeFn1Arg3CbParam, ['first', 'second', 'third']));
+    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 }>>(
+        RSVP.denodeify(nodeFn1Arg2CbParam, ['first', 'second'])
+    );
+    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 | D3 }>>(
+        RSVP.denodeify(nodeFn1Arg3CbParam, ['first', 'second', 'third'])
+    );
 }
 
 function testFilter() {
