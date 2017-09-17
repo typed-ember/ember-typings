@@ -125,8 +125,62 @@ function testDefer() {
     });
 }
 
+// Using this to differentiate the types cleanly
+type A1 = Array<{ arg: boolean }>;
+type D1 = number;
+type D2 = string;
+type D3 = { some: boolean };
+
+declare const nodeFn1Arg1CbParam: (argument: A1, callback: (err: any, data: D1) => void) => void;
+declare const nodeFn1Arg2CbParam: (
+    argument: Array<{ arg: boolean }>,
+    callback: (err: any, data1: D1, data2: D2) => void
+) => void;
+declare const nodeFn1Arg3CbParam: (
+    argument: Array<{ arg: boolean }>,
+    callback: (err: any, data1: D1, data2: D2, data3: D3) => void
+) => void;
+
 function testDenodeify() {
-    // TODO: add test
+    // version with no `options` or `options: false`, and single T
+    assertType<(value: A1) => RSVP.Promise<number>>(RSVP.denodeify(nodeFn1Arg1CbParam));
+    assertType<(value: A1) => RSVP.Promise<number>>(RSVP.denodeify(nodeFn1Arg1CbParam, false));
+
+    // version with no `options` or `options: false`, and multiple T
+    assertType<(value: A1) => RSVP.Promise<D1>>(RSVP.denodeify(nodeFn1Arg2CbParam));
+    assertType<(value: A1) => RSVP.Promise<D1>>(RSVP.denodeify(nodeFn1Arg3CbParam));
+    assertType<(value: A1) => RSVP.Promise<D1>>(RSVP.denodeify(nodeFn1Arg2CbParam, false));
+    assertType<(value: A1) => RSVP.Promise<D1>>(RSVP.denodeify(nodeFn1Arg3CbParam, false));
+
+    // version with `options: true` and single or multiple T
+    assertType<(value: A1) => RSVP.Promise<[D1]>>(RSVP.denodeify(nodeFn1Arg1CbParam, true));
+    assertType<(value: A1) => RSVP.Promise<[D1, D2]>>(
+        RSVP.denodeify<string, number>(nodeFn1Arg2CbParam, true)
+    );
+    assertType<(value: A1) => RSVP.Promise<[D1, D2, D3]>>(RSVP.denodeify(nodeFn1Arg3CbParam, true));
+
+    // version with `options: string[]` and single or multiple T
+    assertType<(value: A1) => RSVP.Promise<{ first: D1 }>>(
+        RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
+    );
+
+    assertType<
+        (
+            value: A1
+        ) => RSVP.Promise<{
+            first: D1;
+            second: D1;
+        }>
+    >(RSVP.denodeify(nodeFn1Arg2CbParam, ['first', 'second']));
+    assertType<
+        (
+            value: A1
+        ) => RSVP.Promise<{
+            first: D1;
+            second: D2;
+            third: D3;
+        }>
+    >(RSVP.denodeify(nodeFn1Arg3CbParam, ['first', 'second', 'third']));
 }
 
 function testFilter() {
