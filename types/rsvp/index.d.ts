@@ -303,23 +303,23 @@ declare module 'rsvp' {
             options: true
         ): (arg1: A) => RSVP.Promise<[T]>;
 
-        function denodeify<T1, T2, T3, A>(
+        function denodeify<T1, T2, T3, A, K1 extends string, K2 extends string, K3 extends string>(
             nodeFunc: (
                 arg1: A,
                 callback: (err: any, data1: T1, data2: T2, data3: T3) => void
             ) => void,
-            options: string[]
-        ): (arg1: A) => RSVP.Promise<{ [key: string]: T1 | T2 | T3 }>;
+            options: [K1, K2, K3]
+        ): (arg1: A) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 } & { [K in K3]: T3 }>;
 
-        function denodeify<T1, T2, A>(
+        function denodeify<T1, T2, A, K1 extends string, K2 extends string>(
             nodeFunc: (arg1: A, callback: (err: any, data1: T1, data2: T2) => void) => void,
-            options: string[]
-        ): (arg1: A) => RSVP.Promise<{ [key: string]: T1 | T2 }>;
+            options: [K1, K2]
+        ): (arg1: A) => RSVP.Promise<{ [K in K1]: T1 } & { [K in K2]: T2 }>;
 
-        function denodeify<T, A>(
+        function denodeify<T, A, K1 extends string>(
             nodeFunc: (arg1: A, callback: (err: any, data: T) => void) => void,
-            options: string[]
-        ): (arg1: A) => RSVP.Promise<{ [key: string]: T }>;
+            options: [K1]
+        ): (arg1: A) => RSVP.Promise<{ [K in K1]: T }>;
 
         // ----- hash and hashSettled ----- //
         function hash<T>(object: { [P in keyof T]: Arg<T[P]> }, label?: string): RSVP.Promise<T>;

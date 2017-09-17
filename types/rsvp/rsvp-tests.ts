@@ -162,19 +162,20 @@ function testDenodeify() {
     // We can't actually map the key names here, because we would need full-on
     // dependent typing to use the *values of an array* as the keys of the
     // resulting object.
-    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 }>>(
+    assertType<(value: A1) => RSVP.Promise<{ first: D1 }>>(
         RSVP.denodeify(nodeFn1Arg1CbParam, ['first'])
     );
-    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 }>>(
+    assertType<(value: A1) => RSVP.Promise<{ first: D1; second: D2 }>>(
         RSVP.denodeify(nodeFn1Arg2CbParam, ['first', 'second'])
     );
-    assertType<(value: A1) => RSVP.Promise<{ [key: string]: D1 | D2 | D3 }>>(
+    assertType<(value: A1) => RSVP.Promise<{ first: D1; second: D2; third: D3 }>>(
         RSVP.denodeify(nodeFn1Arg3CbParam, ['first', 'second', 'third'])
     );
 
-    const foo = RSVP.denodeify(nodeFn1Arg1CbParam, ['quux', 'baz']);
+    const foo = RSVP.denodeify(nodeFn1Arg2CbParam, ['quux', 'baz']);
     foo([{ arg: true }]).then(value => {
-        console.log(value.quux, value.baz);
+        console.log(value.quux + 1);
+        console.log(value.baz.length);
     });
 }
 
