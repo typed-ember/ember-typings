@@ -856,9 +856,7 @@ export namespace Ember {
          * This method works similar to the `filter()` method defined in JavaScript 1.6
          * except that it will stop working on the array once a match is found.
          */
-        find(predicate: (this: void, value: T, index: number, obj: GlobalArray<T>) => boolean): T | undefined;
-        find(predicate: (this: void, value: T, index: number, obj: GlobalArray<T>) => boolean, thisArg: undefined): T | undefined;
-        find<Z>(predicate: (this: Z, value: T, index: number, obj: GlobalArray<T>) => boolean, thisArg: Z): T | undefined;
+        find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
         /**
          * Returns the first item with a property matching the passed value. You
          * can pass an optional second argument with the target value. Otherwise
