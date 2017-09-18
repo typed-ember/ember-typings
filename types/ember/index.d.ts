@@ -1551,9 +1551,17 @@ export namespace Ember {
         */
         has(name: string): boolean;
     }
-
+    interface RouterMapContext {
+        route(name: string, callback: (this: RouterMapContext) => void): void;
+        route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterMapContext) => void): void;
+    }
     class Router extends Object {
-        map(callback: Function): Router;
+        /**
+         * The `Router.map` function allows you to define mappings from URLs to routes
+         * in your application. These mappings are defined within the
+         * supplied callback function using `this.route`.
+         */
+        static map(callback: (this: RouterMapContext) => void): void;
     }
     class RouterDSL {
         resource(name: string, options?: {}, callback?: Function): void;

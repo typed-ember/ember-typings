@@ -36,6 +36,7 @@
         "test/function-ext.ts",
         "test/inject.ts",
         "test/utils.ts",
-        "test/transition.ts"
+        "test/transition.ts",
+        "test/router.ts"
     ]
 }
