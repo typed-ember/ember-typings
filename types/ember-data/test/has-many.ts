@@ -15,18 +15,27 @@ const post = BlogPost.create();
 
 assertType<DS.PromiseArray<Comment>>(post.get('commentsSync').reload());
 assertType<Comment>(post.get('commentsSync').createRecord());
-assertType<Comment>(post.get('commentsSync').get('firstObject'));
-assertType<string>(post.get('commentsSync').get('firstObject').get('text'));
+
+const comment = post.get('commentsSync').get('firstObject');
+assertType<Comment | undefined>(comment);
+if (comment) {
+    assertType<string>(comment.get('text'));
+}
 
 assertType<DS.PromiseArray<Comment>>(post.get('commentsAsync').reload());
 assertType<Comment>(post.get('commentsAsync').createRecord());
-assertType<Comment>(post.get('commentsAsync').get('firstObject'));
-assertType<string>(post.get('commentsAsync').get('firstObject').get('text'));
+assertType<Comment | undefined>(post.get('commentsAsync').get('firstObject'));
+
+const commentAsync = post.get('commentsAsync').get('firstObject');
+assertType<Comment | undefined>(commentAsync);
+if (commentAsync) {
+    assertType<string>(commentAsync.get('text'));
+}
 assertType<boolean>(post.get('commentsAsync').get('isFulfilled'));
 
 post.get('commentsAsync').then(comments => {
-    assertType<Comment>(comments.get('firstObject'));
-    assertType<string>(comments.get('firstObject').get('text'));
+    assertType<Comment | undefined>(comments.get('firstObject'));
+    assertType<string>(comments.get('firstObject')!.get('text'));
 });
 
 class Polymorphic extends DS.Model {
