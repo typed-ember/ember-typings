@@ -1175,6 +1175,12 @@ export namespace Ember {
          * __Required.__ You must implement this method to apply this mixin.
          */
         length: number;
+        /**
+         * Returns the first item in the array for which the callback returns true.
+         * This method works similar to the `filter()` method defined in JavaScript 1.6
+         * except that it will stop working on the array once a match is found.
+         */
+        find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
     }
     const NativeArray: Mixin<NativeArray<any>>;
     class NoneLocation extends Object {
