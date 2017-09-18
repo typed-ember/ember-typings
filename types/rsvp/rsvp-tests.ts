@@ -177,6 +177,21 @@ function testDenodeify() {
         console.log(value.quux + 1);
         console.log(value.baz.length);
     });
+
+    class Quux {
+        foo?: string;
+
+        baz(arg: number, callback: (err: any, data1: number, data2: string) => void): void {
+            this.foo = 'oh weird';
+            callback(null, arg, arg.toString());
+        }
+    }
+
+    const quux = new Quux();
+    const baz = RSVP.denodeify(quux.baz, ['theValue', 'itsLength']);
+
+    baz(123); // NOTE: if you uncomment this, it will fail.
+    baz.call(quux, baz);
 }
 
 function testFilter() {
