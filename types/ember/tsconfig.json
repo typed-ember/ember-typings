@@ -38,6 +38,7 @@
         "test/utils.ts",
         "test/transition.ts",
         "test/router.ts",
-        "test/run.ts"
+        "test/run.ts",
+        "test/unsafe.ts"
     ]
 }
