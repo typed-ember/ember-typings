@@ -11,7 +11,7 @@ proxy.get('firstObject'); // 'amoeba'
 const overridden = Ember.ArrayProxy.create({
     content: Ember.A(pets),
     objectAtContent(idx: number): string {
-        return this.get('content').objectAt(idx).toUpperCase();
+        return this.get('content').objectAt(idx)!.toUpperCase();
     }
 });
 
@@ -22,5 +22,5 @@ class MyNewProxy<T> extends Ember.ArrayProxy<T> {
 }
 
 let x: MyNewProxy<number> = MyNewProxy.create({ content: Ember.A([1, 2, 3]) });
-assertType<number>(x.get('firstObject'));
+assertType<number | undefined>(x.get('firstObject'));
 assertType<boolean>(x.isNew);

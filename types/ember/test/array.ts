@@ -23,13 +23,24 @@ assertType<Person>(people.get('[]').get('firstObject'));
 assertType<boolean[]>(people.mapBy('isHappy'));
 assertType<any[]>(people.mapBy('name.length'));
 
-assertType<string>(people.get('lastObject').get('name'));
-assertType<boolean>(people.get('firstObject').get('isHappy'));
+const last = people.get('lastObject');
+if (last) {
+    assertType<string>(last.get('name'));
+}
+
+const first = people.get('lastObject');
+if (first) {
+    assertType<boolean>(first.get('isHappy'));
+}
 
 const letters: Ember.Enumerable<string> = Ember.A(['a', 'b', 'c']);
 const codes: number[] = letters.map((item, index, enumerable) => {
     assertType<string>(item);
     assertType<number>(index);
-    assertType<Ember.Enumerable<string>>(enumerable);
     return item.charCodeAt(0);
 });
+
+let value = '1,2,3';
+let filters = Ember.A(value.split(','));
+filters.push('4');
+filters.sort();

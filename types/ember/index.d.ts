@@ -94,15 +94,6 @@ interface EnumerableConfigurationOptions {
     didChange?: boolean;
 }
 
-type ItemIndexEnumerableCallback<T, U, This> = (item: T, index: number, enumerable: This) => U;
-
-type ReduceCallback<T, U, This> = (
-    previousValue: U,
-    item: T,
-    index: number,
-    enumerable: This
-) => U;
-
 interface TransitionsHash {
     contexts: any[];
     exitStates: Ember.State[];
@@ -162,6 +153,9 @@ export namespace Ember {
          */
         on(...args: string[]): this;
     }
+
+    interface ArrayPrototypeExtensions<T> extends MutableArray<T>, Observable, Copyable {}
+
     /**
     The Ember.ActionHandler mixin implements support for moving an actions property to an _actions
     property at extend time, and adding _actions to the object's mergedProperties list.
@@ -275,17 +269,76 @@ export namespace Ember {
     Array class as well as other controllers, etc. that want to appear to be arrays.
     **/
     interface Array<T> extends Enumerable<T> {
-        addArrayObserver(target: any, opts?: EnumerableConfigurationOptions): this;
-        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): this;
-        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): this;
-        indexOf(object: T, startAt?: number): number;
-        lastIndexOf(object: T, startAt?: number): number;
-        objectAt(idx: number): T;
-        objectsAt(...args: number[]): T[];
-        removeArrayObserver(target: any, opts: EnumerableConfigurationOptions): this;
-        slice(beginIndex?: number, endIndex?: number): T[];
-        '@each': ComputedProperty<EachProxy>;
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
         length: number | ComputedProperty<number>;
+        /**
+         * Returns the object at the given `index`. If the given `index` is negative
+         * or is greater or equal than the array length, returns `undefined`.
+         */
+        objectAt(idx: number): T | undefined;
+        /**
+         * This returns the objects at the specified indexes, using `objectAt`.
+         */
+        objectsAt(indexes: number[]): Ember.Array<T>;
+        /**
+         * Returns a new array that is a slice of the receiver. This implementation
+         * uses the observable array methods to retrieve the objects for the new
+         * slice.
+         */
+        slice(beginIndex?: number, endIndex?: number): T[];
+        /**
+         * Returns the index of the given object's first occurrence.
+         * If no `startAt` argument is given, the starting location to
+         * search is 0. If it's negative, will count backward from
+         * the end of the array. Returns -1 if no match is found.
+         */
+        indexOf(searchElement: T, fromIndex?: number): number;
+        /**
+         * Returns the index of the given object's last occurrence.
+         * If no `startAt` argument is given, the search starts from
+         * the last position. If it's negative, will count backward
+         * from the end of the array. Returns -1 if no match is found.
+         */
+        lastIndexOf(searchElement: T, fromIndex?: number): number;
+        /**
+         * Adds an array observer to the receiving array. The array observer object
+         * normally must implement two methods:
+         */
+        addArrayObserver(target: {}, opts: {}): this;
+        /**
+         * Removes an array observer from the object if the observer is current
+         * registered. Calling this method multiple times with the same object will
+         * have no effect.
+         */
+        removeArrayObserver(target: {}, opts: {}): this;
+        /**
+         * Becomes true whenever the array currently has observers watching changes
+         * on the array.
+         */
+        hasArrayObservers: ComputedProperty<boolean>;
+        /**
+         * If you are implementing an object that supports `Ember.Array`, call this
+         * method just before the array content changes to notify any observers and
+         * invalidate any related properties. Pass the starting index of the change
+         * as well as a delta of the amounts to change.
+         */
+        arrayContentWillChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        /**
+         * If you are implementing an object that supports `Ember.Array`, call this
+         * method just after the array content changes to notify any observers and
+         * invalidate any related properties. Pass the starting index of the change
+         * as well as a delta of the amounts to change.
+         */
+        arrayContentDidChange(startIdx: number, removeAmt: number, addAmt: number): this;
+        /**
+         * Returns a special object that can be used to observe individual properties
+         * on the array. Just get an equivalent property on this object and it will
+         * return an enumerable that maps automatically to the named key on the
+         * member objects.
+         */
+        '@each': ComputedProperty<EachProxy>;
     }
     // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
     const Array: Mixin<Ember.Array<any>>;
@@ -297,10 +350,12 @@ export namespace Ember {
     **/
     interface ArrayProxy<T> extends MutableArray<T> {}
     class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
-        content: Ember.Array<T>;
-        length: ComputedProperty<number>;
-        objectAtContent(idx: number): any;
-        replaceContent(idx: number, amt: number, objects: any[]): void;
+        /**
+         * Should actually retrieve the object at the specified index from the
+         * content. You can override this method in subclasses to transform the
+         * content item to something new.
+         */
+        objectAtContent(idx: number): T | undefined;
     }
     /**
     AutoLocation will select the best location option based off browser support with the priority order: history, hash, none.
@@ -723,58 +778,166 @@ export namespace Ember {
       unregister(fullName: string): void;
     }
     /**
-    This mixin defines the common interface implemented by enumerable objects in Ember. Most of these
-    methods follow the standard Array iteration API defined up to JavaScript 1.8 (excluding language-specific
-    features that cannot be emulated in older versions of JavaScript).
-    This mixin is applied automatically to the Array class on page load, so you can use any of these methods
-    on simple arrays. If Array already implements one of these methods, the mixin will not override them.
-    **/
+     * This mixin defines the common interface implemented by enumerable objects
+     * in Ember. Most of these methods follow the standard Array iteration
+     * API defined up to JavaScript 1.8 (excluding language-specific features that
+     * cannot be emulated in older versions of JavaScript).
+     */
     interface Enumerable<T> {
-        addEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
-        any(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
-        anyBy(key: string, value?: string): boolean;
-        isAny(key: string, value?: boolean): boolean;
-        someProperty(key: string, value?: string): boolean;
-        compact(): T[];
+        /**
+         * Helper method returns the first object from a collection. This is usually
+         * used by bindings and other parts of the framework to extract a single
+         * object if the enumerable contains only one item.
+         */
+        firstObject: ComputedProperty<T | undefined>;
+        /**
+         * Helper method returns the last object from a collection. If your enumerable
+         * contains only one object, this method should always return that object.
+         * If your enumerable is empty, this method should return `undefined`.
+         */
+        lastObject: ComputedProperty<T | undefined>;
+        /**
+         * @deprecated Use `Enumerable#includes` instead.
+         */
         contains(obj: T): boolean;
-        enumerableContentDidChange(
-            start: number,
-            removing: Enumerable<T> | number,
-            adding: Enumerable<T> | number
-        ): this;
-        enumerableContentDidChange(removing: Enumerable<T> | number, adding: Enumerable<T> | number): this;
-        enumerableContentWillChange(
-            removing: Enumerable<T> | number,
-            adding: Enumerable<T> | number
-        ): this;
-        every(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
-        isEvery(key: string, value?: boolean): boolean;
-        everyBy(key: string, value?: string): boolean;
-        everyProperty(key: string, value?: string): boolean;
-        filter(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T[];
-        filterBy(key: string, value?: string): T[];
-        find(callback: ItemIndexEnumerableCallback<T, boolean, this>, target: any): T | undefined;
-        findBy(key: string, value?: string): T | undefined;
-        forEach(callback: ItemIndexEnumerableCallback<T, void, this>, target?: any): void;
+        /**
+         * Iterates through the enumerable, calling the passed function on each
+         * item. This method corresponds to the `forEach()` method defined in
+         * JavaScript 1.6.
+         */
+        forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;
+        /**
+         * Alias for `mapBy`
+         */
         getEach(key: string): any[];
-        invoke(methodName: string, ...args: any[]): any[];
-        map<U>(callback: ItemIndexEnumerableCallback<T, U, this>, target?: any): U[];
-        mapBy<K extends keyof T>(key: K): GlobalArray<T[K]>;
+        /**
+         * Sets the value on the named property for each member. This is more
+         * ergonomic than using other methods defined on this helper. If the object
+         * implements Ember.Observable, the value will be changed to `set(),` otherwise
+         * it will be set directly. `null` objects are skipped.
+         */
+        setEach(key: string, value: any): any;
+        /**
+         * Maps all of the items in the enumeration to another value, returning
+         * a new array. This method corresponds to `map()` defined in JavaScript 1.6.
+         */
+        map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];
+        /**
+         * Similar to map, this specialized function returns the value of the named
+         * property on all items in the enumeration.
+         */
         mapBy(key: string): any[];
-        nextObject(index: number, previousObject: T, context: any): T | undefined;
-        reduce<U>(callback: ReduceCallback<T, U, this>, initialValue: U, reducerProperty: string): U;
-        reject(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): T[];
-        rejectBy(key: string, value?: string): T[];
-        removeEnumerableObserver(target: any, opts: EnumerableConfigurationOptions): this;
-        setEach(key: string, value?: any): this;
-        some(callback: ItemIndexEnumerableCallback<T, boolean, this>, target?: any): boolean;
+        /**
+         * Returns an array with all of the items in the enumeration that the passed
+         * function returns true for. This method corresponds to `filter()` defined in
+         * JavaScript 1.6.
+         */
+        filter<S extends T>(callbackfn: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];
+        filter(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[];
+        /**
+         * Returns an array with all of the items in the enumeration where the passed
+         * function returns false. This method is the inverse of filter().
+         */
+        reject(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[];
+        /**
+         * Returns an array with just the items with the matched property. You
+         * can pass an optional second argument with the target value. Otherwise
+         * this will match any property that evaluates to `true`.
+         */
+        filterBy(key: string, value?: any): any[];
+        /**
+         * Returns an array with the items that do not have truthy values for
+         * key.  You can pass an optional second argument with the target value.  Otherwise
+         * this will match any property that evaluates to false.
+         */
+        rejectBy(key: string, value?: string): any[];
+        /**
+         * Returns the first item in the array for which the callback returns true.
+         * This method works similar to the `filter()` method defined in JavaScript 1.6
+         * except that it will stop working on the array once a match is found.
+         */
+        find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
+        /**
+         * Returns the first item with a property matching the passed value. You
+         * can pass an optional second argument with the target value. Otherwise
+         * this will match any property that evaluates to `true`.
+         */
+        findBy(key: string, value: string): T | undefined;
+        /**
+         * Returns `true` if the passed function returns true for every item in the
+         * enumeration. This corresponds with the `every()` method in JavaScript 1.6.
+         */
+        every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;
+        /**
+         * Returns `true` if the passed property resolves to the value of the second
+         * argument for all items in the enumerable. This method is often simpler/faster
+         * than using a callback.
+         */
+        isEvery(key: string, value: boolean): boolean;
+        /**
+         * Returns `true` if the passed function returns true for any item in the
+         * enumeration.
+         */
+        any(callback: (value: T, index: number, array: T[]) => boolean, target?: {}): boolean;
+        /**
+         * Returns `true` if the passed property resolves to the value of the second
+         * argument for any item in the enumerable. This method is often simpler/faster
+         * than using a callback.
+         */
+        isAny(key: string, value?: boolean): boolean;
+        /**
+         * This will combine the values of the enumerator into a single value. It
+         * is a useful way to collect a summary value from an enumeration. This
+         * corresponds to the `reduce()` method defined in JavaScript 1.8.
+         */
+        reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;
+        reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
+        /**
+         * Invokes the named method on every object in the receiver that
+         * implements it. This method corresponds to the implementation in
+         * Prototype 1.6.
+         */
+        invoke(methodName: keyof T, ...args: any[]): any[];
+        /**
+         * Simply converts the enumerable into a genuine array. The order is not
+         * guaranteed. Corresponds to the method implemented by Prototype.
+         */
         toArray(): T[];
-        uniq(): Enumerable<T>;
+        /**
+         * Returns a copy of the array with all `null` and `undefined` elements removed.
+         */
+        compact(): Enumerable<T>;
+        /**
+         * Returns a new enumerable that excludes the passed value. The default
+         * implementation returns an array regardless of the receiver type.
+         * If the receiver does not contain the value it returns the original enumerable.
+         */
         without(value: T): Enumerable<T>;
+        /**
+         * Returns a new enumerable that contains only unique values. The default
+         * implementation returns an array regardless of the receiver type.
+         */
+        uniq(): Enumerable<T>;
+        /**
+         * Converts the enumerable into an array and sorts by the keys
+         * specified in the argument.
+         */
+        sortBy(property: string): Enumerable<T>;
+        /**
+         * Returns a new enumerable that contains only items containing a unique property value.
+         * The default implementation returns an array regardless of the receiver type.
+         */
+        uniqBy(): Enumerable<T>;
+        /**
+         * Returns `true` if the passed object can be found in the enumerable.
+         */
+        includes(searchElement: T, fromIndex?: number): boolean;
+        /**
+         * This is the handler for the special array content property. If you get
+         * this property, it will return this. If you set this property to a new
+         * array, it will replace the current content.
+         */
         '[]': ComputedProperty<this>;
-        firstObject: ComputedProperty<T>;
-        hasEnumerableObservers: ComputedProperty<boolean>;
-        lastObject: ComputedProperty<T>;
     }
     const Enumerable: Mixin<Enumerable<any>>;
     /**
@@ -912,32 +1075,112 @@ export namespace Ember {
 
         static create<T, Base = Ember.Object>(args?: T & ThisType<Fix<T & Base>>): Mixin<T, Base>;
     }
+    /**
+     * This mixin defines the API for modifying array-like objects. These methods
+     * can be applied only to a collection that keeps its items in an ordered set.
+     * It builds upon the Array mixin and adds methods to modify the array.
+     * One concrete implementations of this class include ArrayProxy.
+     */
     interface MutableArray<T> extends Array<T>, MutableEnumberable<T> {
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
+        replace(idx: number, amt: number, objects: any[]): any;
+        /**
+         * Remove all elements from the array. This is useful if you
+         * want to reuse an existing array without having to recreate it.
+         */
         clear(): this;
-        insertAt(idx: number, object: T): this;
-        popObject(): T;
-        pushObject(obj: T): T;
-        pushObjects(...args: T[]): this;
+        /**
+         * This will use the primitive `replace()` method to insert an object at the
+         * specified index.
+         */
+        insertAt(idx: number, object: {}): this;
+        /**
+         * Remove an object at the specified index using the `replace()` primitive
+         * method. You can pass either a single index, or a start and a length.
+         */
         removeAt(start: number, len: number): this;
-        replace(idx: number, amt: number, objects: T[]): this;
-        reverseObjects(): this;
-        setObjects(objects: T[]): this;
+        /**
+         * Push the object onto the end of the array. Works just like `push()` but it
+         * is KVO-compliant.
+         */
+        pushObject(obj: T): T;
+        /**
+         * Add the objects in the passed numerable to the end of the array. Defers
+         * notifying observers of the change until all objects are added.
+         */
+        pushObjects(objects: Enumerable<T>): this;
+        /**
+         * Pop object from array or nil if none are left. Works just like `pop()` but
+         * it is KVO-compliant.
+         */
+        popObject(): T;
+        /**
+         * Shift an object from start of array or nil if none are left. Works just
+         * like `shift()` but it is KVO-compliant.
+         */
         shiftObject(): T;
-        unshiftObject(object: T): T;
-        unshiftObjects(objects: T[]): this;
+        /**
+         * Unshift an object to start of array. Works just like `unshift()` but it is
+         * KVO-compliant.
+         */
+        unshiftObject(obj: T): T;
+        /**
+         * Adds the named objects to the beginning of the array. Defers notifying
+         * observers until all objects have been added.
+         */
+        unshiftObjects(objects: Enumerable<T>): this;
+        /**
+         * Reverse objects in the array. Works just like `reverse()` but it is
+         * KVO-compliant.
+         */
+        reverseObjects(): this;
+        /**
+         * Replace all the receiver's content with content of the argument.
+         * If argument is an empty array receiver will be cleared.
+         */
+        setObjects(objects: Ember.Array<T>): this;
     }
     const MutableArray: Mixin<MutableArray<any>>;
+    /**
+     * This mixin defines the API for modifying generic enumerables. These methods
+     * can be applied to an object regardless of whether it is ordered or
+     * unordered.
+     */
     interface MutableEnumberable<T> extends Enumerable<T> {
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
         addObject(object: T): T;
+        /**
+         * Adds each object in the passed enumerable to the receiver.
+         */
         addObjects(objects: Enumerable<T>): this;
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
         removeObject(object: T): T;
+        /**
+         * Removes each object in the passed enumerable from the receiver.
+         */
         removeObjects(objects: Enumerable<T>): this;
     }
     const MutableEnumerable: Mixin<MutableEnumberable<any>>;
     const NAME_KEY: string;
     class Namespace extends Object {
     }
-    interface NativeArray<T> extends MutableArray<T>, Observable, Copyable {
+    interface NativeArray<T> extends GlobalArray<T>, MutableArray<T>, Observable, Copyable {
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
+        length: number;
+        /**
+         * Returns the first item in the array for which the callback returns true.
+         * This method works similar to the `filter()` method defined in JavaScript 1.6
+         * except that it will stop working on the array once a match is found.
+         */
+        find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
     }
     const NativeArray: Mixin<NativeArray<any>>;
     class NoneLocation extends Object {
