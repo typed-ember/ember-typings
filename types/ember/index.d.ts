@@ -809,7 +809,7 @@ export namespace Ember {
         /**
          * Alias for `mapBy`
          */
-        getEach<K extends keyof T>(key: K): T[K][];
+        getEach<K extends keyof T>(key: K): GlobalArray<T[K]>;
         /**
          * Sets the value on the named property for each member. This is more
          * ergonomic than using other methods defined on this helper. If the object
@@ -826,7 +826,7 @@ export namespace Ember {
          * Similar to map, this specialized function returns the value of the named
          * property on all items in the enumeration.
          */
-        mapBy<K extends keyof T>(key: K): T[K][];
+        mapBy<K extends keyof T>(key: K): GlobalArray<T[K]>;
         /**
          * Returns an array with all of the items in the enumeration that the passed
          * function returns true for. This method corresponds to `filter()` defined in
@@ -922,7 +922,7 @@ export namespace Ember {
          * Converts the enumerable into an array and sorts by the keys
          * specified in the argument.
          */
-        sortBy(...property: (keyof T)[]): T[];
+        sortBy(...property: GlobalArray<keyof T>): T[];
         /**
          * Returns a new enumerable that contains only items containing a unique property value.
          * The default implementation returns an array regardless of the receiver type.
