@@ -21,7 +21,7 @@ assertType<typeof people>(people.get('[]'));
 assertType<Person>(people.get('[]').get('firstObject'));
 
 assertType<boolean[]>(people.mapBy('isHappy'));
-assertType<any[]>(people.mapBy('name.length'));
+assertType<number[]>(people.mapBy('name').mapBy('length'));
 
 const last = people.get('lastObject');
 if (last) {
