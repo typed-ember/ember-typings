@@ -922,7 +922,7 @@ export namespace Ember {
          * Converts the enumerable into an array and sorts by the keys
          * specified in the argument.
          */
-        sortBy(...property: (keyof T)[]): Enumerable<T>;
+        sortBy(...property: (keyof T)[]): T[];
         /**
          * Returns a new enumerable that contains only items containing a unique property value.
          * The default implementation returns an array regardless of the receiver type.
