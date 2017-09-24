@@ -62,7 +62,7 @@ describeComponent.skip(
     {
         integration: true
     },
-    function () {
+    function() {
     }
 );
 

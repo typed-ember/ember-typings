@@ -34,8 +34,7 @@ declare module 'ember-mocha' {
     }
 
     interface SetupTest {
-        (name?: string): void;
-        (name: string, callbacks?: ModuleCallbacks): void;
+        (name?: string, callbacks?: ModuleCallbacks): void;
         (callbacks: ModuleCallbacks): void;
     }
 
@@ -85,7 +84,7 @@ declare module 'mocha' {
 
     interface Runnable {
         title: string;
-        fn: Function;
+        fn(...args: any[]): any;
         async: boolean;
         sync: boolean;
         timedOut: boolean;
@@ -143,9 +142,7 @@ declare module 'mocha' {
         state: "failed" | "passed";
     }
 
-    interface MochaDone {
-        (error?: any): any;
-    }
+    type MochaDone = (error?: any) => any;
 
     interface SuiteCallbackContext {
         timeout(ms: number): this;
