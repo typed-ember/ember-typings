@@ -15,6 +15,7 @@
     "lint": "dtslint types"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.4",
     "dts-gen": "^0.5.6",
     "dtslint": "Microsoft/dtslint#production",
     "prettier": "^1.7.0",
