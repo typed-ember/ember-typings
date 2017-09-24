@@ -6,6 +6,7 @@
 
 declare module 'ember-test-helpers' {
     import Ember from 'ember';
+    import DS from 'ember-data';
     import { TemplateFactory } from 'htmlbars-inline-precompile';
     import RSVP from "rsvp";
 
@@ -36,6 +37,8 @@ declare module 'ember-test-helpers' {
         registry: Ember.Registry;
         container: Ember.Container;
         dispatcher: Ember.EventDispatcher;
+        application: Ember.Application;
+        store: DS.Store;
         register(fullName: string, factory: any): void;
         factory(fullName: string): any;
         inject: {
