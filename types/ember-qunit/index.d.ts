@@ -8,14 +8,16 @@ declare module 'ember-qunit' {
     import Ember from 'ember';
     import { TestContext, ModuleCallbacks } from "ember-test-helpers";
 
+    type QUnitModuleCallbacks = ModuleCallbacks & Hooks & ThisType<TestContext>;
+
     /**
      *
      * @param {string} fullName The full name of the unit, ie controller:application, route:index.
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleFor(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleFor(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleFor(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleFor(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      *
@@ -23,8 +25,8 @@ declare module 'ember-qunit' {
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleForComponent(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleForComponent(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleForComponent(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleForComponent(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      *
@@ -32,8 +34,8 @@ declare module 'ember-qunit' {
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleForModel(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleForModel(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleForModel(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleForModel(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      * Sets a Resolver globally which will be used to look up objects from each test's container.
