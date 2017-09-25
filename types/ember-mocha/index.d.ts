@@ -93,14 +93,19 @@ declare module 'mocha' {
         fullTitle(): string;
     }
 
-    interface BeforeAndAfterContext extends TestContext {
+    interface MochaTestContext extends TestContext {
+        skip(): this;
+        timeout(ms: number): this;
+    }
+
+    interface BeforeAndAfterContext extends MochaTestContext {
         currentTest: Test;
     }
 
     interface TestDefinition {
-        (expectation: string, callback?: (this: TestContext, done: MochaDone) => any): Test;
-        only(expectation: string, callback?: (this: TestContext, done: MochaDone) => any): Test;
-        skip(expectation: string, callback?: (this: TestContext, done: MochaDone) => any): void;
+        (expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
+        only(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
+        skip(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): void;
         timeout(ms: number): void;
         state: "failed" | "passed";
     }
