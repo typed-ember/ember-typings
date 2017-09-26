@@ -14,6 +14,7 @@
         "no-unnecessary-qualifier": false,
         "prefer-const": false,
         "no-void-expression": false,
-        "only-arrow-functions": false
+        "only-arrow-functions": false,
+        "no-submodule-imports": false
     }
 }
