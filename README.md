@@ -19,7 +19,7 @@ The tests do *not* run, the code is only type-checked.
 To use `ember-typings` instead of `@types/ember`, first run:
 
 ```
-yarn remove @types/ember @types/ember-testing-helpers
+yarn remove @types/ember @types/ember-testing-helpers @types/rsvp
 yarn add typed-ember/ember-typings --dev
 ```
 
