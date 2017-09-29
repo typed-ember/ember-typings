@@ -17,10 +17,10 @@ declare module 'ember-test-helpers' {
         unit?: boolean;
         needs?: string[];
 
-        beforeSetup?(): void;
-        setup?(): void;
-        teardown?(): void;
-        afterTeardown?(): void;
+        beforeSetup?(assert?: any): void;
+        setup?(assert?: any): void;
+        teardown?(assert?: any): void;
+        afterTeardown?(assert?: any): void;
 
         [key: string]: any;
     }

@@ -6,9 +6,14 @@
 
 declare module 'ember-qunit' {
     import Ember from 'ember';
-    import { TestContext, ModuleCallbacks } from "ember-test-helpers";
+    import { ModuleCallbacks } from "ember-test-helpers";
 
-    type QUnitModuleCallbacks = ModuleCallbacks & Hooks & ThisType<TestContext>;
+    interface QUnitModuleCallbacks extends ModuleCallbacks, Hooks {
+        beforeSetup?(assert: Assert): void;
+        setup?(assert: Assert): void;
+        teardown?(assert: Assert): void;
+        afterTeardown?(assert: Assert): void;
+    }
 
     /**
      *
