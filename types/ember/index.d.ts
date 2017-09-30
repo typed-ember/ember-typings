@@ -2019,7 +2019,7 @@ export namespace Ember {
         defaultTo(defaultPath: string): ComputedProperty<any>;
         deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty<any>;
         empty(dependentKey: string): ComputedProperty<any>;
-        equal(dependentKey: string, value: any): ComputedProperty<any>;
+        equal(dependentKey: string, value: any): ComputedProperty<boolean>;
         filter(
             dependentKey: string,
             callback: (item: any, index?: number, array?: any[]) => boolean
