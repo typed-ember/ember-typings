@@ -38,6 +38,8 @@
         "test/utils.ts",
         "test/transition.ts",
         "test/router.ts",
-        "test/run.ts"
+        "test/run.ts",
+        "test/controller.ts",
+        "test/route.ts"
     ]
 }
