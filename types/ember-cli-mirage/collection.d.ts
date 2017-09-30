@@ -1,4 +1,7 @@
-export interface Collection<T> {
+/**
+ * A collection of db records i.e. a database table.
+ */
+export interface Collection<T> extends ArrayLike<T> {
     /**
      * Returns a single record from the collection if ids is a single id, or an
      * array of records if ids is an array of ids. Note each id can be an int or a
