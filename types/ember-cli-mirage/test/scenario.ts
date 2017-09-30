@@ -1,4 +1,6 @@
-export default function(server) {
+import {Server} from "ember-cli-mirage";
+
+export default function(server: Server) {
     server.createList('author', 10);
     server.createList('blog-post', 10);
 

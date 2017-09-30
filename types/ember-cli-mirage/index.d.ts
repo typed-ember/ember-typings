@@ -4,7 +4,7 @@
 // Definitions: https://github.com/ololabs/mobile-web-client
 
 import Ember from 'ember';
-import * as Registry from './registry';
+import { ModelRegistry, ModelNames, ModelNamesPlural, DbCollections, SchemaCollections } from './registry';
 import fakerStatic = require('faker');
 
 type EmberObject = Ember.Object;
@@ -18,8 +18,18 @@ interface MirageFactory extends EmberObject {}
 export const Response: MirageResponse;
 export const Factory: MirageFactory;
 
-export interface Schema {
+export interface Schema extends SchemaCollections {
     db: Database;
+    registerModels(hash: any): any;
+    registerModel(type: any, ModelClass: any): any;
+    modelFor(type: any): any;
+    new(type: any, attrs: any): any;
+    create(type: any, attrs: any): any;
+    all(type: any): any;
+    find(type: any, ids: any): any;
+    findBy(type: any, attributeName: any): any;
+    where(type: any, query: any): any;
+    first(type: any): any;
 }
 
 /**
@@ -27,8 +37,14 @@ export interface Schema {
  * handlers. You retrieve or modify data from the database, then return what you
  * want for that route.
  */
-export interface Database extends Registry.Collections {
-    createCollection(name: string): void;
+export interface Database extends DbCollections {
+    loadData(data: any): any;
+    dump(): any;
+    createCollection(name: any, initialData: any): any;
+    createCollections(collections: any): any;
+    emptyData(): any;
+    identityManagerFor(name: any): any;
+    registerIdentityManagers(): any;
 }
 
 /**
@@ -42,9 +58,9 @@ export interface FakeRequest<QP> extends XMLHttpRequest {
 
 type ResponseCode = number | string;
 type Shorthand =
-    | Registry.ModelNames
-    | Registry.CollectionNames
-    | Array<Registry.ModelNames | Registry.CollectionNames>;
+    | ModelNames
+    | ModelNamesPlural
+    | Array<ModelNames | ModelNamesPlural>;
 
 interface FunctionRouteHandler<QP> {
     request: FakeRequest<QP>;
@@ -93,10 +109,10 @@ export interface Server {
      * the attributes from the factory definition with a hash passed in as the
      * second parameter.
      */
-    create<N extends Registry.ModelNames>(
+    create<N extends ModelNames>(
         type: N,
-        attrs?: Partial<Registry.Models[N]>
-    ): Registry.Models[N];
+        attrs?: Partial<ModelRegistry[N]>
+    ): ModelRegistry[N];
 
     /**
      * Creates amount models of type `type`, optionally overriding the attributes
@@ -104,11 +120,11 @@ export interface Server {
      *
      * Returns the array of records that were added to the database.
      */
-    createList<N extends Registry.ModelNames>(
+    createList<N extends ModelNames>(
         type: N,
         count: number,
-        attrs?: Partial<Registry.Models[N]>
-    ): Registry.Models[N][];
+        attrs?: Partial<ModelRegistry[N]>
+    ): Array<ModelRegistry[N]>;
 
     get: RouteHandler;
     post: RouteHandler;

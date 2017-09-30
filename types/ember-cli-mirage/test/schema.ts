@@ -1,4 +1,4 @@
-import {Model, hasMany, belongsTo, Schema} from 'ember-cli-mirage';
+import { Schema } from 'ember-cli-mirage';
 
 declare const schema: Schema;
 
@@ -16,7 +16,9 @@ posts.reload(); // reloads data for each post from the db
 posts.destroy(); // all posts removed from db
 
 let postsByTitleAsc = posts.sort((a, b) => {
-    return b.title < a.title;
+    if (b.title === a.title) return 0;
+    if (b.title < a.title) return -1;
+    return 1;
 });
 
 let longPosts = posts.filter((postModel) => {

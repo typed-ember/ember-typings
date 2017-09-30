@@ -1,13 +1,22 @@
-import Collection from './collection';
+import { DbCollection, SchemaCollection } from './collection';
 
-export interface Models {
+export interface ModelRegistry {
     // string -> Model
+    // e.g. 'blog-post': typeof BlogPost
 }
 
-export type ModelNames = keyof Models;
-
-export interface Collections {
-    // string -> Collection<Model>
+export interface ModelRegistryPlural {
+    // string -> Model
+    // e.g. blogPosts: typeof BlogPost
 }
 
-export type CollectionNames = keyof Collections;
+export type ModelNames = keyof ModelRegistry;
+export type ModelNamesPlural = keyof ModelRegistryPlural;
+
+export type DbCollections = {
+    [P in keyof ModelRegistryPlural]: DbCollection<ModelRegistryPlural[P]>
+};
+
+export type SchemaCollections = {
+    [P in keyof ModelRegistryPlural]: SchemaCollection<ModelRegistryPlural[P]>
+};
