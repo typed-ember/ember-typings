@@ -17,6 +17,7 @@
         "test/factory.ts",
         "test/fixture.ts",
         "test/model.ts",
+        "test/schema.ts",
         "test/scenario.ts",
         "test/serializer.ts",
         "test/server.ts"
