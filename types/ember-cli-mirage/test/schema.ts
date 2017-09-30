@@ -1,5 +1,6 @@
-import { Model, hasMany, belongsTo } from 'ember-cli-mirage';
+import {Model, hasMany, belongsTo, Schema} from 'ember-cli-mirage';
 
+declare const schema: Schema;
 
 let posts = schema.blogPosts.all();
 posts.modelName; // "blog-post"

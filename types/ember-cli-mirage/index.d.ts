@@ -17,6 +17,10 @@ interface MirageFactory extends EmberObject {}
 export const Response: MirageResponse;
 export const Factory: MirageFactory;
 
+export interface Schema {
+    db: Database;
+}
+
 /**
  * Your Mirage server has a database which you can interact with in your route
  * handlers. You retrieve or modify data from the database, then return what you
@@ -26,15 +30,14 @@ export interface Database extends Registry.Collections {
     createCollection(name: string): void;
 }
 
-export interface Request<QP> {
+/**
+ * Actually a pretender.js FakeRequest, but there are no typings for it,
+ * so the real XHR is the closest thing
+ */
+export interface FakeRequest<QP> extends XMLHttpRequest {
     requestBody: string;
     params: QP;
 }
-
-export type RouteHandler<QP = any, T = any> = (
-    db: Database,
-    request: Request<QP>
-) => T;
 
 type ResponseCode = number | string;
 type Shorthand =
@@ -42,18 +45,30 @@ type Shorthand =
     | Registry.CollectionNames
     | Array<Registry.ModelNames | Registry.CollectionNames>;
 
+interface FunctionRouteHandler<QP> {
+    request: FakeRequest<QP>;
+    schema: Schema,
+    normalizedRequestAttrs(): any;
+}
+
+export type RouteHandlerCallback<QP = any, T = any> = (
+    this: FunctionRouteHandler<QP>,
+    schema: Schema,
+    request: FakeRequest<QP>
+) => T;
+
 interface RouteHandler {
+    // callbacks
+    <QP = void, T = void>(
+        route: string,
+        handler: RouteHandlerCallback<QP, T>,
+        responseCode?: ResponseCode
+    ): void;
+
     // shorthands
     (route: string): void;
     (route: string, object: object, responseCode?: ResponseCode): void;
     (route: string, shorthand: Shorthand, responseCode?: ResponseCode): void;
-    
-    // callbacks
-    <QP = void, T = void>(
-        route: string,
-        handler: RouteHandler<QP, T>,
-        responseCode?: ResponseCode
-    ): void;
 }
 
 export interface Server {
