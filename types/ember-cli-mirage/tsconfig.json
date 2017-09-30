@@ -11,5 +11,14 @@
         "noEmit": true,
         "forceConsistentCasingInFileNames": true
     },
-    "files": ["index.d.ts", "ember-cli-qunit-tests.ts"]
+    "files": [
+        "index.d.ts",
+        "test/config.ts",
+        "test/factory.ts",
+        "test/fixture.ts",
+        "test/model.ts",
+        "test/scenario.ts",
+        "test/serializer.ts",
+        "test/server.ts"
+    ]
 }
