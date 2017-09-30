@@ -9,6 +9,13 @@ export interface Collection<T> {
     find(ids: (number | string)[]): T[];
 
     /**
+     * Returns the first model from `collection` that matches the
+     * key-value pairs in the `query` object. Note that a string
+     * comparison is used. `query` is a POJO.
+     */
+    findBy(query: object): T;
+
+    /**
      * Finds the first record matching the provided query in `Collection`, or
      * creates a new record using a merge of the query and optional
      * `attributesForCreate`.

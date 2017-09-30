@@ -7,6 +7,8 @@ posts.modelName; // "blog-post"
 
 let posts2 = schema.blogPosts.find([1, 2, 4]);
 let posts3 = schema.blogPosts.where({published: true});
+let post = schema.blogPosts.findBy({ 'author': 'Link' });
+let post2 = schema.blogPosts.find(1);
 
 posts.update('published', true); // the db was updated for all posts
 posts.save(); // all posts saved to db
