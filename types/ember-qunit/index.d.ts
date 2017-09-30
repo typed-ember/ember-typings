@@ -4,17 +4,11 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
-/// <reference types="jquery" />
-
 declare module 'ember-qunit' {
     import Ember from 'ember';
-    import { TestContext } from 'qunit';
+    import { ModuleCallbacks } from "ember-test-helpers";
 
-    interface ModuleCallbacks extends Hooks {
-        integration?: boolean;
-        unit?: boolean;
-        needs?: string[];
-
+    interface QUnitModuleCallbacks extends ModuleCallbacks, Hooks {
         beforeSetup?(assert: Assert): void;
         setup?(assert: Assert): void;
         teardown?(assert: Assert): void;
@@ -27,8 +21,8 @@ declare module 'ember-qunit' {
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleFor(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleFor(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleFor(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleFor(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      *
@@ -36,8 +30,8 @@ declare module 'ember-qunit' {
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleForComponent(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleForComponent(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleForComponent(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleForComponent(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      *
@@ -45,8 +39,8 @@ declare module 'ember-qunit' {
      * @param {string} description The description of the module
      * @param {ModuleCallbacks} callbacks
      */
-    export function moduleForModel(fullName: string, description: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
-    export function moduleForModel(fullName: string, callbacks?: ModuleCallbacks & ThisType<TestContext>): void;
+    export function moduleForModel(fullName: string, description: string, callbacks?: QUnitModuleCallbacks): void;
+    export function moduleForModel(fullName: string, callbacks?: QUnitModuleCallbacks): void;
 
     /**
      * Sets a Resolver globally which will be used to look up objects from each test's container.
@@ -59,30 +53,7 @@ declare module 'ember-qunit' {
 }
 
 declare module 'qunit' {
-    import Ember from 'ember';
-    import { TemplateFactory } from 'htmlbars-inline-precompile';
-
-    export interface TestContext {
-        get(key: string): any;
-        getProperties<K extends string>(...keys: K[]): Pick<any, K>;
-        set<V>(key: string, value: V): V;
-        setProperties<P extends { [key: string]: any }>(hash: P): P;
-        on(actionName: string, handler: (this: TestContext, ...args: any[]) => any): void;
-        send(actionName: string): void;
-        $: JQueryStatic;
-        subject(options?: {}): any;
-        render(template?: string | string[] | TemplateFactory): void;
-        clearRender(): void;
-        registry: Ember.Registry;
-        container: Ember.Container;
-        dispatcher: Ember.EventDispatcher;
-        register(fullName: string, factory: any): void;
-        factory(fullName: string): any;
-        inject: {
-            controller(name: string, options?: { as: string }): any;
-            service(name: string, options?: { as: string }): any;
-        };
-    }
+    import { TestContext } from "ember-test-helpers";
 
     export const module: typeof QUnit.module;
 

@@ -7,19 +7,7 @@
 declare module 'ember-mocha' {
     import Ember from 'ember';
     import { it as mochaIt, SuiteCallbackContext } from 'mocha';
-
-    interface ModuleCallbacks {
-        integration?: boolean;
-        unit?: boolean;
-        needs?: string[];
-
-        beforeSetup?(): void;
-        setup?(): void;
-        teardown?(): void;
-        afterTeardown?(): void;
-
-        [key: string]: any;
-    }
+    import { ModuleCallbacks } from "ember-test-helpers";
 
     interface ContextDefinitionFunction {
         (name: string, description: string, callbacks: ModuleCallbacks, tests: (this: SuiteCallbackContext) => void): void;
@@ -79,8 +67,7 @@ declare module 'ember-mocha' {
 }
 
 declare module 'mocha' {
-    import Ember from 'ember';
-    import { TemplateFactory } from 'htmlbars-inline-precompile';
+    import { TestContext } from "ember-test-helpers";
 
     interface Runnable {
         title: string;
@@ -106,38 +93,19 @@ declare module 'mocha' {
         fullTitle(): string;
     }
 
-    interface TestContext {
+    interface MochaTestContext extends TestContext {
         skip(): this;
         timeout(ms: number): this;
-        get(key: string): any;
-        getProperties<K extends string>(...keys: K[]): Pick<any, K>;
-        set<V>(key: string, value: V): V;
-        setProperties<P extends { [key: string]: any }>(hash: P): P;
-        on(actionName: string, handler: (this: TestContext, ...args: any[]) => any): void;
-        send(actionName: string): void;
-        $: JQueryStatic;
-        subject(options?: {}): any;
-        render(template?: string | string[] | TemplateFactory): void;
-        clearRender(): void;
-        registry: Ember.Registry;
-        container: Ember.Container;
-        dispatcher: Ember.EventDispatcher;
-        register(fullName: string, factory: any): void;
-        factory(fullName: string): any;
-        inject: {
-            controller(name: string, options?: { as: string }): any;
-            service(name: string, options?: { as: string }): any;
-        };
     }
 
-    interface BeforeAndAfterContext extends TestContext {
+    interface BeforeAndAfterContext extends MochaTestContext {
         currentTest: Test;
     }
 
     interface TestDefinition {
-        (expectation: string, callback?: (this: TestContext, done: MochaDone) => any): Test;
-        only(expectation: string, callback?: (this: TestContext, done: MochaDone) => any): Test;
-        skip(expectation: string, callback?: (this: TestContext, done: MochaDone) => any): void;
+        (expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
+        only(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
+        skip(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): void;
         timeout(ms: number): void;
         state: "failed" | "passed";
     }
