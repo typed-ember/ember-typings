@@ -133,7 +133,7 @@ const people = Ember.A([
 ]);
 people.invoke('sayHello');
 
-const arr = Ember.A([Ember.Object.create(), Ember.Object.create()]);
+const arr = Ember.A([Person2.create(), Person2.create()]);
 arr.setEach('name', 'unknown');
 arr.getEach('name');
 

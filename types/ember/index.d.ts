@@ -809,14 +809,14 @@ export namespace Ember {
         /**
          * Alias for `mapBy`
          */
-        getEach(key: string): any[];
+        getEach<K extends keyof T>(key: K): GlobalArray<T[K]>;
         /**
          * Sets the value on the named property for each member. This is more
          * ergonomic than using other methods defined on this helper. If the object
          * implements Ember.Observable, the value will be changed to `set(),` otherwise
          * it will be set directly. `null` objects are skipped.
          */
-        setEach(key: string, value: any): any;
+        setEach<K extends keyof T>(key: K, value: T[K]): T[K];
         /**
          * Maps all of the items in the enumeration to another value, returning
          * a new array. This method corresponds to `map()` defined in JavaScript 1.6.
@@ -826,7 +826,7 @@ export namespace Ember {
          * Similar to map, this specialized function returns the value of the named
          * property on all items in the enumeration.
          */
-        mapBy(key: string): any[];
+        mapBy<K extends keyof T>(key: K): GlobalArray<T[K]>;
         /**
          * Returns an array with all of the items in the enumeration that the passed
          * function returns true for. This method corresponds to `filter()` defined in
@@ -844,13 +844,13 @@ export namespace Ember {
          * can pass an optional second argument with the target value. Otherwise
          * this will match any property that evaluates to `true`.
          */
-        filterBy(key: string, value?: any): any[];
+        filterBy<K extends keyof T>(key: K, value?: T[K]): T[];
         /**
          * Returns an array with the items that do not have truthy values for
          * key.  You can pass an optional second argument with the target value.  Otherwise
          * this will match any property that evaluates to false.
          */
-        rejectBy(key: string, value?: string): any[];
+        rejectBy<K extends keyof T>(key: K, value?: T[K]): T[];
         /**
          * Returns the first item in the array for which the callback returns true.
          * This method works similar to the `filter()` method defined in JavaScript 1.6
@@ -862,7 +862,7 @@ export namespace Ember {
          * can pass an optional second argument with the target value. Otherwise
          * this will match any property that evaluates to `true`.
          */
-        findBy(key: string, value: string): T | undefined;
+        findBy<K extends keyof T>(key: K, value: T[K]): T | undefined;
         /**
          * Returns `true` if the passed function returns true for every item in the
          * enumeration. This corresponds with the `every()` method in JavaScript 1.6.
@@ -873,7 +873,7 @@ export namespace Ember {
          * argument for all items in the enumerable. This method is often simpler/faster
          * than using a callback.
          */
-        isEvery(key: string, value: boolean): boolean;
+        isEvery(key: keyof T, value?: boolean): boolean;
         /**
          * Returns `true` if the passed function returns true for any item in the
          * enumeration.
@@ -884,7 +884,7 @@ export namespace Ember {
          * argument for any item in the enumerable. This method is often simpler/faster
          * than using a callback.
          */
-        isAny(key: string, value?: boolean): boolean;
+        isAny(key: keyof T, value?: boolean): boolean;
         /**
          * This will combine the values of the enumerator into a single value. It
          * is a useful way to collect a summary value from an enumeration. This
@@ -922,7 +922,7 @@ export namespace Ember {
          * Converts the enumerable into an array and sorts by the keys
          * specified in the argument.
          */
-        sortBy(property: string): Enumerable<T>;
+        sortBy(...property: GlobalArray<keyof T>): T[];
         /**
          * Returns a new enumerable that contains only items containing a unique property value.
          * The default implementation returns an array regardless of the receiver type.
