@@ -229,5 +229,19 @@ declare namespace Mirage {
     const Factory: MirageFactory;
 }
 
-export const faker: typeof fakerStatic;
+interface MirageFakerExtras {
+    list: {
+        random<T>(first: T, ...rest: T[]): () => T ;
+        random<T>(...args: T[]): () => T | undefined;
+        cycle<T>(first: T, ...rest: T[]): () => T;
+        cycle<T>(...args: T[]): () => T | undefined;
+    },
+    random: {
+        number: {
+            range(min: number, max: number): () => number;
+        }
+    }
+}
+
+export const faker: typeof fakerStatic & MirageFakerExtras;
 export default Mirage;

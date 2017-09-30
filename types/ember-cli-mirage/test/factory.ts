@@ -20,8 +20,11 @@ const AuthorFactory = Factory.extend({
     },
     age() {
         // list method added by Mirage
-        return faker.list.random(18, 20, 28, 32, 45, 60)();
-    },
+        let random: number = faker.list.random(18, 20, 28, 32, 45, 60)();
+        let num: number = faker.random.number();
+        let range: number = faker.random.number.range(20, 30)();
+        return range;
+    }
 });
 
 // mirage/factories/contact.js
