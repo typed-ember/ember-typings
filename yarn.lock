@@ -6,6 +6,10 @@
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.0.4.tgz#fe86315d9a66827feeb16f73bc954688ec950e18"
 
+"@types/faker@^4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@types/faker/-/faker-4.1.1.tgz#989666efde54c07b7f960a552b5fceb5d5e570e0"
+
 "@types/handlebars@^4.0.35":
   version "4.0.36"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.36.tgz#ff57c77fa1ab6713bb446534ddc4d979707a3a79"

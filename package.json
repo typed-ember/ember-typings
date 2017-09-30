@@ -23,6 +23,7 @@
     "types-publisher": "Microsoft/types-publisher#production"
   },
   "dependencies": {
+    "@types/faker": "^4.1.1",
     "@types/handlebars": "^4.0.35",
     "@types/jquery": "^3.2.11",
     "@types/qunit": "^2.0.31",

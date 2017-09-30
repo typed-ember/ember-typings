@@ -5,6 +5,7 @@
 
 import Ember from 'ember';
 import * as Registry from './registry';
+import fakerStatic = require('faker');
 
 type EmberObject = Ember.Object;
 
@@ -228,50 +229,5 @@ declare namespace Mirage {
     const Factory: MirageFactory;
 }
 
-export namespace faker {
-    const address: {
-        city(): string;
-        countryCode(): string;
-        latitude(): string;
-        longitude(): string;
-        state(): string;
-        streetAddress(): string;
-        zipCode(): string;
-    };
-
-    const commerce: {
-        price(): number;
-        product(): string;
-        productName(): string;
-        productAdjective(): string;
-        productMaterial(): string;
-    };
-
-    const hacker: {
-        noun(): string;
-    };
-
-    const internet: {
-        email(): string;
-        password(): string;
-    };
-
-    const lorem: {
-        sentence(): string;
-    };
-
-    const name: {
-        firstName(): string;
-        lastName(): string;
-    };
-
-    const phone: {
-        phoneNumber(): string;
-    };
-
-    const random: {
-        number(): number;
-    };
-}
-
+export const faker: typeof fakerStatic;
 export default Mirage;
