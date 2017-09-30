@@ -47,6 +47,17 @@ export interface Server {
     namespace: string;
 
     /**
+     * Set the timing parameter of the response for this particular route.
+     * Default is a 400ms delay during development and 0 delay in testing (so your tests run fast).
+     */
+    timing: number;
+
+    /**
+     * Set to log all requests
+     */
+    logging: boolean;
+
+    /**
      * Generates a single model of type `type`, inserts it into the database
      * (giving it an id), and returns the data that was added. You can override
      * the attributes from the factory definition with a hash passed in as the
