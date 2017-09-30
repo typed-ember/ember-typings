@@ -3,7 +3,7 @@ import Object from '@ember/object';
 import Array from '@ember/array';
 import Ember from 'ember'; // currently needed for Transition
 
-interface Post extends Object {}
+interface Post extends Ember.Object {}
 
 interface Posts extends Array<Post> {}
 
@@ -40,8 +40,7 @@ Route.extend({
 
 Ember.Route.extend({
   model() {
-    let post = this.modelFor('post');
-    return post.get('comments');
+    return this.modelFor('post');
   },
 });
 
@@ -81,12 +80,8 @@ Route.extend({
 });
 
 Route.extend({
-  model() {
-    return this.store.findAll('photo');
-  },
-
   setupController(controller: Ember.Controller, model: {}) {
     this._super(controller, model);
-    // this.controllerFor('application').set('showingPhotos', true);
+    this.controllerFor('application').set('model', model);
   },
 });

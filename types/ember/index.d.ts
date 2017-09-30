@@ -1423,8 +1423,8 @@ export namespace Ember {
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
     */
     class Route extends Object.extend(ActionHandler, Evented) {
-      // methods
-      /**
+        // methods
+        /**
         This hook is called after this route's model has resolved.
         It follows identical async/promise semantics to `beforeModel`
         but is provided the route's resolved model in addition to
@@ -1434,7 +1434,7 @@ export namespace Ember {
         */
         afterModel(resolvedModel: any, transition: Transition): Rsvp.Promise<any>;
 
-      /**
+        /**
         This hook is the first of the route entry validation hooks
         called when an attempt is made to transition into a route
         or one of its children. It is called before `model` and
@@ -1463,10 +1463,15 @@ export namespace Ember {
          */
         controllerFor(name: string): Controller;
 
-      /**
-        A hook you can implement to convert the URL into the model for
-        this route.
-        */
+        /**
+         * Disconnects a view that has been rendered into an outlet.
+         */
+        disconnectOutlet(options: string | {outlet?: string, parentView?: string}): void;
+
+        /**
+         * A hook you can implement to convert the URL into the model for
+         * this route.
+         */
         model(params: {}, transition: Transition): any | Rsvp.Promise<any>;
 
         /**
