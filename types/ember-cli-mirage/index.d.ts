@@ -42,6 +42,20 @@ type Shorthand =
     | Registry.CollectionNames
     | Array<Registry.ModelNames | Registry.CollectionNames>;
 
+interface RouteHandler {
+    // shorthands
+    (route: string): void;
+    (route: string, object: object, responseCode?: ResponseCode): void;
+    (route: string, shorthand: Shorthand, responseCode?: ResponseCode): void;
+    
+    // callbacks
+    <QP = void, T = void>(
+        route: string,
+        handler: RouteHandler<QP, T>,
+        responseCode?: ResponseCode
+    ): void;
+}
+
 export interface Server {
     /** Set the base namespace used for all routes defined with get, post, put or del. */
     namespace: string;
@@ -80,46 +94,11 @@ export interface Server {
         attrs?: Partial<Registry.Models[N]>
     ): Registry.Models[N][];
 
-    // Route handlers
-    get(route: string): void;
-    get(route: string, object: object, responseCode?: ResponseCode): void;
-    get(route: string, shorthand: Shorthand, responseCode?: ResponseCode): void;
-    get<QP = void, T = void>(
-        route: string,
-        handler: RouteHandler<QP, T>,
-        responseCode?: ResponseCode
-    ): void;
-
-    post(route: string): void;
-    post(route: string, object: object, responseCode?: ResponseCode): void;
-    post(
-        route: string,
-        shorthand: Shorthand,
-        responseCode?: ResponseCode
-    ): void;
-    post<QP = void, T = void>(
-        route: string,
-        handler: RouteHandler<QP, T>,
-        responseCode?: ResponseCode
-    ): void;
-
-    put(route: string): void;
-    put(route: string, object: object, responseCode?: ResponseCode): void;
-    put(route: string, shorthand: Shorthand, responseCode?: ResponseCode): void;
-    put<QP = void, T = void>(
-        route: string,
-        handler: RouteHandler<QP, T>,
-        responseCode?: ResponseCode
-    ): void;
-
-    del(route: string): void;
-    del(route: string, object: object, responseCode?: ResponseCode): void;
-    del(route: string, shorthand: Shorthand, responseCode?: ResponseCode): void;
-    del<QP = void, T = void>(
-        route: string,
-        handler: RouteHandler<QP, T>,
-        responseCode?: ResponseCode
-    ): void;
+    get: RouteHandler;
+    post: RouteHandler;
+    patch: RouteHandler;
+    put: RouteHandler;
+    del: RouteHandler;
 
     /**
      * By default, all the data files under `/fixtures` will be loaded during
