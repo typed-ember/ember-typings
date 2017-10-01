@@ -892,12 +892,30 @@ export namespace Ember {
         const String: boolean;
     }
     /**
-    The Engine class contains core functionality for both applications and engines.
-    **/
+     * The `Engine` class contains core functionality for both applications and
+     * engines.
+     */
     class Engine extends Namespace {
-      resolver: Resolver;
-      initializer(initializer: Object): any;
-      instanceInitializer(instanceInitializer: Object): any;
+        /**
+         * The goal of initializers should be to register dependencies and injections.
+         * This phase runs once. Because these initializers may load code, they are
+         * allowed to defer application readiness and advance it. If you need to access
+         * the container or store you should use an InstanceInitializer that will be run
+         * after all initializers and therefore after all code is loaded and the app is
+         * ready.
+         */
+        initializer(initializer: {}): any;
+        /**
+         * Instance initializers run after all initializers have run. Because
+         * instance initializers run after the app is fully set up. We have access
+         * to the store, container, and other items. However, these initializers run
+         * after code has loaded and are not allowed to defer readiness.
+         */
+        instanceInitializer(instanceInitializer: any): any;
+        /**
+         * Set this to provide an alternate class to `Ember.DefaultResolver`
+         */
+        resolver: Resolver;
     }
     /**
      The `EngineInstance` encapsulates all of the stateful aspects of a
