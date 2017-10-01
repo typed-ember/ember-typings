@@ -1092,8 +1092,7 @@ export namespace Ember {
     /**
     A subclass of the JavaScript Error object for use in Ember.
     **/
-    // Restore this to 'typeof Error' when https://github.com/Microsoft/TypeScript/issues/983 is resolved
-    const Error: any; // typeof Error;
+    const Error: ErrorConstructor;
     /**
     Handles delegating browser events to their corresponding Ember.Views. For example, when you click on
     a view, Ember.EventDispatcher ensures that that view's mouseDown method gets called.
