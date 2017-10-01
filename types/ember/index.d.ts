@@ -1170,6 +1170,14 @@ export namespace Ember {
     }
     const Evented: Mixin<Evented>;
     const FROZEN_ERROR: string;
+
+    /**
+     * The `Ember.Freezable` mixin implements some basic methods for marking an
+     * object as frozen. Once an object is frozen it should be read only. No changes
+     * may be made the internal state of the object.
+     * @private
+     * @deprecated Use `Object.freeze` instead.
+     */
     interface Freezable {
         freeze(): Freezable;
         isFrozen: boolean;
