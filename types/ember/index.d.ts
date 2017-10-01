@@ -77,9 +77,32 @@ type EmberClassConstructor<T> = (
     new (...args: any[]) => T
 );
 
+type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
+
+interface ComputedPropertyGet<T> {
+    get(this: any, key: string): T;
+}
+
+interface ComputedPropertySet<T> {
+    set(this: any, key: string, value: T): T;
+}
+
+type ComputedPropertyCallback<T> =
+    ComputedPropertyGetterFunction<T> |
+    ComputedPropertyGet<T> |
+    ComputedPropertySet<T> |
+    (ComputedPropertyGet<T> & ComputedPropertySet<T>);
+
 interface ActionsHash {
     [index: string]: (...params: any[]) => any;
 }
+
+interface EmberRunTimer {
+    __ember_run_timer_brand__: any;
+}
+
+type RunMethod<Target, Ret = any> = ((this: Target, ...args: any[]) => Ret) | keyof Target;
+type EmberRunQueues = "sync" | "actions" | "routerTransitions" | "render"| "afterRender" | "destroy";
 
 type ObserverMethod<Target, Sender> =
     (keyof Target) |
@@ -241,18 +264,6 @@ interface TargetActionSupport {
 }
 
 export namespace Ember {
-    /**
-    Alias for jQuery.
-    **/
-    const $: JQueryStatic;
-    /**
-    Creates an Ember.NativeArray from an Array like object. Does not modify the original object.
-    Ember.A is not needed if Ember.EXTEND_PROTOTYPES is true (the default value). However, it is
-    recommended that you use Ember.A when creating addons for ember or when you can not garentee
-    that Ember.EXTEND_PROTOTYPES will be true.
-    **/
-    function A<T>(arr?: T[]): NativeArray<T>;
-
     interface FunctionPrototypeExtensions {
         /**
          * The `property` extension of Javascript's Function prototype is available
@@ -276,6 +287,76 @@ export namespace Ember {
 
     interface ArrayPrototypeExtensions<T> extends MutableArray<T>, Observable, Copyable {}
 
+    /**
+     * Given a fullName return a factory manager.
+     */
+    interface _ContainerProxyMixin {
+        /**
+         * Returns an object that can be used to provide an owner to a
+         * manually created instance.
+         */
+        ownerInjection(): {};
+        /**
+         * Given a fullName return a corresponding instance.
+         */
+        lookup(fullName: string, options: {}): any;
+    }
+    const _ContainerProxyMixin: Mixin<_ContainerProxyMixin>;
+
+    /**
+     * RegistryProxyMixin is used to provide public access to specific
+     * registry functionality.
+     */
+    interface _RegistryProxyMixin {
+        /**
+         * Given a fullName return the corresponding factory.
+         */
+        resolveRegistration(fullName: string): Function;
+        /**
+         * Registers a factory that can be used for dependency injection (with
+         * `inject`) or for service lookup. Each factory is registered with
+         * a full name including two parts: `type:name`.
+         */
+        register(fullName: string, factory: Function, options: {}): any;
+        /**
+         * Unregister a factory.
+         */
+        unregister(fullName: string): any;
+        /**
+         * Check if a factory is registered.
+         */
+        hasRegistration(fullName: string): boolean;
+        /**
+         * Register an option for a particular factory.
+         */
+        registerOption(fullName: string, optionName: string, options: {}): any;
+        /**
+         * Return a specific registered option for a particular factory.
+         */
+        registeredOption(fullName: string, optionName: string): {};
+        /**
+         * Register options for a particular factory.
+         */
+        registerOptions(fullName: string, options: {}): any;
+        /**
+         * Return registered options for a particular factory.
+         */
+        registeredOptions(fullName: string): {};
+        /**
+         * Allow registering options for all factories of a type.
+         */
+        registerOptionsForType(type: string, options: {}): any;
+        /**
+         * Return the registered options for all factories of a type.
+         */
+        registeredOptionsForType(type: string): {};
+        /**
+         * Define a dependency injection onto a specific factory or all factories
+         * of a type.
+         */
+        inject(factoryNameOrType: string, property: string, injectionName: string): any;
+    }
+    const _RegistryProxyMixin: Mixin<_RegistryProxyMixin>;
     /**
      Ember.ActionHandler is available on some familiar classes including Ember.Route,
      Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
@@ -489,7 +570,6 @@ export namespace Ember {
     **/
     class AutoLocation extends Object {
     }
-    const BOOTED: boolean;
     /**
      * Connects the properties of two objects so that whenever the value of one property changes,
      * the other property will be changed also.
@@ -940,19 +1020,6 @@ export namespace Ember {
          */
         namespace: Application;
     }
-    namespace ENV {
-        const EXTEND_PROTOTYPES: typeof Ember.EXTEND_PROTOTYPES;
-        const LOG_BINDINGS: boolean;
-        const LOG_STACKTRACE_ON_DEPRECATION: boolean;
-        const LOG_VERSION: boolean;
-        const MODEL_FACTORY_INJECTIONS: boolean;
-        const RAISE_ON_DEPRECATION: boolean;
-    }
-    namespace EXTEND_PROTOTYPES {
-        const Array: boolean;
-        const Function: boolean;
-        const String: boolean;
-    }
     /**
      * The `Engine` class contains core functionality for both applications and
      * engines.
@@ -1201,8 +1268,6 @@ export namespace Ember {
         has(name: string): boolean;
     }
     const Evented: Mixin<Evented>;
-    const FROZEN_ERROR: string;
-
     /**
      * The `Ember.Freezable` mixin implements some basic methods for marking an
      * object as frozen. Once an object is frozen it should be read only. No changes
@@ -1215,26 +1280,6 @@ export namespace Ember {
         isFrozen: boolean;
     }
     const Freezable: Mixin<Freezable>;
-    const GUID_KEY: string;
-    namespace Handlebars {
-        function compile(string: string): Function;
-        function compile(environment: any, options?: any, context?: any, asObject?: any): any;
-        function precompile(string: string, options: any): void;
-        class Compiler {}
-        class JavaScriptCompiler {}
-        function registerPartial(name: string, str: any): void;
-        function K(): any;
-        function createFrame(objec: any): any;
-        function Exception(message: string): void;
-        class SafeString {
-            constructor(str: string);
-            static toString(): string;
-        }
-        function parse(string: string): any;
-        function print(ast: any): void;
-        const logger: typeof Ember.Logger;
-        function log(level: string, str: string): void;
-    }
     /**
      * `Ember.HashLocation` implements the location API using the browser's
      * hash. At present, it relies on a `hashchange` event existing in the
@@ -1249,22 +1294,6 @@ export namespace Ember {
      * @protected
      */
     class HistoryLocation extends Object {
-    }
-    const IS_BINDING: RegExp;
-    /**
-     * Namespace for injection helper methods.
-     */
-    namespace inject {
-        /**
-         * Creates a property that lazily looks up another controller in the container.
-         * Can only be used when defining another controller.
-         */
-        function controller<T extends Controller>(name?: string): ComputedProperty<T>;
-        /**
-         * Creates a property that lazily looks up a service in the container. There
-         * are no restrictions as to what objects a service can be injected into.
-         */
-        function service<T extends Service>(name?: string): ComputedProperty<T>;
     }
     /**
      * Ember Helpers are functions that can compute values, and are used in templates.
@@ -1299,10 +1328,6 @@ export namespace Ember {
         subscribe(pattern: string, object: any): void;
         unsubscribe(subscriber: any): void;
     };
-    /**
-     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
-     */
-    const K: () => any;
     /**
      * `Ember.LinkComponent` renders an element whose `click` event triggers a
      * transition of the application's instance of `Ember.Router` to
@@ -1340,9 +1365,6 @@ export namespace Ember {
          */
         replace: boolean;
     }
-    const LOG_BINDINGS: boolean;
-    const LOG_STACKTRACE_ON_DEPRECATION: boolean;
-    const LOG_VERSION: boolean;
     /**
      * Ember.Location returns an instance of the correct implementation of
      * the `location` API.
@@ -1511,7 +1533,6 @@ export namespace Ember {
         removeObjects(objects: Enumerable<T>): this;
     }
     const MutableEnumerable: Mixin<MutableEnumberable<any>>;
-    const NAME_KEY: string;
     /**
      * A Namespace is an object usually used to contain other objects or methods
      * such as an application or framework. Create a namespace anytime you want
@@ -1548,7 +1569,6 @@ export namespace Ember {
      */
     class NoneLocation extends Object {
     }
-    const ORDER_DEFINITION: string[];
     /**
      * `Ember.Object` is the main base class for all Ember objects. It is a subclass
      * of `Ember.CoreObject` with the `Ember.Observable` mixin applied. For details,
@@ -1688,13 +1708,6 @@ export namespace Ember {
     }
     class Resolver extends Ember.Object {
     }
-
-    // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
-    const RSVP: typeof Rsvp;
-    namespace RSVP {
-        type Promise<T> = Rsvp.Promise<T>;
-    }
-
     /**
       The `Ember.Route` class is used to define individual routes. Refer to
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
@@ -2007,44 +2020,6 @@ export namespace Ember {
     }
     class Service extends Object {
     }
-    const STRINGS: boolean;
-    namespace String {
-        function camelize(str: string): string;
-        function capitalize(str: string): string;
-        function classify(str: string): string;
-        function dasherize(str: string): string;
-        function decamelize(str: string): string;
-        function fmt(...args: string[]): string;
-        function htmlSafe(str: string): void; // TODO: @returns Handlebars.SafeStringStatic;
-        function isHTMLSafe(str: string): boolean;
-        function loc(...args: string[]): string;
-        function underscore(str: string): string;
-        function w(str: string): string[];
-    }
-    const TEMPLATES: {};
-    namespace Test {
-        class Adapter extends Ember.Object {
-            constructor();
-        }
-        class Promise<T> extends Rsvp.Promise<T> {
-            constructor();
-        }
-        function oninjectHelpers(callback: Function): void;
-        function promise<T>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T>;
-        function unregisterHelper(name: string): void;
-        function registerHelper(name: string, helperMethod: Function): void;
-        function registerAsyncHelper(name: string, helperMethod: Function): void;
-
-        const adapter: Object;
-        const QUnitAdapter: Object;
-
-        function registerWaiter(callback: Function): void;
-        function registerWaiter(context: any, callback: Function): void;
-        function unregisterWaiter(callback: Function): void;
-        function unregisterWaiter(context: any, callback: Function): void;
-
-        function resolve<T>(result: T): Ember.Test.Promise<T>;
-    }
     /**
      * The internal class used to create textarea element when the `{{textarea}}`
      * helper is used.
@@ -2115,57 +2090,102 @@ export namespace Ember {
         */
         retry(): Transition;
     }
-    const VERSION: string;
     interface ViewTargetActionSupport {
         target: any;
         actionContext: any;
     }
     const ViewTargetActionSupport: Mixin<ViewTargetActionSupport>;
     const ViewUtils: {}; // TODO: define interface
-    function addListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string,
-        once?: boolean
-    ): void;
 
-    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
-    function aliasMethod(methodName: string): ComputedProperty<any>;
-    function assert(desc: string, test: boolean): void;
-    function beginPropertyChanges(): void;
+    // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
+    const RSVP: typeof Rsvp;
+    namespace RSVP {
+        type Promise<T> = Rsvp.Promise<T>;
+    }
 
+    namespace Test {
+        class Adapter extends Ember.Object {
+            constructor();
+        }
+        class Promise<T> extends Rsvp.Promise<T> {
+            constructor();
+        }
+        function oninjectHelpers(callback: Function): void;
+        function promise<T>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T>;
+        function unregisterHelper(name: string): void;
+        function registerHelper(name: string, helperMethod: Function): void;
+        function registerAsyncHelper(name: string, helperMethod: Function): void;
+
+        const adapter: Object;
+        const QUnitAdapter: Object;
+
+        function registerWaiter(callback: Function): void;
+        function registerWaiter(context: any, callback: Function): void;
+        function unregisterWaiter(callback: Function): void;
+        function unregisterWaiter(context: any, callback: Function): void;
+
+        function resolve<T>(result: T): Ember.Test.Promise<T>;
+    }
     /**
-     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     * Namespace for injection helper methods.
      */
-    function bind(obj: any, to: string, from: string): Binding;
-    function canInvoke(obj: any, methodName: string): boolean;
-    function changeProperties(callback: Function, binding?: any): void;
-    function compare(v: any, w: any): number;
-    type compareFunc = (itemA: any, itemB: any) => number;
-    interface DeprecateOptions {
-        id: string;
-        until: string;
+    namespace inject {
+        /**
+         * Creates a property that lazily looks up another controller in the container.
+         * Can only be used when defining another controller.
+         */
+        function controller<T extends Controller>(name?: string): ComputedProperty<T>;
+        /**
+         * Creates a property that lazily looks up a service in the container. There
+         * are no restrictions as to what objects a service can be injected into.
+         */
+        function service<T extends Service>(name?: string): ComputedProperty<T>;
     }
-
-    type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
-
-    interface ComputedPropertyGet<T> {
-        get(this: any, key: string): T;
+    namespace ENV {
+        const EXTEND_PROTOTYPES: typeof Ember.EXTEND_PROTOTYPES;
+        const LOG_BINDINGS: boolean;
+        const LOG_STACKTRACE_ON_DEPRECATION: boolean;
+        const LOG_VERSION: boolean;
+        const MODEL_FACTORY_INJECTIONS: boolean;
+        const RAISE_ON_DEPRECATION: boolean;
     }
-
-    interface ComputedPropertySet<T> {
-        set(this: any, key: string, value: T): T;
+    namespace EXTEND_PROTOTYPES {
+        const Array: boolean;
+        const Function: boolean;
+        const String: boolean;
     }
-
-    type ComputedPropertyCallback<T> =
-        ComputedPropertyGetterFunction<T> |
-        ComputedPropertyGet<T> |
-        ComputedPropertySet<T> |
-        (ComputedPropertyGet<T> & ComputedPropertySet<T>);
-
-    type ComputedPropertyReturn<T> = ComputedProperty<T>;
-
+    namespace Handlebars {
+        function compile(string: string): Function;
+        function compile(environment: any, options?: any, context?: any, asObject?: any): any;
+        function precompile(string: string, options: any): void;
+        class Compiler {}
+        class JavaScriptCompiler {}
+        function registerPartial(name: string, str: any): void;
+        function K(): any;
+        function createFrame(objec: any): any;
+        function Exception(message: string): void;
+        class SafeString {
+            constructor(str: string);
+            static toString(): string;
+        }
+        function parse(string: string): any;
+        function print(ast: any): void;
+        const logger: typeof Ember.Logger;
+        function log(level: string, str: string): void;
+    }
+    namespace String {
+        function camelize(str: string): string;
+        function capitalize(str: string): string;
+        function classify(str: string): string;
+        function dasherize(str: string): string;
+        function decamelize(str: string): string;
+        function fmt(...args: string[]): string;
+        function htmlSafe(str: string): void; // TODO: @returns Handlebars.SafeStringStatic;
+        function isHTMLSafe(str: string): boolean;
+        function loc(...args: string[]): string;
+        function underscore(str: string): string;
+        function w(str: string): string[];
+    }
     const computed: {
         <T>(cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
         <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
@@ -2182,7 +2202,7 @@ export namespace Ember {
         bool(dependentKey: string): ComputedProperty<any>;
         collect(...dependentKeys: string[]): ComputedProperty<any>;
         defaultTo(defaultPath: string): ComputedProperty<any>;
-        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty<any>;
+        deprecatingAlias(dependentKey: string, options: { id: string; until: string; }): ComputedProperty<any>;
         empty(dependentKey: string): ComputedProperty<any>;
         equal(dependentKey: string, value: any): ComputedProperty<any>;
         filter(
@@ -2210,109 +2230,12 @@ export namespace Ember {
         readOnly(dependentString: string): ComputedProperty<any>;
         reads(dependentKey: string): ComputedProperty<any>;
         setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any>;
-        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty<any>;
+        sort(itemsKey: string, sortDefinition: string | ((itemA: any, itemB: any) => number)): ComputedProperty<any>;
         sum(dependentKey: string): ComputedProperty<any>;
         union(...args: string[]): ComputedProperty<any>;
         uniq(...args: string[]): ComputedProperty<any>;
         uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
     };
-    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
-    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
-    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
-    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
-
-    function controllerFor(
-        container: Container,
-        controllerName: string,
-        lookupOptions?: {}
-    ): Controller;
-    function copy(obj: any, deep: boolean): any;
-    /**
-    Creates an instance of the CoreObject class.
-    @param arguments A hash containing values with which to initialize the newly instantiated object.
-    **/
-    function create(arguments?: {}): CoreObject;
-    function debug(message: string): void;
-    function defineProperty(obj: any, keyName: string, desc: {}): void;
-    function deprecate(message: string, test?: boolean): void;
-    function deprecateFunc(message: string, func: Function): Function;
-    function destroy(obj: any): void;
-    function endPropertyChanges(): void;
-    function expandProperties(pattern: string, callback: Function): void;
-    function finishChains(obj: any): void;
-    function generateController(
-        container: Container,
-        controllerName: string,
-        context: any
-    ): Controller;
-    function generateGuid(obj: any, prefix?: string): string;
-    function getEngineParent(engine: EngineInstance): EngineInstance;
-    function guidFor(obj: any): string;
-    function handleErrors(func: Function, context: any): any;
-    function hasListeners(context: any, name: string): boolean;
-    function hasOwnProperty(prop: string): boolean;
-    function immediateObserver(func: Function, ...propertyNames: any[]): Function;
-    function inspect(obj: any): string;
-    function instrument(name: string, payload: any, callback: Function, binding: any): void;
-    function isArray(obj: any): boolean;
-    function isBlank(obj: any): boolean;
-    function isEmpty(obj: any): boolean;
-    function isEqual(a: any, b: any): boolean;
-    function isGlobalPath(path: string): boolean;
-    const isNamespace: boolean;
-    function isNone(obj: any): obj is null | undefined;
-    function isPresent(obj: any): boolean;
-    function isPrototypeOf(obj: {}): boolean;
-    function isWatching(obj: any, key: string): boolean;
-    function keys(obj: any): any[];
-    function listenersDiff(obj: any, eventName: string, otherActions: any[]): any[];
-    function listenersFor(obj: any, eventName: string): any[];
-    function listenersUnion(obj: any, eventName: string, otherActions: any[]): void;
-    const lookup: {}; // TODO: define interface
-    function makeArray(obj: any): any[];
-    function merge(original: any, updates: any): any;
-    function meta(obj: any): {};
-    function mixin(obj: any, ...args: any[]): any;
-    function observer(...args: any[]): Function;
-    function observersFor(obj: any, path: string): any[];
-    function on(eventNames: string, func: Function): Function;
-    function onLoad(name: string, callback: Function): void;
-    const onError: Error;
-    function onerror(error: any): void;
-    function overrideChains(obj: any, keyName: string, m: any): boolean;
-    const platform: {
-        defineProperty: boolean;
-        hasPropertyAccessors: boolean;
-    };
-    function propertyDidChange(obj: any, keyName: string): void;
-    function propertyIsEnumerable(prop: string): boolean;
-    function propertyWillChange(obj: any, keyName: string): void;
-    function removeChainWatcher(obj: any, keyName: string, node: any): void;
-    function removeListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string
-    ): void;
-    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
-
-    /**
-     * @deprecated Ember.required is deprecated as its behavior is inconsistent and unreliable
-     */
-    function required(): ComputedProperty<any>;
-    function reset(): void;
-    function rewatch(obj: any): void;
-
-    type RunMethod<Target, Ret = any> = ((this: Target, ...args: any[]) => Ret) | keyof Target;
-    type EmberRunQueues = "sync" | "actions" | "routerTransitions" | "render"| "afterRender" | "destroy";
-
-    interface EmberRunTimer {
-        __ember_run_timer_brand__: any;
-    }
-
     const run: {
         /**
          * Runs the passed target and method inside of a RunLoop, ensuring any
@@ -2420,6 +2343,147 @@ export namespace Ember {
 
         queues: EmberRunQueues[];
     };
+
+    /**
+     Alias for jQuery.
+     **/
+    const $: JQueryStatic;
+    const BOOTED: boolean;
+    const FROZEN_ERROR: string;
+
+    const GUID_KEY: string;
+    const IS_BINDING: RegExp;
+    /**
+     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
+     */
+    const K: () => any;
+    const LOG_BINDINGS: boolean;
+    const LOG_STACKTRACE_ON_DEPRECATION: boolean;
+    const LOG_VERSION: boolean;
+    const NAME_KEY: string;
+    const ORDER_DEFINITION: string[];
+    const STRINGS: boolean;
+    const TEMPLATES: {};
+    const VERSION: string;
+
+    /**
+     Creates an Ember.NativeArray from an Array like object. Does not modify the original object.
+     Ember.A is not needed if Ember.EXTEND_PROTOTYPES is true (the default value). However, it is
+     recommended that you use Ember.A when creating addons for ember or when you can not garentee
+     that Ember.EXTEND_PROTOTYPES will be true.
+     **/
+    function A<T>(arr?: T[]): NativeArray<T>;
+
+    function addListener(
+        obj: any,
+        eventName: string,
+        target: Function | any,
+        method: Function | string,
+        once?: boolean
+    ): void;
+
+    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
+    function aliasMethod(methodName: string): ComputedProperty<any>;
+    function assert(desc: string, test: boolean): void;
+    function beginPropertyChanges(): void;
+
+    /**
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     */
+    function bind(obj: any, to: string, from: string): Binding;
+    function canInvoke(obj: any, methodName: string): boolean;
+    function changeProperties(callback: Function, binding?: any): void;
+    function compare(v: any, w: any): number;
+    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
+    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
+    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
+
+    function controllerFor(
+        container: Container,
+        controllerName: string,
+        lookupOptions?: {}
+    ): Controller;
+    function copy(obj: any, deep: boolean): any;
+    /**
+    Creates an instance of the CoreObject class.
+    @param arguments A hash containing values with which to initialize the newly instantiated object.
+    **/
+    function create(arguments?: {}): CoreObject;
+    function debug(message: string): void;
+    function defineProperty(obj: any, keyName: string, desc: {}): void;
+    function deprecate(message: string, test?: boolean): void;
+    function deprecateFunc(message: string, func: Function): Function;
+    function destroy(obj: any): void;
+    function endPropertyChanges(): void;
+    function expandProperties(pattern: string, callback: Function): void;
+    function finishChains(obj: any): void;
+    function generateController(
+        container: Container,
+        controllerName: string,
+        context: any
+    ): Controller;
+    function generateGuid(obj: any, prefix?: string): string;
+    function getEngineParent(engine: EngineInstance): EngineInstance;
+    function guidFor(obj: any): string;
+    function handleErrors(func: Function, context: any): any;
+    function hasListeners(context: any, name: string): boolean;
+    function hasOwnProperty(prop: string): boolean;
+    function immediateObserver(func: Function, ...propertyNames: any[]): Function;
+    function inspect(obj: any): string;
+    function instrument(name: string, payload: any, callback: Function, binding: any): void;
+    function isArray(obj: any): boolean;
+    function isBlank(obj: any): boolean;
+    function isEmpty(obj: any): boolean;
+    function isEqual(a: any, b: any): boolean;
+    function isGlobalPath(path: string): boolean;
+    const isNamespace: boolean;
+    function isNone(obj: any): obj is null | undefined;
+    function isPresent(obj: any): boolean;
+    function isPrototypeOf(obj: {}): boolean;
+    function isWatching(obj: any, key: string): boolean;
+    function keys(obj: any): any[];
+    function listenersDiff(obj: any, eventName: string, otherActions: any[]): any[];
+    function listenersFor(obj: any, eventName: string): any[];
+    function listenersUnion(obj: any, eventName: string, otherActions: any[]): void;
+    const lookup: {}; // TODO: define interface
+    function makeArray(obj: any): any[];
+    function merge(original: any, updates: any): any;
+    function meta(obj: any): {};
+    function mixin(obj: any, ...args: any[]): any;
+    function observer(...args: any[]): Function;
+    function observersFor(obj: any, path: string): any[];
+    function on(eventNames: string, func: Function): Function;
+    function onLoad(name: string, callback: Function): void;
+    const onError: Error;
+    function onerror(error: any): void;
+    function overrideChains(obj: any, keyName: string, m: any): boolean;
+    const platform: {
+        defineProperty: boolean;
+        hasPropertyAccessors: boolean;
+    };
+    function propertyDidChange(obj: any, keyName: string): void;
+    function propertyIsEnumerable(prop: string): boolean;
+    function propertyWillChange(obj: any, keyName: string): void;
+    function removeChainWatcher(obj: any, keyName: string, node: any): void;
+    function removeListener(
+        obj: any,
+        eventName: string,
+        target: Function | any,
+        method: Function | string
+    ): void;
+    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
+
+    /**
+     * @deprecated Ember.required is deprecated as its behavior is inconsistent and unreliable
+     */
+    function required(): ComputedProperty<any>;
+    function reset(): void;
+    function rewatch(obj: any): void;
+
     function runInDebug(fn: Function): void;
     function runLoadHooks(name: string, object: any): void;
     function sendEvent(obj: any, eventName: string, params?: any[], actions?: any[]): boolean;
@@ -2447,76 +2511,6 @@ export namespace Ember {
     function watchPath(obj: any, keyPath: string): void;
     function watchedEvents(obj: {}): any[];
     function wrap(func: Function, superFunc: Function): Function;
-    /**
-     * Given a fullName return a factory manager.
-     */
-    interface _ContainerProxyMixin {
-        /**
-         * Returns an object that can be used to provide an owner to a
-         * manually created instance.
-         */
-        ownerInjection(): {};
-        /**
-         * Given a fullName return a corresponding instance.
-         */
-        lookup(fullName: string, options: {}): any;
-    }
-    const _ContainerProxyMixin: Mixin<_ContainerProxyMixin>;
-
-    /**
-     * RegistryProxyMixin is used to provide public access to specific
-     * registry functionality.
-     */
-    interface _RegistryProxyMixin {
-        /**
-         * Given a fullName return the corresponding factory.
-         */
-        resolveRegistration(fullName: string): Function;
-        /**
-         * Registers a factory that can be used for dependency injection (with
-         * `inject`) or for service lookup. Each factory is registered with
-         * a full name including two parts: `type:name`.
-         */
-        register(fullName: string, factory: Function, options: {}): any;
-        /**
-         * Unregister a factory.
-         */
-        unregister(fullName: string): any;
-        /**
-         * Check if a factory is registered.
-         */
-        hasRegistration(fullName: string): boolean;
-        /**
-         * Register an option for a particular factory.
-         */
-        registerOption(fullName: string, optionName: string, options: {}): any;
-        /**
-         * Return a specific registered option for a particular factory.
-         */
-        registeredOption(fullName: string, optionName: string): {};
-        /**
-         * Register options for a particular factory.
-         */
-        registerOptions(fullName: string, options: {}): any;
-        /**
-         * Return registered options for a particular factory.
-         */
-        registeredOptions(fullName: string): {};
-        /**
-         * Allow registering options for all factories of a type.
-         */
-        registerOptionsForType(type: string, options: {}): any;
-        /**
-         * Return the registered options for all factories of a type.
-         */
-        registeredOptionsForType(type: string): {};
-        /**
-         * Define a dependency injection onto a specific factory or all factories
-         * of a type.
-         */
-        inject(factoryNameOrType: string, property: string, injectionName: string): any;
-    }
-    const _RegistryProxyMixin: Mixin<_RegistryProxyMixin>;
     function getOwner(object: any): any;
     function setOwner(object: any, owner: any): void;
     const testing: boolean;
