@@ -21,6 +21,7 @@
         "test/extend.ts",
         "test/create.ts",
         "test/object.ts",
+        "test/observable.ts",
         "test/mixin.ts",
         "test/reopen.ts",
         "test/detect.ts",

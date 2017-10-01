@@ -81,6 +81,10 @@ interface ActionsHash {
     [index: string]: (...params: any[]) => any;
 }
 
+type ObserverMethod<Target, Sender> =
+    (keyof Target) |
+    ((this: Target, sender: Sender, key: keyof Sender, value: any, rev: number) => void);
+
 interface RenderOptions {
     into?: string;
     controller?: string;
@@ -1534,30 +1538,70 @@ export namespace Ember {
         **/
         content: Object;
     }
-
+    /**
+     * This mixin provides properties and property observing functionality, core features of the Ember object model.
+     */
     interface Observable {
-        addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
-        beginPropertyChanges(): Observable;
-        cacheFor(keyName: string): any;
-        decrementProperty(keyName: string, decrement?: number): number;
-        endPropertyChanges(): Observable;
+        /**
+         * Retrieves the value of a property from the object.
+         */
         get<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K];
+        /**
+         * To get the values of multiple properties at once, call `getProperties`
+         * with a list of strings or an array:
+         */
         getProperties<T, K extends keyof T>(this: ComputedProperties<T>, list: K[]): Pick<T, K>;
         getProperties<T, K extends keyof T>(this: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
-        getWithDefault(keyName: string, defaultValue: any): any;
-        hasObserverFor(key: string): boolean;
-        incrementProperty(keyName: string, increment?: number): number;
-        notifyPropertyChange(keyName: string): Observable;
-        propertyDidChange(keyName: string): Observable;
-        propertyWillChange(keyName: string): Observable;
-        removeObserver(key: string, target: {}, method: Function | string): void;
-        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
-        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-
         /**
-        Set the value of a boolean property to the opposite of its current value.
-        */
+         * Sets the provided key or path to the value.
+         */
+        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
+        /**
+         * Sets a list of properties at once. These properties are set inside
+         * a single `beginPropertyChanges` and `endPropertyChanges` batch, so
+         * observers will be buffered.
+         */
+        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+        /**
+         * Convenience method to call `propertyWillChange` and `propertyDidChange` in
+         * succession.
+         */
+        notifyPropertyChange(keyName: string): this;
+        /**
+         * Adds an observer on a property.
+         */
+        addObserver<Target>(key: keyof this, target: Target, method: ObserverMethod<Target, this>): void;
+        /**
+         * Remove an observer you have previously registered on this object. Pass
+         * the same key, target, and method you passed to `addObserver()` and your
+         * target will no longer receive notifications.
+         */
+        removeObserver<Target>(key: keyof this, target: Target, method: ObserverMethod<Target, this>): any;
+        /**
+         * Retrieves the value of a property, or a default value in the case that the
+         * property returns `undefined`.
+         */
+        getWithDefault(keyName: string, defaultValue: any): any;
+        /**
+         * Set the value of a property to the current value plus some amount.
+         */
+        incrementProperty(keyName: string, increment?: number): number;
+        /**
+         * Set the value of a property to the current value minus some amount.
+         */
+        decrementProperty(keyName: string, decrement?: number): number;
+        /**
+         * Set the value of a boolean property to the opposite of its
+         * current value.
+         */
         toggleProperty(keyName: string): boolean;
+        /**
+         * Returns the cached value of a computed property, if it exists.
+         * This allows you to inspect the value of a computed property
+         * without accidentally invoking it if it is intended to be
+         * generated lazily.
+         */
+        cacheFor(keyName: string): any;
     }
     const Observable: Mixin<Observable, Ember.CoreObject>;
     class OrderedSet {
@@ -2123,7 +2167,8 @@ export namespace Ember {
         method: Function | string,
         once?: boolean
     ): void;
-    function addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
+
+    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
     function aliasMethod(methodName: string): ComputedProperty<any>;
     function assert(desc: string, test: boolean): void;
     function beginPropertyChanges(): void;
@@ -2289,7 +2334,7 @@ export namespace Ember {
         target: Function | any,
         method: Function | string
     ): void;
-    function removeObserver(obj: any, path: string, target: any, method: Function): any;
+    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
 
     /**
      * @deprecated Ember.required is deprecated as its behavior is inconsistent and unreliable
