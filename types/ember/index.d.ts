@@ -1403,6 +1403,13 @@ export namespace Ember {
         find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
     }
     const NativeArray: Mixin<NativeArray<any>>;
+    /**
+     * Ember.NoneLocation does not interact with the browser. It is useful for
+     * testing, or when you need to manage state with your Router, but temporarily
+     * don't want it to muck with the URL (for example when you embed your
+     * application in a larger page).
+     * @private
+     */
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
