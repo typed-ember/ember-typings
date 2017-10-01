@@ -1255,14 +1255,18 @@ export namespace Ember {
          */
         recompute(): any;
     }
-    class Instrumentation {
-        getProperties(obj: any, list: any[]): {};
-        getProperties(obj: any, ...args: string[]): {};
+    /**
+     * The purpose of the Ember Instrumentation module is
+     * to provide efficient, general-purpose instrumentation
+     * for Ember.
+     * @private
+     */
+    const Instrumentation: {
         instrument(name: string, payload: any, callback: Function, binding: any): void;
         reset(): void;
         subscribe(pattern: string, object: any): void;
         unsubscribe(subscriber: any): void;
-    }
+    };
     const K: Function;
     class LinkComponent extends Component {
       activeClass: string;
