@@ -196,7 +196,7 @@ view class Ember.Component and other classes that don't need the full functional
 
 Unless you have specific needs for CoreView, you will use Ember.Component in your applications.
 **/
-class CoreView extends Ember.Object.extend(Ember.Evented, ActionHandler) {}
+class CoreView extends Ember.Object.extend(Ember.Evented, Ember.ActionHandler) {}
 interface ActionSupport {
     sendAction(action: string, ...params: any[]): void;
 }
@@ -219,28 +219,6 @@ interface ClassNamesSupport {
     classNames: string[];
 }
 const ClassNamesSupport: ClassNamesSupport;
-
-/**
-Ember.ActionHandler is available on some familiar classes including Ember.Route,
-Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
-Ember.ControllerMixin, and Ember.Route and available to the above classes through inheritance.)
-**/
-interface ActionHandler {
-    /**
-    Triggers a named action on the ActionHandler. Any parameters supplied after the actionName
-    string will be passed as arguments to the action target function.
-
-    If the ActionHandler has its target property set, actions may bubble to the target.
-    Bubbling happens when an actionName can not be found in the ActionHandler's actions
-    hash or if the action target function returns true.
-    **/
-    send(actionName: string, ...args: any[]): void;
-    /**
-    The collection of functions, keyed by name, available on this ActionHandler as action targets.
-    **/
-    actions: ActionsHash;
-}
-const ActionHandler: Ember.Mixin<ActionHandler>;
 
 interface TriggerActionOptions {
     "action"?: string;
@@ -293,6 +271,27 @@ export namespace Ember {
 
     interface ArrayPrototypeExtensions<T> extends MutableArray<T>, Observable, Copyable {}
 
+    /**
+     Ember.ActionHandler is available on some familiar classes including Ember.Route,
+     Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
+     Ember.ControllerMixin, and Ember.Route and available to the above classes through inheritance.)
+     **/
+    interface ActionHandler {
+        /**
+         Triggers a named action on the ActionHandler. Any parameters supplied after the actionName
+         string will be passed as arguments to the action target function.
+
+         If the ActionHandler has its target property set, actions may bubble to the target.
+         Bubbling happens when an actionName can not be found in the ActionHandler's actions
+         hash or if the action target function returns true.
+         **/
+        send(actionName: string, ...args: any[]): void;
+        /**
+         The collection of functions, keyed by name, available on this ActionHandler as action targets.
+         **/
+        actions: ActionsHash;
+    }
+    const ActionHandler: Ember.Mixin<ActionHandler>;
     /**
     An instance of Ember.Application is the starting point for every Ember application. It helps to
     instantiate, initialize and coordinate the many objects that make up your app.
