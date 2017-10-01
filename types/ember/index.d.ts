@@ -860,7 +860,6 @@ export namespace Ember {
          */
         registerWarnHandler(handler: Function): any;
     };
-    function DEFAULT_GETTER_FUNCTION(name: string): Function;
     /**
     The DefaultResolver defines the default lookup rules to resolve container lookups before consulting
     the container for registered items:
