@@ -598,15 +598,23 @@ export namespace Ember {
     const ControllerMixin: Ember.Mixin<ControllerMixin>;
     class Controller extends Object.extend(ControllerMixin) {}
     /**
-    Implements some standard methods for copying an object. Add this mixin to any object you
-    create that can create a copy of itself. This mixin is added automatically to the built-in array.
-    You should generally implement the copy() method to return a copy of the receiver.
-    Note that frozenCopy() will only work if you also implement Ember.Freezable.
-    **/
-    class Copyable {
+     * Implements some standard methods for copying an object. Add this mixin to
+     * any object you create that can create a copy of itself. This mixin is
+     * added automatically to the built-in array.
+     * @private
+     */
+    interface Copyable {
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
         copy(deep: boolean): Copyable;
+        /**
+         * If the object implements `Ember.Freezable`, then this will return a new
+         * copy if the object is not frozen and the receiver if the object is frozen.
+         */
         frozenCopy(): Copyable;
     }
+    const Copyable: Ember.Mixin<Copyable>;
     class CoreObject {
         _super(...args: any[]): any;
 
