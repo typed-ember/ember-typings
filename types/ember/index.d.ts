@@ -1211,8 +1211,12 @@ export namespace Ember {
      */
     class HashLocation extends Object {
     }
+    /**
+     * Ember.HistoryLocation implements the location API using the browser's
+     * history.pushState API.
+     * @protected
+     */
     class HistoryLocation extends Object {
-        rootURL: string;
     }
     const IS_BINDING: RegExp;
     /**
