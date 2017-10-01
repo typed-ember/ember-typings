@@ -1480,6 +1480,11 @@ export namespace Ember {
     }
     const MutableEnumerable: Mixin<MutableEnumberable<any>>;
     const NAME_KEY: string;
+    /**
+     * A Namespace is an object usually used to contain other objects or methods
+     * such as an application or framework. Create a namespace anytime you want
+     * to define one of these new containers.
+     */
     class Namespace extends Object {
     }
     interface NativeArray<T> extends GlobalArray<T>, MutableArray<T>, Observable, Copyable {
