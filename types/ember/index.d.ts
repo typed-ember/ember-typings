@@ -2017,15 +2017,11 @@ export namespace Ember {
 
         function resolve<T>(result: T): Ember.Test.Promise<T>;
     }
+    /**
+     * The internal class used to create textarea element when the `{{textarea}}`
+     * helper is used.
+     */
     class TextArea extends Component.extend(TextSupport) {
-        cancel(event: Function): void;
-        focusIn(event: Function): void;
-        focusOut(event: Function): void;
-        insertNewLine(event: Function): void;
-        keyPress(event: Function): void;
-        action: string;
-        bubbles: boolean;
-        onEvent: string;
     }
     class TextField extends Component.extend(TextSupport) {
         cancel(event: Function): void;
