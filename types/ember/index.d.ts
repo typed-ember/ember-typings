@@ -216,9 +216,14 @@ interface ClassNamesSupport {
     This list of properties is inherited from the component's superclasses as well.
     */
     classNameBindings: string[];
+    /**
+     * Standard CSS class names to apply to the view's outer element. This
+     * property automatically inherits any class names defined by the view's
+     * superclasses as well.
+     */
     classNames: string[];
 }
-const ClassNamesSupport: ClassNamesSupport;
+const ClassNamesSupport: Ember.Mixin<ClassNamesSupport>;
 
 interface TriggerActionOptions {
     "action"?: string;
