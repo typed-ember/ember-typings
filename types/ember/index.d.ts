@@ -462,12 +462,14 @@ export namespace Ember {
     class Checkbox extends Component {
     }
     /**
-    Implements some standard methods for comparing objects. Add this mixin to any class
-    you create that can compare its instances.
-    **/
-    class Comparable {
+     * Implements some standard methods for comparing objects. Add this mixin to
+     * any class you create that can compare its instances.
+     * @private
+     */
+    interface Comparable {
         compare(a: any, b: any): number;
     }
+    const Comparable: Mixin<Comparable>;
     /**
     A view that is completely isolated. Property access in its templates go to the view object
     and actions are targeted at the view object. There is no access to the surrounding context or
