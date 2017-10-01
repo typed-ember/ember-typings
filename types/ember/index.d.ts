@@ -1933,11 +1933,6 @@ export namespace Ember {
          */
         willTransition(transition: Transition): void;
     }
-    interface RouterMapContext {
-        route(name: string, callback: (this: RouterMapContext) => void): void;
-        route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterMapContext) => void): void;
-    }
-    class Router extends Object {
     /**
      * The `Ember.Router` class manages the application state and URLs. Refer to
      * the [routing guide](http://emberjs.com/guides/routing/) for documentation.
@@ -1948,7 +1943,7 @@ export namespace Ember {
          * in your application. These mappings are defined within the
          * supplied callback function using `this.route`.
          */
-        static map(callback: (this: RouterMapContext) => void): void;
+        static map(callback: (this: RouterDSL) => void): void;
         /**
          * The `location` property determines the type of URL's that your
          * application will use.
@@ -1977,12 +1972,10 @@ export namespace Ember {
         transitionTo(name: string, options: {}): Transition;
     }
     class RouterDSL {
-        resource(name: string, options?: {}, callback?: Function): void;
-        resource(name: string, callback: Function): void;
-        route(name: string, options?: {}): void;
-        explicitIndex: boolean;
-        router: Router;
-        options: any;
+        constructor(name: string, options: object);
+        route(name: string, callback: (this: RouterDSL) => void): void;
+        route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterDSL) => void): void;
+        mount(name: string): void;
     }
     class Service extends Object {
     }
