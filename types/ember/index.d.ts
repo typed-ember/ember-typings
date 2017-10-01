@@ -1323,12 +1323,34 @@ export namespace Ember {
          */
         create(options?: {}): any;
     };
+    /**
+     * Inside Ember-Metal, simply uses the methods from `imports.console`.
+     * Override this to provide more robust logging functionality.
+     */
     const Logger: {
-        assert(param: any): void;
+        /**
+         * If the value passed into `Ember.Logger.assert` is not truthy it will throw an error with a stack trace.
+         */
+        assert(test: boolean, message?: string): void;
+        /**
+         * Logs the arguments to the console in blue text.
+         */
         debug(...args: any[]): void;
+        /**
+         * Prints the arguments to the console with an error icon, red text and a stack trace.
+         */
         error(...args: any[]): void;
+        /**
+         * Logs the arguments to the console.
+         */
         info(...args: any[]): void;
+        /**
+         * Logs the arguments to the console.
+         */
         log(...args: any[]): void;
+        /**
+         * Prints the arguments to the console with a warning icon.
+         */
         warn(...args: any[]): void;
     };
     function MANDATORY_SETTER_FUNCTION(value: string): void;
