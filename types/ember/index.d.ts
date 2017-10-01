@@ -1353,7 +1353,6 @@ export namespace Ember {
          */
         warn(...args: any[]): void;
     };
-    function MANDATORY_SETTER_FUNCTION(value: string): void;
     const META_KEY: string;
     class Map {
         copy(): Map;
