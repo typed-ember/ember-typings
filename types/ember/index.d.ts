@@ -17,19 +17,6 @@ import { TemplateFactory } from 'htmlbars-inline-precompile';
 // Get an alias to the global Array type to use in inner scope below.
 type GlobalArray<T> = T[];
 
-interface String {
-    camelize(): string;
-    capitalize(): string;
-    classify(): string;
-    dasherize(): string;
-    decamelize(): string;
-    fmt(...args: string[]): string;
-    htmlSafe(): typeof Handlebars.SafeString;
-    loc(...args: string[]): string;
-    underscore(): string;
-    w(): string[];
-}
-
 /**
  * Deconstructs computed properties into the types which would be returned by `.get()`.
  */
@@ -90,18 +77,8 @@ type EmberClassConstructor<T> = (
     new (...args: any[]) => T
 );
 
-interface EnumerableConfigurationOptions {
-    willChange?: boolean;
-    didChange?: boolean;
-}
-
 interface ActionsHash {
     [index: string]: (...params: any[]) => any;
-}
-
-interface DisconnectOutletOptions {
-    outlet?: string;
-    parentView?: string;
 }
 
 interface RenderOptions {
