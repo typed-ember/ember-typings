@@ -441,9 +441,11 @@ export namespace Ember {
     }
     const BOOTED: boolean;
     /**
-    Connects the properties of two objects so that whenever the value of one property changes,
-    the other property will be changed also.
-    **/
+     * Connects the properties of two objects so that whenever the value of one property changes,
+     * the other property will be changed also.
+     *
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     **/
     class Binding {
         constructor(toPath: string, fromPath: string);
         connect(obj: any): Binding;
@@ -1891,6 +1893,10 @@ export namespace Ember {
     function aliasMethod(methodName: string): Descriptor;
     function assert(desc: string, test: boolean): void;
     function beginPropertyChanges(): void;
+
+    /**
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     */
     function bind(obj: any, to: string, from: string): Binding;
     function cacheFor(obj: any, key: string): any;
     function canInvoke(obj: any, methodName: string): boolean;
