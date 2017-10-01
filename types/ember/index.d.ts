@@ -1353,6 +1353,12 @@ export namespace Ember {
          */
         warn(...args: any[]): void;
     };
+    /**
+     * A Map stores values indexed by keys. Unlike JavaScript's
+     * default Objects, the keys of a Map can be any JavaScript
+     * object.
+     * @deprecated
+     */
     class Map {
         copy(): Map;
         static create(): Map;
@@ -1362,6 +1368,9 @@ export namespace Ember {
         set(key: any, value: any): void;
         length: number;
     }
+    /**
+     * @deprecated
+     */
     class MapWithDefault extends Map {
         copy(): MapWithDefault;
         static create(): MapWithDefault;
