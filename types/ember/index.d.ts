@@ -2275,45 +2275,179 @@ export namespace Ember {
         <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
         (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty<any>;
 
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is null, an empty string, empty array, or empty function.
+         */
+        empty(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is NOT null, an empty string, empty array, or empty function.
+         */
+        notEmpty(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is null or undefined. This avoids errors from JSLint complaining
+         * about use of ==, which can be technically confusing.
+         */
+        none(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns the inverse boolean value
+         * of the original value for the dependent property.
+         */
+        not(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that converts the provided dependent property
+         * into a boolean value.
+         */
+        bool(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property which matches the original value for the
+         * dependent property against a given RegExp, returning `true`
+         * if the value matches the RegExp and `false` if it does not.
+         */
+        match(dependentKey: string, regexp: RegExp): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is equal to the given value.
+         */
+        equal(dependentKey: string, value: any): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is greater than the provided value.
+         */
+        gt(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is greater than or equal to the provided value.
+         */
+        gte(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is less than the provided value.
+         */
+        lt(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is less than or equal to the provided value.
+         */
+        lte(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that performs a logical `and` on the
+         * original values for the provided dependent properties.
+         */
+        and(...dependentKeys: string[]): ComputedProperty<any>;
+        /**
+         * A computed property which performs a logical `or` on the
+         * original values for the provided dependent properties.
+         */
+        or(...dependentKeys: string[]): ComputedProperty<any>;
+        /**
+         * Creates a new property that is an alias for another property
+         * on an object. Calls to `get` or `set` this property behave as
+         * though they were called on the original property.
+         */
         alias(dependentKey: string): ComputedProperty<any>;
-        and(...args: string[]): ComputedProperty<any>;
-        any(...args: string[]): ComputedProperty<any>;
-        bool(dependentKey: string): ComputedProperty<any>;
-        collect(...dependentKeys: string[]): ComputedProperty<any>;
-        defaultTo(defaultPath: string): ComputedProperty<any>;
-        deprecatingAlias(dependentKey: string, options: { id: string; until: string; }): ComputedProperty<any>;
-        empty(dependentKey: string): ComputedProperty<any>;
-        equal(dependentKey: string, value: any): ComputedProperty<any>;
-        filter(
-            dependentKey: string,
-            callback: (item: any, index?: number, array?: any[]) => boolean
-        ): ComputedProperty<any>;
-        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any>;
-        filterProperty(key: string, value?: string): any[];
-        gt(dependentKey: string, value: number): ComputedProperty<any>;
-        gte(dependentKey: string, value: number): ComputedProperty<any>;
-        intersect(...args: string[]): ComputedProperty<any>;
-        lt(dependentKey: string, value: number): ComputedProperty<any>;
-        lte(dependentKey: string, value: number): ComputedProperty<any>;
-        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty<any>;
-        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
-        mapProperty(key: string): any[];
-        match(dependentKey: string, regexp: RegExp): ComputedProperty<any>;
-        max(dependentKey: string): ComputedProperty<any>;
-        min(dependentKey: string): ComputedProperty<any>;
-        none(dependentKey: string): ComputedProperty<any>;
-        not(dependentKey: string): ComputedProperty<any>;
-        notEmpty(dependentKey: string): ComputedProperty<any>;
+        /**
+         * Where `computed.alias` aliases `get` and `set`, and allows for bidirectional
+         * data flow, `computed.oneWay` only provides an aliased `get`. The `set` will
+         * not mutate the upstream property, rather causes the current property to
+         * become the value set. This causes the downstream property to permanently
+         * diverge from the upstream property.
+         */
         oneWay(dependentKey: string): ComputedProperty<any>;
-        or(...args: string[]): ComputedProperty<any>;
-        readOnly(dependentString: string): ComputedProperty<any>;
+        /**
+         * This is a more semantically meaningful alias of `computed.oneWay`,
+         * whose name is somewhat ambiguous as to which direction the data flows.
+         */
         reads(dependentKey: string): ComputedProperty<any>;
-        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any>;
-        sort(itemsKey: string, sortDefinition: string | ((itemA: any, itemB: any) => number)): ComputedProperty<any>;
-        sum(dependentKey: string): ComputedProperty<any>;
-        union(...args: string[]): ComputedProperty<any>;
-        uniq(...args: string[]): ComputedProperty<any>;
-        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
+        /**
+         * Where `computed.oneWay` provides oneWay bindings, `computed.readOnly` provides
+         * a readOnly one way binding. Very often when using `computed.oneWay` one does
+         * not also want changes to propagate back up, as they will replace the value.
+         */
+        readOnly(dependentKey: string): ComputedProperty<any>;
+        /**
+         * Creates a new property that is an alias for another property
+         * on an object. Calls to `get` or `set` this property behave as
+         * though they were called on the original property, but also
+         * print a deprecation warning.
+         */
+        deprecatingAlias(dependentKey: string, options: { id: string, until: string }): ComputedProperty<any>;
+        /**
+         * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+         */
+        deprecatingAlias(dependentKey: string, options?: { id?: string, until?: string }): ComputedProperty<any>;
+        /**
+         * A computed property that returns the sum of the values
+         * in the dependent array.
+         */
+        sum(dependentKey: string): ComputedProperty<number>;
+        /**
+         * A computed property that calculates the maximum value in the
+         * dependent array. This will return `-Infinity` when the dependent
+         * array is empty.
+         */
+        max(dependentKey: string): ComputedProperty<number>;
+        /**
+         * A computed property that calculates the minimum value in the
+         * dependent array. This will return `Infinity` when the dependent
+         * array is empty.
+         */
+        min(dependentKey: string): ComputedProperty<number>;
+        /**
+         * Returns an array mapped via the callback
+         */
+        map<U>(dependentKey: string, callback: (value: any, index: number, array: any[]) => U): ComputedProperty<U[]>;
+        /**
+         * Returns an array mapped to the specified key.
+         */
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * Filters the array by the callback.
+         */
+        filter(dependentKey: string, callback: (value: any, index: number, array: any[]) => boolean): ComputedProperty<any[]>;
+        /**
+         * Filters the array by the property and value
+         */
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from one or more dependent arrays.
+         */
+        uniq(propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from an array, with uniqueness determined by specific key.
+         */
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from one or more dependent arrays.
+         */
+        union(...propertyKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the elements
+         * two or more dependent arrays have in common.
+         */
+        intersect(...propertyKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the
+         * properties from the first dependent array that are not in the second
+         * dependent array.
+         */
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any[]>;
+        /**
+         * A computed property that returns the array of values
+         * for the provided dependent properties.
+         */
+        collect(...dependentKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the
+         * properties from the first dependent array sorted based on a property
+         * or sort function.
+         */
+        sort(itemsKey: string, sortDefinition: string | ((itemA: any, itemB: any) => number)): ComputedProperty<any[]>;
     };
     const run: {
         /**
@@ -2494,7 +2628,15 @@ export namespace Ember {
     function create(arguments?: {}): CoreObject;
     function debug(message: string): void;
     function defineProperty(obj: any, keyName: string, desc: {}): void;
-    function deprecate(message: string, test?: boolean): void;
+    /**
+     * Display a deprecation warning with the provided message and a stack trace
+     * (Chrome and Firefox only).
+     */
+    function deprecate(message: string, test: boolean, options: { id: string, until: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function deprecate(message: string, test: boolean, options?: { id?: string, until?: string }): any;
     function deprecateFunc(message: string, func: Function): Function;
     function destroy(obj: any): void;
     function endPropertyChanges(): void;
@@ -2768,7 +2910,6 @@ declare module '@ember/object/computed' {
     export const expandProperties: typeof Ember.expandProperties;
     export const filter: typeof Ember.computed.filter;
     export const filterBy: typeof Ember.computed.filterBy;
-    export const filterProperty: typeof Ember.computed.filterProperty;
     export const gt: typeof Ember.computed.gt;
     export const gte: typeof Ember.computed.gte;
     export const intersect: typeof Ember.computed.intersect;
@@ -2776,7 +2917,6 @@ declare module '@ember/object/computed' {
     export const lte: typeof Ember.computed.lte;
     export const map: typeof Ember.computed.map;
     export const mapBy: typeof Ember.computed.mapBy;
-    export const mapProperty: typeof Ember.computed.mapProperty;
     export const match: typeof Ember.computed.match;
     export const max: typeof Ember.computed.max;
     export const min: typeof Ember.computed.min;
