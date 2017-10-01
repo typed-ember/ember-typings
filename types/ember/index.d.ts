@@ -1375,6 +1375,10 @@ export namespace Ember {
         copy(): MapWithDefault;
         static create(): MapWithDefault;
     }
+    /**
+     * The `Ember.Mixin` class allows you to create mixins, whose properties can be
+     * added to other classes.
+     */
     class Mixin<T, Base = Ember.Object> {
         /**
          * Mixin needs to have *something* on its prototype, otherwise it's treated like an empty interface.
