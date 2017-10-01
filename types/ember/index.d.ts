@@ -918,11 +918,14 @@ export namespace Ember {
         resolver: Resolver;
     }
     /**
-     The `EngineInstance` encapsulates all of the stateful aspects of a
-     running `Engine`.
-     **/
-    class EngineInstance extends Object {
-      unregister(fullName: string): void;
+     * The `EngineInstance` encapsulates all of the stateful aspects of a
+     * running `Engine`.
+     */
+    class EngineInstance extends Ember.Object.extend(_RegistryProxyMixin, _ContainerProxyMixin) {
+        /**
+         * Unregister a factory.
+         */
+        unregister(fullName: string): any;
     }
     /**
      * This mixin defines the common interface implemented by enumerable objects
@@ -2249,8 +2252,76 @@ export namespace Ember {
     function watchPath(obj: any, keyPath: string): void;
     function watchedEvents(obj: {}): any[];
     function wrap(func: Function, superFunc: Function): Function;
-    const _ContainerProxyMixin: Mixin<Object>;
-    const _RegistryProxyMixin: Mixin<Object>;
+    /**
+     * Given a fullName return a factory manager.
+     */
+    interface _ContainerProxyMixin {
+        /**
+         * Returns an object that can be used to provide an owner to a
+         * manually created instance.
+         */
+        ownerInjection(): {};
+        /**
+         * Given a fullName return a corresponding instance.
+         */
+        lookup(fullName: string, options: {}): any;
+    }
+    const _ContainerProxyMixin: Mixin<_ContainerProxyMixin>;
+
+    /**
+     * RegistryProxyMixin is used to provide public access to specific
+     * registry functionality.
+     */
+    interface _RegistryProxyMixin {
+        /**
+         * Given a fullName return the corresponding factory.
+         */
+        resolveRegistration(fullName: string): Function;
+        /**
+         * Registers a factory that can be used for dependency injection (with
+         * `inject`) or for service lookup. Each factory is registered with
+         * a full name including two parts: `type:name`.
+         */
+        register(fullName: string, factory: Function, options: {}): any;
+        /**
+         * Unregister a factory.
+         */
+        unregister(fullName: string): any;
+        /**
+         * Check if a factory is registered.
+         */
+        hasRegistration(fullName: string): boolean;
+        /**
+         * Register an option for a particular factory.
+         */
+        registerOption(fullName: string, optionName: string, options: {}): any;
+        /**
+         * Return a specific registered option for a particular factory.
+         */
+        registeredOption(fullName: string, optionName: string): {};
+        /**
+         * Register options for a particular factory.
+         */
+        registerOptions(fullName: string, options: {}): any;
+        /**
+         * Return registered options for a particular factory.
+         */
+        registeredOptions(fullName: string): {};
+        /**
+         * Allow registering options for all factories of a type.
+         */
+        registerOptionsForType(type: string, options: {}): any;
+        /**
+         * Return the registered options for all factories of a type.
+         */
+        registeredOptionsForType(type: string): {};
+        /**
+         * Define a dependency injection onto a specific factory or all factories
+         * of a type.
+         */
+        inject(factoryNameOrType: string, property: string, injectionName: string): any;
+    }
+    const _RegistryProxyMixin: Mixin<_RegistryProxyMixin>;
     function getOwner(object: any): any;
     function setOwner(object: any, owner: any): void;
     const testing: boolean;
