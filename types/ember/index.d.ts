@@ -878,12 +878,6 @@ export namespace Ember {
          */
         namespace: Application;
     }
-    /**
-    Objects of this type can implement an interface to respond to requests to get and set.
-    The default implementation handles simple properties.
-    You generally won't need to create or subclass this directly.
-    **/
-    class Descriptor {}
     namespace ENV {
         const EXTEND_PROTOTYPES: typeof Ember.EXTEND_PROTOTYPES;
         const LOG_BINDINGS: boolean;
@@ -1924,7 +1918,7 @@ export namespace Ember {
         once?: boolean
     ): void;
     function addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
-    function aliasMethod(methodName: string): Descriptor;
+    function aliasMethod(methodName: string): ComputedProperty<any>;
     function assert(desc: string, test: boolean): void;
     function beginPropertyChanges(): void;
 
@@ -2094,7 +2088,11 @@ export namespace Ember {
         method: Function | string
     ): void;
     function removeObserver(obj: any, path: string, target: any, method: Function): any;
-    function required(): Descriptor;
+
+    /**
+     * @deprecated Ember.required is deprecated as its behavior is inconsistent and unreliable
+     */
+    function required(): ComputedProperty<any>;
     function reset(): void;
     function rewatch(obj: any): void;
 
