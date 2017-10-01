@@ -845,8 +845,20 @@ export namespace Ember {
         watchRecords(modelName: string, recordsAdded: Function, recordsUpdated: Function, recordsRemoved: Function): Function;
     }
     const Debug: {
-        registerDeprecationHandler(handler: Function): void;
-        registerWarnHandler(handler: Function): void;
+        /**
+         * Allows for runtime registration of handler functions that override the default deprecation behavior.
+         * Deprecations are invoked by calls to [Ember.deprecate](http://emberjs.com/api/classes/Ember.html#method_deprecate).
+         * The following example demonstrates its usage by registering a handler that throws an error if the
+         * message contains the word "should", otherwise defers to the default handler.
+         */
+        registerDeprecationHandler(handler: Function): any;
+        /**
+         * Allows for runtime registration of handler functions that override the default warning behavior.
+         * Warnings are invoked by calls made to [Ember.warn](http://emberjs.com/api/classes/Ember.html#method_warn).
+         * The following example demonstrates its usage by registering a handler that does nothing overriding Ember's
+         * default warning behavior.
+         */
+        registerWarnHandler(handler: Function): any;
     };
     function DEFAULT_GETTER_FUNCTION(name: string): Function;
     /**
