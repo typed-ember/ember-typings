@@ -1311,10 +1311,18 @@ export namespace Ember {
     const LOG_BINDINGS: boolean;
     const LOG_STACKTRACE_ON_DEPRECATION: boolean;
     const LOG_VERSION: boolean;
-    class Location {
+    /**
+     * Ember.Location returns an instance of the correct implementation of
+     * the `location` API.
+     */
+    const Location: {
+        /**
+         * This is deprecated in favor of using the container to lookup the location
+         * implementation as desired.
+         * @deprecated Use the container to lookup the location implementation that you need.
+         */
         create(options?: {}): any;
-        registerImplementation(name: string, implementation: any): void;
-    }
+    };
     const Logger: {
         assert(param: any): void;
         debug(...args: any[]): void;
