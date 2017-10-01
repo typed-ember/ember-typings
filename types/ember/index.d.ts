@@ -2023,19 +2023,36 @@ export namespace Ember {
      */
     class TextArea extends Component.extend(TextSupport) {
     }
+    /**
+     * The internal class used to create text inputs when the `{{input}}`
+     * helper is used with `type` of `text`.
+     */
     class TextField extends Component.extend(TextSupport) {
-        cancel(event: Function): void;
-        focusIn(event: Function): void;
-        focusOut(event: Function): void;
-        insertNewLine(event: Function): void;
-        keyPress(event: Function): void;
-        action: string;
-        bubbles: boolean;
-        onEvent: string;
-        pattern: string;
-        size: string;
-        type: string;
+        /**
+         * The `value` attribute of the input element. As the user inputs text, this
+         * property is updated live.
+         */
         value: string;
+        /**
+         * The `type` attribute of the input element.
+         */
+        type: string;
+        /**
+         * The `size` of the text field in characters.
+         */
+        size: string;
+        /**
+         * The `pattern` attribute of input element.
+         */
+        pattern: string;
+        /**
+         * The `min` attribute of input element used with `type="number"` or `type="range"`.
+         */
+        min: string;
+        /**
+         * The `max` attribute of input element used with `type="number"` or `type="range"`.
+         */
+        max: string;
     }
     interface Transition {
         targetName: string;
