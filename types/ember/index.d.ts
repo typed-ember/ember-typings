@@ -200,7 +200,7 @@ class CoreView extends Ember.Object.extend(Ember.Evented, Ember.ActionHandler) {
 interface ActionSupport {
     sendAction(action: string, ...params: any[]): void;
 }
-const ActionSupport: ActionSupport;
+const ActionSupport: Ember.Mixin<ActionSupport>;
 
 interface ClassNamesSupport {
     /**
