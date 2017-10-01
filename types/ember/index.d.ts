@@ -1524,6 +1524,10 @@ export namespace Ember {
      */
     class Object extends CoreObject.extend(Observable) {
     }
+    /**
+     * `Ember.ObjectProxy` forwards all properties not defined by the proxy itself
+     * to a proxied `content` object.
+     */
     class ObjectProxy extends Object {
         /**
         The object whose properties will be forwarded.
