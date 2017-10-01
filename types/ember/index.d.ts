@@ -1234,10 +1234,26 @@ export namespace Ember {
          */
         function service<T extends Service>(name?: string): ComputedProperty<T>;
     }
+    /**
+     * Ember Helpers are functions that can compute values, and are used in templates.
+     * For example, this code calls a helper named `format-currency`:
+     */
     class Helper extends Object {
-        static helper(h: (params: any, hash?: any) => any): Helper;
-        compute(params: any[], hash: any): any;
-        recompute(params: any[], hash: any): any;
+        /**
+         * In many cases, the ceremony of a full `Ember.Helper` class is not required.
+         * The `helper` method create pure-function helpers without instances. For
+         * example:
+         */
+        static helper(helper: (params: any[], hash?: object) => any): Helper;
+        /**
+         * Override this function when writing a class-based helper.
+         */
+        compute(params: any[], hash: object): any;
+        /**
+         * On a class-based helper, it may be useful to force a recomputation of that
+         * helpers value. This is akin to `rerender` on a component.
+         */
+        recompute(): any;
     }
     class Instrumentation {
         getProperties(obj: any, list: any[]): {};

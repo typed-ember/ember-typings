@@ -30,6 +30,7 @@
         "test/array-proxy.ts",
         "test/get.ts",
         "test/get-properties.ts",
+        "test/helper.ts",
         "test/set.ts",
         "test/set-properties.ts",
         "test/computed.ts",
