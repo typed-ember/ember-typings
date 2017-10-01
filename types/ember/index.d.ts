@@ -198,18 +198,6 @@ interface TargetActionSupport {
     triggerAction(opts: TriggerActionOptions): boolean;
 }
 
-/**
-Additional methods for the Controller.
-**/
-interface ControllerMixin extends ActionHandler {
-    replaceRoute(name: string, ...args: any[]): void;
-    transitionToRoute(name: string, ...args: any[]): void;
-    model: any;
-    queryParams: string[] | Array<{ [key: string]: { type: string } }>;
-    target: Object;
-}
-const ControllerMixin: Ember.Mixin<ControllerMixin>;
-
 export namespace Ember {
     /**
     Alias for jQuery.
@@ -596,7 +584,18 @@ export namespace Ember {
       canCatalogEntriesByType(type: string): boolean;
       catalogEntriesByType(type: string): any[];
     }
-
+    /**
+     * Additional methods for the Controller.
+     * @private
+     */
+    interface ControllerMixin extends ActionHandler {
+        replaceRoute(name: string, ...args: any[]): void;
+        transitionToRoute(name: string, ...args: any[]): void;
+        model: any;
+        queryParams: string[] | Array<{ [key: string]: { type: string } }>;
+        target: Object;
+    }
+    const ControllerMixin: Ember.Mixin<ControllerMixin>;
     class Controller extends Object.extend(ControllerMixin) {}
     /**
     Implements some standard methods for copying an object. Add this mixin to any object you
