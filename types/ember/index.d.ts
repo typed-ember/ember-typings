@@ -570,30 +570,18 @@ export namespace Ember {
         meta(meta: {}): this;
         meta(): {};
     }
+    /**
+     * A container used to instantiate and cache objects.
+     * @private
+     */
     class Container {
-        constructor(parent: Container);
-        parent: Container;
-        children: any[];
-        owner: any;
-        ownerInjection(): any;
-        resolver: Function;
-        registry: Registry;
-        cache: {};
-        typeInjections: {};
-        injections: {};
-        child(): Container;
-        set(object: {}, key: string, value: any): void;
         /**
-        registers a factory for later injection
-        @param fullName type:name (e.g., 'model:user')
-        @param factory (e.g., App.Person)
-        **/
-        describe(fullName: string): string;
-        makeToString(factory: any, fullName: string): Function;
-        lookup(fullName: string, options?: {}): any;
-        lookupFactory(fullName: string, options?: {}): any;
-        destroy(): void;
-        reset(): void;
+         * Given a fullName, return the corresponding factory. The consumer of the factory
+         * is responsible for the destruction of any factory instances, as there is no
+         * way for the container to ensure instances are destroyed when it itself is
+         * destroyed.
+         */
+        factoryFor(fullName: string, options?: {}): any;
     }
     /**
     The ContainerDebugAdapter helps the container and resolver interface
