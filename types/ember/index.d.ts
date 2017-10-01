@@ -1517,6 +1517,11 @@ export namespace Ember {
     class NoneLocation extends Object {
     }
     const ORDER_DEFINITION: string[];
+    /**
+     * `Ember.Object` is the main base class for all Ember objects. It is a subclass
+     * of `Ember.CoreObject` with the `Ember.Observable` mixin applied. For details,
+     * see the documentation for each of these.
+     */
     class Object extends CoreObject.extend(Observable) {
     }
     class ObjectProxy extends Object {
