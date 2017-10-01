@@ -1705,6 +1705,7 @@ export namespace Ember {
      * @private
      */
     class Registry {
+        register(fullName: string, factory: EmberClassConstructor<any>, options?: { singleton?: boolean }): void;
     }
     class Resolver extends Ember.Object {
     }
