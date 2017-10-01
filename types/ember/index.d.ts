@@ -1353,7 +1353,6 @@ export namespace Ember {
          */
         warn(...args: any[]): void;
     };
-    const META_KEY: string;
     class Map {
         copy(): Map;
         static create(): Map;
