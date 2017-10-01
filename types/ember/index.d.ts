@@ -813,15 +813,6 @@ export namespace Ember {
         static isClass: boolean;
         static isMethod: boolean;
     }
-    class DAG {
-        add(name: string): any;
-        map(name: string, value: any): void;
-        addEdge(fromName: string, toName: string): void;
-        topsort(fn: Function): void;
-        addEdges(name: string, value: any, before: any, after: any): void;
-        names: any[];
-        vertices: {};
-    }
     /**
     The DataAdapter helps a data persistence library interface with tools
     that debug Ember such as the Ember Extension for Chrome and Firefox.
