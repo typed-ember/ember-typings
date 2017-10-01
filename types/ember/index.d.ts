@@ -2104,28 +2104,106 @@ export namespace Ember {
         type Promise<T> = Rsvp.Promise<T>;
     }
 
+    /**
+     * This is a container for an assortment of testing related functionality
+     */
     namespace Test {
-        class Adapter extends Ember.Object {
-            constructor();
+        /**
+         * `registerHelper` is used to register a test helper that will be injected
+         * when `App.injectTestHelpers` is called.
+         */
+        function registerHelper(name: string, helperMethod: (app: Application, ...args: any[]) => any, options?: object): any;
+        /**
+         * `registerAsyncHelper` is used to register an async test helper that will be injected
+         * when `App.injectTestHelpers` is called.
+         */
+        function registerAsyncHelper(name: string, helperMethod: (app: Application, ...args: any[]) => any): void;
+        /**
+         * Remove a previously added helper method.
+         */
+        function unregisterHelper(name: string): void;
+        /**
+         * Used to register callbacks to be fired whenever `App.injectTestHelpers`
+         * is called.
+         */
+        function onInjectHelpers(callback: (app: Application) => void): void;
+        /**
+         * This returns a thenable tailored for testing.  It catches failed
+         * `onSuccess` callbacks and invokes the `Ember.Test.adapter.exception`
+         * callback in the last chained then.
+         */
+        function promise<T>(resolver: (
+            resolve: (value?: T | PromiseLike<T>) => void,
+            reject: (reason?: any) => void
+        ) => void, label?: string): Ember.Test.Promise<T>;
+        /**
+         * Replacement for `Ember.RSVP.resolve`
+         * The only difference is this uses
+         * an instance of `Ember.Test.Promise`
+         */
+        function resolve<T>(value?: T | PromiseLike<T>, label?: string): Ember.Test.Promise<T>;
+        function resolve(): Ember.Test.Promise<void>;
+        /**
+         * This allows ember-testing to play nicely with other asynchronous
+         * events, such as an application that is waiting for a CSS3
+         * transition or an IndexDB transaction. The waiter runs periodically
+         * after each async helper (i.e. `click`, `andThen`, `visit`, etc) has executed,
+         * until the returning result is truthy. After the waiters finish, the next async helper
+         * is executed and the process repeats.
+         */
+        function registerWaiter(callback: () => boolean): any;
+        function registerWaiter<Context>(context: Context, callback: (this: Context) => boolean): any;
+        /**
+         * `unregisterWaiter` is used to unregister a callback that was
+         * registered with `registerWaiter`.
+         */
+        function unregisterWaiter(callback: () => boolean): any;
+        function unregisterWaiter<Context>(context: Context, callback: (this: Context) => boolean): any;
+        /**
+         * Iterates through each registered test waiter, and invokes
+         * its callback. If any waiter returns false, this method will return
+         * true indicating that the waiters have not settled yet.
+         */
+        function checkWaiters(): boolean;
+        /**
+         * Used to allow ember-testing to communicate with a specific testing
+         * framework.
+         */
+        const adapter: Adapter;
+        /**
+         * The primary purpose of this class is to create hooks that can be implemented
+         * by an adapter for various test frameworks.
+         */
+        class Adapter {
+            /**
+             * This callback will be called whenever an async operation is about to start.
+             */
+            asyncStart(): any;
+            /**
+             * This callback will be called whenever an async operation has completed.
+             */
+            asyncEnd(): any;
+            /**
+             * Override this method with your testing framework's false assertion.
+             * This function is called whenever an exception occurs causing the testing
+             * promise to fail.
+             */
+            exception(error: string): any;
+        }
+        /**
+         * This class implements the methods defined by Ember.Test.Adapter for the
+         * QUnit testing framework.
+         */
+        class QUnitAdapter extends Adapter {
         }
         class Promise<T> extends Rsvp.Promise<T> {
-            constructor();
+            constructor(
+                executor: (
+                    resolve: (value?: T | PromiseLike<T>) => void,
+                    reject: (reason?: any) => void
+                ) => void
+            );
         }
-        function oninjectHelpers(callback: Function): void;
-        function promise<T>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T>;
-        function unregisterHelper(name: string): void;
-        function registerHelper(name: string, helperMethod: Function): void;
-        function registerAsyncHelper(name: string, helperMethod: Function): void;
-
-        const adapter: Object;
-        const QUnitAdapter: Object;
-
-        function registerWaiter(callback: Function): void;
-        function registerWaiter(context: any, callback: Function): void;
-        function unregisterWaiter(callback: Function): void;
-        function unregisterWaiter(context: any, callback: Function): void;
-
-        function resolve<T>(result: T): Ember.Test.Promise<T>;
     }
     /**
      * Namespace for injection helper methods.
@@ -2514,6 +2592,11 @@ export namespace Ember {
     function wrap(func: Function, superFunc: Function): Function;
     function getOwner(object: any): any;
     function setOwner(object: any, owner: any): void;
+    /**
+     * This property indicates whether or not this application is currently in
+     * testing mode. This is set when `setupForTesting` is called on the current
+     * application.
+     */
     const testing: boolean;
     const MODEL_FACTORY_INJECTIONS: boolean;
     function assign(original: any, ...sources: any[]): any;
