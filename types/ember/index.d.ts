@@ -95,6 +95,37 @@ interface RouteQueryParam {
     as?: string;
 }
 
+interface EventDispatcherEvents {
+    touchstart?: string | null;
+    touchmove?: string | null;
+    touchend?: string | null;
+    touchcancel?: string | null;
+    keydown?: string | null;
+    keyup?: string | null;
+    keypress?: string | null;
+    mousedown?: string | null;
+    mouseup?: string | null;
+    contextmenu?: string | null;
+    click?: string | null;
+    dblclick?: string | null;
+    mousemove?: string | null;
+    focusin?: string | null;
+    focusout?: string | null;
+    mouseenter?: string | null;
+    mouseleave?: string | null;
+    submit?: string | null;
+    input?: string | null;
+    change?: string | null;
+    dragstart?: string | null;
+    drag?: string | null;
+    dragenter?: string | null;
+    dragleave?: string | null;
+    dragover?: string | null;
+    drop?: string | null;
+    dragend?: string | null;
+    [event: string]: string | null | undefined;
+}
+
 interface ViewMixin {
     // methods
     $: JQueryStatic;
@@ -293,7 +324,7 @@ export namespace Ember {
         /**
         The DOM events for which the event dispatcher should listen.
         */
-        customEvents: {};
+        customEvents: EventDispatcherEvents;
         /**
         The Ember.EventDispatcher responsible for delegating events to this application's views.
         **/
@@ -1094,11 +1125,19 @@ export namespace Ember {
     **/
     const Error: ErrorConstructor;
     /**
-    Handles delegating browser events to their corresponding Ember.Views. For example, when you click on
-    a view, Ember.EventDispatcher ensures that that view's mouseDown method gets called.
-    **/
+     * `Ember.EventDispatcher` handles delegating browser events to their
+     * corresponding `Ember.Views.` For example, when you click on a view,
+     * `Ember.EventDispatcher` ensures that that view's `mouseDown` method gets
+     * called.
+     * @private
+     */
     class EventDispatcher extends Object {
-        events: {};
+        /**
+         * The set of events names (and associated handler function names) to be setup
+         * and dispatched by the `EventDispatcher`. Modifications to this list can be done
+         * at setup time, generally via the `Ember.Application.customEvents` hash.
+         */
+        events: EventDispatcherEvents;
     }
     /**
     This mixin allows for Ember objects to subscribe to and emit events.
