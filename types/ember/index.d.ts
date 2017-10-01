@@ -1203,6 +1203,12 @@ export namespace Ember {
         const logger: typeof Ember.Logger;
         function log(level: string, str: string): void;
     }
+    /**
+     * `Ember.HashLocation` implements the location API using the browser's
+     * hash. At present, it relies on a `hashchange` event existing in the
+     * browser.
+     * @protected
+     */
     class HashLocation extends Object {
     }
     class HistoryLocation extends Object {
