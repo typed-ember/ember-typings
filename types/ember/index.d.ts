@@ -1585,23 +1585,23 @@ export namespace Ember {
         /**
          * Set the value of a property to the current value plus some amount.
          */
-        incrementProperty(keyName: string, increment?: number): number;
+        incrementProperty(keyName: keyof this, increment?: number): number;
         /**
          * Set the value of a property to the current value minus some amount.
          */
-        decrementProperty(keyName: string, decrement?: number): number;
+        decrementProperty(keyName: keyof this, decrement?: number): number;
         /**
          * Set the value of a boolean property to the opposite of its
          * current value.
          */
-        toggleProperty(keyName: string): boolean;
+        toggleProperty(keyName: keyof this): boolean;
         /**
          * Returns the cached value of a computed property, if it exists.
          * This allows you to inspect the value of a computed property
          * without accidentally invoking it if it is intended to be
          * generated lazily.
          */
-        cacheFor(keyName: string): any;
+        cacheFor<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K] | undefined;
     }
     const Observable: Mixin<Observable, Ember.CoreObject>;
     class OrderedSet {
@@ -2177,7 +2177,6 @@ export namespace Ember {
      * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
      */
     function bind(obj: any, to: string, from: string): Binding;
-    function cacheFor(obj: any, key: string): any;
     function canInvoke(obj: any, methodName: string): boolean;
     function changeProperties(callback: Function, binding?: any): void;
     function compare(v: any, w: any): number;
@@ -2261,6 +2260,7 @@ export namespace Ember {
     function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
     function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
     function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
 
     function controllerFor(
         container: Container,
