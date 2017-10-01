@@ -1886,10 +1886,6 @@ export namespace Ember {
         once?: boolean
     ): void;
     function addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
-    /**
-    Ember.alias is deprecated. Please use Ember.aliasMethod or Ember.computed.alias instead.
-    **/
-    const alias: typeof deprecateFunc;
     function aliasMethod(methodName: string): Descriptor;
     function assert(desc: string, test: boolean): void;
     function beginPropertyChanges(): void;
@@ -1999,11 +1995,6 @@ export namespace Ember {
     function deprecate(message: string, test?: boolean): void;
     function deprecateFunc(message: string, func: Function): Function;
     function destroy(obj: any): void;
-    /**
-    Ember.empty is deprecated. Please use Ember.isEmpty instead.
-    **/
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const empty: typeof deprecateFunc;
     function endPropertyChanges(): void;
     function expandProperties(pattern: string, callback: Function): void;
     function finishChains(obj: any): void;
@@ -2014,10 +2005,6 @@ export namespace Ember {
     ): Controller;
     function generateGuid(obj: any, prefix?: string): string;
     function getEngineParent(engine: EngineInstance): EngineInstance;
-    /**
-    getPath is deprecated since get now supports paths.
-    **/
-    const getPath: typeof deprecateFunc;
     function getWithDefault(root: string, key: string, defaultValue: any): any;
     function guidFor(obj: any): string;
     function handleErrors(func: Function, context: any): any;
@@ -2046,10 +2033,6 @@ export namespace Ember {
     function merge(original: any, updates: any): any;
     function meta(obj: any): {};
     function mixin(obj: any, ...args: any[]): any;
-    /**
-    Ember.none is deprecated. Please use Ember.isNone instead.
-    **/
-    const none: typeof deprecateFunc;
     function observer(...args: any[]): Function;
     function observersFor(obj: any, path: string): any[];
     function on(eventNames: string, func: Function): Function;
@@ -2194,10 +2177,6 @@ export namespace Ember {
     function runInDebug(fn: Function): void;
     function runLoadHooks(name: string, object: any): void;
     function sendEvent(obj: any, eventName: string, params?: any[], actions?: any[]): boolean;
-    /**
-    setPath is deprecated since set now supports paths.
-    **/
-    const setPath: typeof deprecateFunc;
     function subscribe(pattern: string, object: any): void;
     function toLocaleString(): string;
     function toString(): string;
@@ -2209,10 +2188,6 @@ export namespace Ember {
     ): any;
     function tryInvoke(obj: any, methodName: string, args?: any[]): any;
     function trySet(obj: any, path: string, value: any): void;
-    /**
-    trySetPath has been renamed to trySet.
-    **/
-    const trySetPath: typeof deprecateFunc;
     function typeOf(item: any): string;
     function unsubscribe(subscriber: any): void;
     function unwatch(obj: any, keyPath: string): void;
