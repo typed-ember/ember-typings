@@ -1604,6 +1604,12 @@ export namespace Ember {
         cacheFor<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K] | undefined;
     }
     const Observable: Mixin<Observable, Ember.CoreObject>;
+    /**
+     * This class is used internally by Ember and Ember Data.
+     * Please do not use it at this time. We plan to clean it up
+     * and add many tests soon.
+     * @deprecated
+     */
     class OrderedSet {
         add(obj: any): void;
         clear(): void;
