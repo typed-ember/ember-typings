@@ -1581,7 +1581,7 @@ export namespace Ember {
          * Retrieves the value of a property, or a default value in the case that the
          * property returns `undefined`.
          */
-        getWithDefault(keyName: string, defaultValue: any): any;
+        getWithDefault<T, K extends keyof T>(this: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
         /**
          * Set the value of a property to the current value plus some amount.
          */
@@ -2260,6 +2260,8 @@ export namespace Ember {
     function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
     function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
     function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+
     function controllerFor(
         container: Container,
         controllerName: string,
@@ -2286,7 +2288,6 @@ export namespace Ember {
     ): Controller;
     function generateGuid(obj: any, prefix?: string): string;
     function getEngineParent(engine: EngineInstance): EngineInstance;
-    function getWithDefault(root: string, key: string, defaultValue: any): any;
     function guidFor(obj: any): string;
     function handleErrors(func: Function, context: any): any;
     function hasListeners(context: any, name: string): boolean;
