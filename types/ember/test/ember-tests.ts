@@ -48,13 +48,6 @@ tom.helloWorld();
 const PersonReopened = Person1.reopen({ isPerson: true });
 PersonReopened.create().get('isPerson');
 
-const person = Person1.create({
-    firstName: 'Yehuda',
-    lastName: 'Katz',
-});
-person.addObserver('fullName', null, () => {});
-person.set('firstName', 'Brohuda');
-
 App.todosController = Ember.Object.create({
     todos: [Ember.Object.create({ isDone: false })],
     remaining: Ember.computed('todos.@each.isDone', function() {
@@ -99,17 +92,6 @@ App.userController = Ember.Object.create({
         posts: 25,
         hobbies: 'Riding bicycles',
     }),
-});
-
-Ember.Helper.helper(params => {
-    let cents = params[0];
-    return `${cents * 0.01}`;
-});
-
-Ember.Helper.helper((params, hash) => {
-    let cents = params[0];
-    let currency = hash.currency;
-    return `${currency}${cents * 0.01}`;
 });
 
 Handlebars.registerHelper(

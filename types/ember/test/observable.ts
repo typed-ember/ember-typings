@@ -21,6 +21,10 @@ class MyComponent extends Ember.Component {
     }
 }
 
+const myComponent = MyComponent.create();
+myComponent.addObserver('foo', null, () => {});
+myComponent.set('foo', 'baz');
+
 const person = Ember.Object.create({
     name: 'Fred',
     age: 29,
