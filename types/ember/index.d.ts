@@ -95,13 +95,6 @@ interface EnumerableConfigurationOptions {
     didChange?: boolean;
 }
 
-interface TransitionsHash {
-    contexts: any[];
-    exitStates: Ember.State[];
-    enterStates: Ember.State[];
-    resolveState: Ember.State;
-}
-
 interface ActionsHash {
     [index: string]: (...params: any[]) => any;
 }
@@ -1707,44 +1700,6 @@ export namespace Ember {
     class Service extends Object {
     }
     const STRINGS: boolean;
-    class State extends Object implements Evented {
-        has(name: string): boolean;
-        off(name: string, target: any, method: Function): State;
-        on(name: string, target: any, method: Function): State;
-        one(name: string, target: any, method: Function): State;
-        trigger(name: string, ...args: string[]): void;
-        getPathsCache(stateManager: {}, path: string): {};
-        init(): void;
-        setPathsCache(stateManager: {}, path: string, transitions: any): void;
-        static transitionTo(target: string): void;
-        hasContext: boolean;
-        isLeaf: boolean;
-        name: string;
-        parentState: State;
-        path: string;
-        enter: Function;
-        exit: Function;
-        setup: Function;
-    }
-    class StateManager extends State {
-        contextFreeTransition(currentState: State, path: string): TransitionsHash;
-        enterState(transition: TransitionsHash): void;
-        getState(name: string): State;
-        getStateByPath(root: State, path: string): State;
-        getStateMeta(state: State, key: string): any;
-        getStatesInPath(root: State, path: string): State[];
-        goToState(path: string, context: any): void;
-        send(event: string): void;
-        setStateMeta(state: State, key: string, value: any): any;
-        stateMetaFor(state: State): {};
-        transitionTo(path: string, context: any): void;
-        triggerSetupContext(transitions: TransitionsHash): void;
-        unhandledEvent(manager: StateManager, event: string): any;
-        currentPath: string;
-        currentState: State;
-        errorOnUnhandledEvents: boolean;
-        transitionEvent: string;
-    }
     namespace String {
         function camelize(str: string): string;
         function capitalize(str: string): string;
