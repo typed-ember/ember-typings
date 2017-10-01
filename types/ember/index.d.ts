@@ -403,7 +403,7 @@ export namespace Ember {
          * return an enumerable that maps automatically to the named key on the
          * member objects.
          */
-        '@each': ComputedProperty<EachProxy>;
+        '@each': ComputedProperty<T>;
     }
     // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
     const Array: Mixin<Ember.Array<any>>;
@@ -890,13 +890,6 @@ export namespace Ember {
         const Array: boolean;
         const Function: boolean;
         const String: boolean;
-    }
-    /**
-    This is the object instance returned when you get the @each property on an array. It uses
-    the unknownProperty handler to automatically create EachArray instances for property names.
-    **/
-    class EachProxy extends Object {
-        unknownProperty(keyName: string, value: any): any[];
     }
     /**
     The Engine class contains core functionality for both applications and engines.
