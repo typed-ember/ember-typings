@@ -202,7 +202,6 @@ export namespace Ember {
     /**
     Alias for jQuery.
     **/
-    // ReSharper disable once DuplicatingLocalDeclaration
     const $: JQueryStatic;
     /**
     Creates an Ember.NativeArray from an Array like object. Does not modify the original object.
@@ -1094,7 +1093,6 @@ export namespace Ember {
     A subclass of the JavaScript Error object for use in Ember.
     **/
     // Restore this to 'typeof Error' when https://github.com/Microsoft/TypeScript/issues/983 is resolved
-    // ReSharper disable once DuplicatingLocalDeclaration
     const Error: any; // typeof Error;
     /**
     Handles delegating browser events to their corresponding Ember.Views. For example, when you click on
@@ -1949,7 +1947,6 @@ export namespace Ember {
         id: string;
         until: string;
     }
-    // ReSharper disable once DuplicatingLocalDeclaration
 
     type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
 
@@ -2024,7 +2021,6 @@ export namespace Ember {
     function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
     function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
     function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-    // ReSharper restore DuplicatingLocalDeclaration
     function controllerFor(
         container: Container,
         controllerName: string,
@@ -2073,7 +2069,6 @@ export namespace Ember {
     function listenersDiff(obj: any, eventName: string, otherActions: any[]): any[];
     function listenersFor(obj: any, eventName: string): any[];
     function listenersUnion(obj: any, eventName: string, otherActions: any[]): void;
-    // ReSharper disable once DuplicatingLocalDeclaration
     const lookup: {}; // TODO: define interface
     function makeArray(obj: any): any[];
     function merge(original: any, updates: any): any;
@@ -2086,7 +2081,6 @@ export namespace Ember {
     const onError: Error;
     function onerror(error: any): void;
     function overrideChains(obj: any, keyName: string, m: any): boolean;
-    // ReSharper disable once DuplicatingLocalDeclaration
     const platform: {
         defineProperty: boolean;
         hasPropertyAccessors: boolean;
@@ -2243,7 +2237,6 @@ export namespace Ember {
     function unwatch(obj: any, keyPath: string): void;
     function unwatchKey(obj: any, keyName: string): void;
     function unwatchPath(obj: any, keyPath: string): void;
-    // ReSharper disable once DuplicatingLocalDeclaration
     const uuid: number;
     function valueOf(): {};
     function warn(message: string, test?: boolean): void;
