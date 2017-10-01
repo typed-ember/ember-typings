@@ -1267,7 +1267,10 @@ export namespace Ember {
         subscribe(pattern: string, object: any): void;
         unsubscribe(subscriber: any): void;
     };
-    const K: Function;
+    /**
+     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
+     */
+    const K: () => any;
     class LinkComponent extends Component {
       activeClass: string;
       currentWhen: any;
