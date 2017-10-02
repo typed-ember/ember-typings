@@ -1245,13 +1245,15 @@ export namespace Ember {
         /**
          * Subscribes to a named event with given function.
          */
-        on(name: string, target: {}, method: Function): void;
+        on<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        on(name: string, method: (...args: any[]) => void): this;
         /**
          * Subscribes a function to a named event and then cancels the subscription
          * after the first time the event is triggered. It is good to use ``one`` when
          * you only care about the first time an event has taken place.
          */
-        one(name: string, target: {}, method: Function): void;
+        one<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        one(name: string, method: (...args: any[]) => void): this;
         /**
          * Triggers a named event for the object. Any additional arguments
          * will be passed as parameters to the functions that are subscribed to the
@@ -1261,7 +1263,8 @@ export namespace Ember {
         /**
          * Cancels subscription for given name, target, and method.
          */
-        off(name: string, target: {}, method: Function): void;
+        off<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        off(name: string, method: (...args: any[]) => void): this;
         /**
          * Checks to see if object has any subscriptions for named event.
          */
@@ -2556,78 +2559,15 @@ export namespace Ember {
 
         queues: EmberRunQueues[];
     };
+    const platform: {
+        defineProperty: boolean;
+        hasPropertyAccessors: boolean;
+    };
 
     /**
-     Alias for jQuery.
-     **/
-    const $: JQueryStatic;
-    const BOOTED: boolean;
-    const FROZEN_ERROR: string;
-
-    const GUID_KEY: string;
-    const IS_BINDING: RegExp;
-    /**
-     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
+     * `getEngineParent` retrieves an engine instance's parent instance.
      */
-    const K: () => any;
-    const LOG_BINDINGS: boolean;
-    const LOG_STACKTRACE_ON_DEPRECATION: boolean;
-    const LOG_VERSION: boolean;
-    const NAME_KEY: string;
-    const ORDER_DEFINITION: string[];
-    const STRINGS: boolean;
-    const TEMPLATES: {};
-    const VERSION: string;
-
-    /**
-     Creates an Ember.NativeArray from an Array like object. Does not modify the original object.
-     Ember.A is not needed if Ember.EXTEND_PROTOTYPES is true (the default value). However, it is
-     recommended that you use Ember.A when creating addons for ember or when you can not garentee
-     that Ember.EXTEND_PROTOTYPES will be true.
-     **/
-    function A<T>(arr?: T[]): NativeArray<T>;
-
-    function addListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string,
-        once?: boolean
-    ): void;
-
-    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
-    function aliasMethod(methodName: string): ComputedProperty<any>;
-    function assert(desc: string, test: boolean): void;
-    function beginPropertyChanges(): void;
-
-    /**
-     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
-     */
-    function bind(obj: any, to: string, from: string): Binding;
-    function canInvoke(obj: any, methodName: string): boolean;
-    function changeProperties(callback: Function, binding?: any): void;
-    function compare(v: any, w: any): number;
-    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
-    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
-    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
-    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
-
-    function controllerFor(
-        container: Container,
-        controllerName: string,
-        lookupOptions?: {}
-    ): Controller;
-    function copy(obj: any, deep: boolean): any;
-    /**
-    Creates an instance of the CoreObject class.
-    @param arguments A hash containing values with which to initialize the newly instantiated object.
-    **/
-    function create(arguments?: {}): CoreObject;
-    function debug(message: string): void;
-    function defineProperty(obj: any, keyName: string, desc: {}): void;
+    function getEngineParent(engine: EngineInstance): EngineInstance;
     /**
      * Display a deprecation warning with the provided message and a stack trace
      * (Chrome and Firefox only).
@@ -2637,111 +2577,304 @@ export namespace Ember {
      * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
      */
     function deprecate(message: string, test: boolean, options?: { id?: string, until?: string }): any;
-    function deprecateFunc(message: string, func: Function): Function;
-    function destroy(obj: any): void;
-    function endPropertyChanges(): void;
-    function expandProperties(pattern: string, callback: Function): void;
-    function finishChains(obj: any): void;
-    function generateController(
-        container: Container,
-        controllerName: string,
-        context: any
-    ): Controller;
-    function generateGuid(obj: any, prefix?: string): string;
-    function getEngineParent(engine: EngineInstance): EngineInstance;
-    function guidFor(obj: any): string;
-    function handleErrors(func: Function, context: any): any;
-    function hasListeners(context: any, name: string): boolean;
-    function hasOwnProperty(prop: string): boolean;
-    function immediateObserver(func: Function, ...propertyNames: any[]): Function;
-    function inspect(obj: any): string;
-    function instrument(name: string, payload: any, callback: Function, binding: any): void;
-    function isArray(obj: any): boolean;
-    function isBlank(obj: any): boolean;
-    function isEmpty(obj: any): boolean;
-    function isEqual(a: any, b: any): boolean;
-    function isGlobalPath(path: string): boolean;
-    const isNamespace: boolean;
-    function isNone(obj: any): obj is null | undefined;
-    function isPresent(obj: any): boolean;
-    function isPrototypeOf(obj: {}): boolean;
-    function isWatching(obj: any, key: string): boolean;
-    function keys(obj: any): any[];
-    function listenersDiff(obj: any, eventName: string, otherActions: any[]): any[];
-    function listenersFor(obj: any, eventName: string): any[];
-    function listenersUnion(obj: any, eventName: string, otherActions: any[]): void;
-    const lookup: {}; // TODO: define interface
-    function makeArray(obj: any): any[];
-    function merge(original: any, updates: any): any;
-    function meta(obj: any): {};
-    function mixin(obj: any, ...args: any[]): any;
-    function observer(...args: any[]): Function;
-    function observersFor(obj: any, path: string): any[];
-    function on(eventNames: string, func: Function): Function;
-    function onLoad(name: string, callback: Function): void;
-    const onError: Error;
-    function onerror(error: any): void;
-    function overrideChains(obj: any, keyName: string, m: any): boolean;
-    const platform: {
-        defineProperty: boolean;
-        hasPropertyAccessors: boolean;
-    };
-    function propertyDidChange(obj: any, keyName: string): void;
-    function propertyIsEnumerable(prop: string): boolean;
-    function propertyWillChange(obj: any, keyName: string): void;
-    function removeChainWatcher(obj: any, keyName: string, node: any): void;
-    function removeListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string
-    ): void;
-    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
-
     /**
-     * @deprecated Ember.required is deprecated as its behavior is inconsistent and unreliable
+     * Define an assertion that will throw an exception if the condition is not met.
      */
-    function required(): ComputedProperty<any>;
-    function reset(): void;
-    function rewatch(obj: any): void;
-
-    function runInDebug(fn: Function): void;
-    function runLoadHooks(name: string, object: any): void;
+    function assert(desc: string, test?: boolean): void | never;
+    /**
+     * Display a debug notice.
+     */
+    function debug(message: string): void;
+    /**
+     * NOTE: This is a low-level method used by other parts of the API.
+     * You almost never want to call this method directly. Instead you
+     * should use Ember.mixin() to define new properties.
+     * @private
+     */
+    function defineProperty(obj: object, keyName: string, desc?: PropertyDescriptor | ComputedProperty<any>, data?: any, meta?: any): void;
+    /**
+     * Alias an old, deprecated method with its new counterpart.
+     * @private
+     */
+    function deprecateFunc<Func extends ((...args: any[]) => any)>(message: string, options: { id: string, until: string }, func: Func): Func;
+    /**
+     * @private
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function deprecateFunc<Func extends ((...args: any[]) => any)>(message: string, func: Func): Func;
+    /**
+     * Run a function meant for debugging.
+     */
+    function runInDebug(func: () => void): any;
+    /**
+     * Display a warning with the provided message.
+     */
+    function warn(message: string, test: boolean, options: { id: string }): any;
+    function warn(message: string, options: { id: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function warn(message: string, test: boolean, options?: { id?: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function warn(message: string, options?: { id?: string }): any;
+    /**
+     * Global helper method to create a new binding. Just pass the root object
+     * along with a `to` and `from` path to create and connect the binding.
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     */
+    function bind(obj: {}, to: string, from: string): Binding;
+    /**
+     * Returns the cached value for a property, if one exists.
+     * This can be useful for peeking at the value of a computed
+     * property that is generated lazily, without accidentally causing
+     * it to be created.
+     */
+    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
+    /**
+     * Add an event listener
+     */
+    function addListener<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>, once?: boolean): void;
+    /**
+     * Remove an event listener
+     */
+    function removeListener<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
+    /**
+     * Send an event. The execution of suspended listeners
+     * is skipped, and once listeners are removed. A listener without
+     * a target is executed on the passed object. If an array of actions
+     * is not passed, the actions stored on the passed object are invoked.
+     */
     function sendEvent(obj: any, eventName: string, params?: any[], actions?: any[]): boolean;
-    function subscribe(pattern: string, object: any): void;
-    function toLocaleString(): string;
-    function toString(): string;
-    function tryCatchFinally(
-        tryable: Function,
-        catchable: Function,
-        finalizer: Function,
-        binding?: any
-    ): any;
-    function tryInvoke(obj: any, methodName: string, args?: any[]): any;
-    function trySet(obj: any, path: string, value: any): void;
+    /**
+     * Define a property as a function that should be executed when
+     * a specified event or events are triggered.
+     */
+    function on(eventNames: string, func: (...args: any[]) => void): (...args: any[]) => void;
+    /**
+     * To get multiple properties at once, call `Ember.getProperties`
+     * with an object followed by a list of strings or an array:
+     */
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
+    /**
+     * A value is blank if it is empty or a whitespace string.
+     */
+    function isBlank(obj: any): boolean;
+    /**
+     * Verifies that a value is `null` or an empty string, empty array,
+     * or empty function.
+     */
+    function isEmpty(obj: any): boolean;
+    /**
+     * Returns true if the passed value is null or undefined. This avoids errors
+     * from JSLint complaining about use of ==, which can be technically
+     * confusing.
+     */
+    function isNone(obj: any): obj is null | undefined;
+    /**
+     * A value is present if it not `isBlank`.
+     */
+    function isPresent(obj: any): boolean;
+    /**
+     * Merge the contents of two objects together into the first object.
+     * @deprecated Use Object.assign
+     */
+    function merge<T, U>(original: T, updates: U): T & U;
+    /**
+     * Makes a method available via an additional name.
+     */
+    function aliasMethod(methodName: string): ComputedProperty<any>;
+    /**
+     * Specify a method that observes property changes.
+     */
+    function observer(key1: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, key4: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, key4: string, key5: string, func: (target: any, key: string) => void): void;
+    /**
+     * Adds an observer on a property.
+     */
+    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
+    /**
+     * Remove an observer you have previously registered on this object. Pass
+     * the same key, target, and method you passed to `addObserver()` and your
+     * target will no longer receive notifications.
+     */
+    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
+    /**
+     * Gets the value of a property on an object. If the property is computed,
+     * the function will be invoked. If the property is not defined but the
+     * object implements the `unknownProperty` method then that will be invoked.
+     */
+    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
+    /**
+     * Retrieves the value of a property from an Object, or a default value in the
+     * case that the property returns `undefined`.
+     */
+    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+    /**
+     * Sets the value of a property on an object, respecting computed properties
+     * and notifying observers and other listeners of the change. If the
+     * property is not defined but the object implements the `setUnknownProperty`
+     * method then that will be invoked as well.
+     */
+    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
+    /**
+     * Error-tolerant form of `Ember.set`. Will not blow up if any part of the
+     * chain is `undefined`, `null`, or destroyed.
+     */
+    function trySet(root: object, path: string, value: any): any;
+    /**
+     * Set a list of properties on an object. These properties are set inside
+     * a single `beginPropertyChanges` and `endPropertyChanges` batch, so
+     * observers will be buffered.
+     */
+    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+    /**
+     * Detects when a specific package of Ember (e.g. 'Ember.Application')
+     * has fully loaded and is available for extension.
+     * @private
+     */
+    function onLoad(name: string, callback: Function): any;
+    /**
+     * Called when an Ember.js package (e.g Ember.Application) has finished
+     * loading. Triggers any callbacks registered for this event.
+     * @private
+     */
+    function runLoadHooks(name: string, object?: {}): any;
+    /**
+     * Creates an `Ember.NativeArray` from an Array like object.
+     * Does not modify the original object's contents. Ember.A is not needed if
+     * `EmberENV.EXTEND_PROTOTYPES` is `true` (the default value). However,
+     * it is recommended that you use Ember.A when creating addons for
+     * ember or when you can not guarantee that `EmberENV.EXTEND_PROTOTYPES`
+     * will be `true`.
+     */
+    function A<T>(arr?: T[]): NativeArray<T>;
+    /**
+     * Compares two javascript values and returns:
+     */
+    function compare(v: any, w: any): number;
+    /**
+     * Creates a shallow copy of the passed object. A deep copy of the object is
+     * returned if the optional `deep` argument is `true`.
+     */
+    function copy(obj: any, deep?: boolean): any;
+    /**
+     * Compares two objects, returning true if they are equal.
+     */
+    function isEqual(a: any, b: any): boolean;
+    /**
+     * Returns true if the passed object is an array or Array-like.
+     */
+    function isArray(obj: any): obj is ArrayLike<any>;
+    /**
+     * Returns a consistent type for the passed object.
+     */
     function typeOf(item: any): string;
-    function unsubscribe(subscriber: any): void;
-    function unwatch(obj: any, keyPath: string): void;
-    function unwatchKey(obj: any, keyName: string): void;
-    function unwatchPath(obj: any, keyPath: string): void;
-    const uuid: number;
-    function valueOf(): {};
-    function warn(message: string, test?: boolean): void;
-    function watch(obj: any, keyPath: string): void;
-    function watchKey(obj: any, keyName: string): void;
-    function watchPath(obj: any, keyPath: string): void;
-    function watchedEvents(obj: {}): any[];
-    function wrap(func: Function, superFunc: Function): Function;
+    /**
+     * Copy properties from a source object to a target object.
+     * @deprecated Use Object.assign
+     */
+    function assign<T, U>(target: T, source: U): T & U;
+    function assign<T, U, V>(target: T, source1: U, source2: V): T & U & V;
+    function assign<T, U, V, W>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+    /**
+     * Polyfill for Object.create
+     * @deprecated Use Object.create
+     */
+    function create(o: object | null): any;
+    /**
+     * Polyfill for Object.keys
+     * @deprecated Use Object.keys
+     */
+    function keys(o: any): string[];
+    /**
+     * Returns a unique id for the object. If the object does not yet have a guid,
+     * one will be assigned to it. You can call this on any object,
+     * `Ember.Object`-based or not, but be aware that it will add a `_guid`
+     * property.
+     */
+    function guidFor(obj: any): string;
+    /**
+     * Convenience method to inspect an object. This method will attempt to
+     * convert the object into a useful string description.
+     * @private
+     */
+    function inspect(obj: any): string;
+    /**
+     * Checks to see if the `methodName` exists on the `obj`,
+     * and if it does, invokes it with the arguments passed.
+     */
+    function tryInvoke(obj: any, methodName: string, args?: any[]): any;
+    /**
+     * Forces the passed object to be part of an array. If the object is already
+     * an array, it will return the object. Otherwise, it will add the object to
+     * an array. If obj is `null` or `undefined`, it will return an empty array.
+     * @private
+     */
+    function makeArray<T>(obj?: T[] | T | null | undefined): T[];
+    /**
+     * Framework objects in an Ember application (components, services, routes, etc.)
+     * are created via a factory and dependency injection system. Each of these
+     * objects is the responsibility of an "owner", which handled its
+     * instantiation and manages its lifetime.
+     */
     function getOwner(object: any): any;
+    /**
+     * `setOwner` forces a new owner on a given object instance. This is primarily
+     * useful in some testing cases.
+     */
     function setOwner(object: any, owner: any): void;
+    /**
+     * A function may be assigned to `Ember.onerror` to be called when Ember
+     * internals encounter an error. This is useful for specialized error handling
+     * and reporting code.
+     */
+    function onerror(error: Error): void;
+    /**
+     * An empty function useful for some operations. Always returns `this`.
+     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
+     */
+    function K<This>(this: This): This;
+    /**
+     * The semantic version
+     */
+    const VERSION: string;
+    /**
+     * Alias for jQuery
+     */
+    const $: JQueryStatic;
     /**
      * This property indicates whether or not this application is currently in
      * testing mode. This is set when `setupForTesting` is called on the current
      * application.
      */
     const testing: boolean;
-    const MODEL_FACTORY_INJECTIONS: boolean;
-    function assign(original: any, ...sources: any[]): any;
+    /**
+     * @private
+     */
+    const instrument: typeof Instrumentation.instrument;
+    /**
+     * @private
+     */
+    const reset: typeof Instrumentation.reset;
+    /**
+     * @private
+     */
+    const subscribe: typeof Instrumentation.subscribe;
+    /**
+     * @private
+     */
+    const unsubscribe: typeof Instrumentation.unsubscribe;
+    /**
+     * Expands `pattern`, invoking `callback` for each expansion.
+     * @private
+     */
+    function expandProperties(pattern: string, callback: (expanded: string) => void): void;
 }
 
 export default Ember;
