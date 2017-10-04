@@ -17,19 +17,6 @@ import { TemplateFactory } from 'htmlbars-inline-precompile';
 // Get an alias to the global Array type to use in inner scope below.
 type GlobalArray<T> = T[];
 
-interface String {
-    camelize(): string;
-    capitalize(): string;
-    classify(): string;
-    dasherize(): string;
-    decamelize(): string;
-    fmt(...args: string[]): string;
-    htmlSafe(): typeof Handlebars.SafeString;
-    loc(...args: string[]): string;
-    underscore(): string;
-    w(): string[];
-}
-
 /**
  * Deconstructs computed properties into the types which would be returned by `.get()`.
  */
@@ -90,26 +77,36 @@ type EmberClassConstructor<T> = (
     new (...args: any[]) => T
 );
 
-interface EnumerableConfigurationOptions {
-    willChange?: boolean;
-    didChange?: boolean;
+type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
+
+interface ComputedPropertyGet<T> {
+    get(this: any, key: string): T;
 }
 
-interface TransitionsHash {
-    contexts: any[];
-    exitStates: Ember.State[];
-    enterStates: Ember.State[];
-    resolveState: Ember.State;
+interface ComputedPropertySet<T> {
+    set(this: any, key: string, value: T): T;
 }
+
+type ComputedPropertyCallback<T> =
+    ComputedPropertyGetterFunction<T> |
+    ComputedPropertyGet<T> |
+    ComputedPropertySet<T> |
+    (ComputedPropertyGet<T> & ComputedPropertySet<T>);
 
 interface ActionsHash {
     [index: string]: (...params: any[]) => any;
 }
 
-interface DisconnectOutletOptions {
-    outlet?: string;
-    parentView?: string;
+interface EmberRunTimer {
+    __ember_run_timer_brand__: any;
 }
+
+type RunMethod<Target, Ret = any> = ((this: Target, ...args: any[]) => Ret) | keyof Target;
+type EmberRunQueues = "sync" | "actions" | "routerTransitions" | "render"| "afterRender" | "destroy";
+
+type ObserverMethod<Target, Sender> =
+    (keyof Target) |
+    ((this: Target, sender: Sender, key: keyof Sender, value: any, rev: number) => void);
 
 interface RenderOptions {
     into?: string;
@@ -125,20 +122,94 @@ interface RouteQueryParam {
     as?: string;
 }
 
+interface EventDispatcherEvents {
+    touchstart?: string | null;
+    touchmove?: string | null;
+    touchend?: string | null;
+    touchcancel?: string | null;
+    keydown?: string | null;
+    keyup?: string | null;
+    keypress?: string | null;
+    mousedown?: string | null;
+    mouseup?: string | null;
+    contextmenu?: string | null;
+    click?: string | null;
+    dblclick?: string | null;
+    mousemove?: string | null;
+    focusin?: string | null;
+    focusout?: string | null;
+    mouseenter?: string | null;
+    mouseleave?: string | null;
+    submit?: string | null;
+    input?: string | null;
+    change?: string | null;
+    dragstart?: string | null;
+    drag?: string | null;
+    dragenter?: string | null;
+    dragleave?: string | null;
+    dragover?: string | null;
+    drop?: string | null;
+    dragend?: string | null;
+    [event: string]: string | null | undefined;
+}
+
 interface ViewMixin {
-    // methods
-    $: JQueryStatic;
-    rerender(): void;
-    // properties
+    /**
+     * A list of properties of the view to apply as attributes. If the property
+     * is a string value, the value of that string will be applied as the value
+     * for an attribute of the property's name.
+     */
     attributeBindings: string[];
+    /**
+     * Returns the current DOM element for the view.
+     */
     element: Element;
+    /**
+     * Returns a jQuery object for this view's element. If you pass in a selector
+     * string, this method will return a jQuery object, using the current element
+     * as its buffer.
+     */
+    $: JQueryStatic;
+    /**
+     * The HTML `id` of the view's element in the DOM. You can provide this
+     * value yourself but it must be unique (just as in HTML):
+     */
     elementId: string;
+    /**
+     * Tag name for the view's outer element. The tag name is only used when an
+     * element is first created. If you change the `tagName` for an element, you
+     * must destroy and recreate the view element.
+     */
     tagName: string;
-    // events
-    didInsertElement(): void;
-    willClearRender(): void;
-    willDestroyElement(): void;
+    /**
+     * Renders the view again. This will work regardless of whether the
+     * view is already in the DOM or not. If the view is in the DOM, the
+     * rendering process will be deferred to give bindings a chance
+     * to synchronize.
+     */
+    rerender(): void;
+    /**
+     * Called when a view is going to insert an element into the DOM.
+     */
     willInsertElement(): void;
+    /**
+     * Called when the element of the view has been inserted into the DOM.
+     * Override this function to do any set up that requires an element
+     * in the document body.
+     */
+    didInsertElement(): void;
+    /**
+     * Called when the view is about to rerender, but before anything has
+     * been torn down. This is a good opportunity to tear down any manual
+     * observers you have installed based on the DOM state
+     */
+    willClearRender(): void;
+    /**
+     * Called when the element of the view is going to be destroyed. Override
+     * this function to do any teardown that requires an element, like removing
+     * event listeners.
+     */
+    willDestroyElement(): void;
 }
 const ViewMixin: Ember.Mixin<ViewMixin>;
 
@@ -148,11 +219,11 @@ view class Ember.Component and other classes that don't need the full functional
 
 Unless you have specific needs for CoreView, you will use Ember.Component in your applications.
 **/
-class CoreView extends Ember.Object.extend(Ember.Evented, ActionHandler) {}
+class CoreView extends Ember.Object.extend(Ember.Evented, Ember.ActionHandler) {}
 interface ActionSupport {
     sendAction(action: string, ...params: any[]): void;
 }
-const ActionSupport: ActionSupport;
+const ActionSupport: Ember.Mixin<ActionSupport>;
 
 interface ClassNamesSupport {
     /**
@@ -168,50 +239,14 @@ interface ClassNamesSupport {
     This list of properties is inherited from the component's superclasses as well.
     */
     classNameBindings: string[];
+    /**
+     * Standard CSS class names to apply to the view's outer element. This
+     * property automatically inherits any class names defined by the view's
+     * superclasses as well.
+     */
     classNames: string[];
 }
-const ClassNamesSupport: ClassNamesSupport;
-
-/**
-TextSupport is a shared mixin used by both Ember.TextField and Ember.TextArea. TextSupport
-adds a number of methods that allow you to specify a controller action to invoke when a
-certain event is fired on your text field or textarea. The specifed controller action would
-get the current value of the field passed in as the only argument unless the value of the field
-is empty. In that case, the instance of the field itself is passed in as the only argument.
-**/
-interface TextSupport extends TargetActionSupport {
-    cancel(event: Function): void;
-    focusIn(event: Function): void;
-    focusOut(event: Function): void;
-    insertNewLine(event: Function): void;
-    keyPress(event: Function): void;
-    action: string;
-    bubbles: boolean;
-    onEvent: string;
-}
-const TextSupport: Ember.Mixin<TextSupport, Ember.Component>;
-
-/**
-Ember.ActionHandler is available on some familiar classes including Ember.Route,
-Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
-Ember.ControllerMixin, and Ember.Route and available to the above classes through inheritance.)
-**/
-interface ActionHandler {
-    /**
-    Triggers a named action on the ActionHandler. Any parameters supplied after the actionName
-    string will be passed as arguments to the action target function.
-
-    If the ActionHandler has its target property set, actions may bubble to the target.
-    Bubbling happens when an actionName can not be found in the ActionHandler's actions
-    hash or if the action target function returns true.
-    **/
-    send(actionName: string, ...args: any[]): void;
-    /**
-    The collection of functions, keyed by name, available on this ActionHandler as action targets.
-    **/
-    actions: ActionsHash;
-}
-const ActionHandler: Ember.Mixin<ActionHandler>;
+const ClassNamesSupport: Ember.Mixin<ClassNamesSupport>;
 
 interface TriggerActionOptions {
     "action"?: string;
@@ -228,32 +263,7 @@ interface TargetActionSupport {
     triggerAction(opts: TriggerActionOptions): boolean;
 }
 
-/**
-Additional methods for the Controller.
-**/
-interface ControllerMixin extends ActionHandler {
-    replaceRoute(name: string, ...args: any[]): void;
-    transitionToRoute(name: string, ...args: any[]): void;
-    model: any;
-    queryParams: string[] | Array<{ [key: string]: { type: string } }>;
-    target: Object;
-}
-const ControllerMixin: Ember.Mixin<ControllerMixin>;
-
 export namespace Ember {
-    /**
-    Alias for jQuery.
-    **/
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const $: JQueryStatic;
-    /**
-    Creates an Ember.NativeArray from an Array like object. Does not modify the original object.
-    Ember.A is not needed if Ember.EXTEND_PROTOTYPES is true (the default value). However, it is
-    recommended that you use Ember.A when creating addons for ember or when you can not garentee
-    that Ember.EXTEND_PROTOTYPES will be true.
-    **/
-    function A<T>(arr?: T[]): NativeArray<T>;
-
     interface FunctionPrototypeExtensions {
         /**
          * The `property` extension of Javascript's Function prototype is available
@@ -277,6 +287,97 @@ export namespace Ember {
 
     interface ArrayPrototypeExtensions<T> extends MutableArray<T>, Observable, Copyable {}
 
+    /**
+     * Given a fullName return a factory manager.
+     */
+    interface _ContainerProxyMixin {
+        /**
+         * Returns an object that can be used to provide an owner to a
+         * manually created instance.
+         */
+        ownerInjection(): {};
+        /**
+         * Given a fullName return a corresponding instance.
+         */
+        lookup(fullName: string, options: {}): any;
+    }
+    const _ContainerProxyMixin: Mixin<_ContainerProxyMixin>;
+
+    /**
+     * RegistryProxyMixin is used to provide public access to specific
+     * registry functionality.
+     */
+    interface _RegistryProxyMixin {
+        /**
+         * Given a fullName return the corresponding factory.
+         */
+        resolveRegistration(fullName: string): Function;
+        /**
+         * Registers a factory that can be used for dependency injection (with
+         * `inject`) or for service lookup. Each factory is registered with
+         * a full name including two parts: `type:name`.
+         */
+        register(fullName: string, factory: Function, options: {}): any;
+        /**
+         * Unregister a factory.
+         */
+        unregister(fullName: string): any;
+        /**
+         * Check if a factory is registered.
+         */
+        hasRegistration(fullName: string): boolean;
+        /**
+         * Register an option for a particular factory.
+         */
+        registerOption(fullName: string, optionName: string, options: {}): any;
+        /**
+         * Return a specific registered option for a particular factory.
+         */
+        registeredOption(fullName: string, optionName: string): {};
+        /**
+         * Register options for a particular factory.
+         */
+        registerOptions(fullName: string, options: {}): any;
+        /**
+         * Return registered options for a particular factory.
+         */
+        registeredOptions(fullName: string): {};
+        /**
+         * Allow registering options for all factories of a type.
+         */
+        registerOptionsForType(type: string, options: {}): any;
+        /**
+         * Return the registered options for all factories of a type.
+         */
+        registeredOptionsForType(type: string): {};
+        /**
+         * Define a dependency injection onto a specific factory or all factories
+         * of a type.
+         */
+        inject(factoryNameOrType: string, property: string, injectionName: string): any;
+    }
+    const _RegistryProxyMixin: Mixin<_RegistryProxyMixin>;
+    /**
+     Ember.ActionHandler is available on some familiar classes including Ember.Route,
+     Ember.Component, and Ember.Controller. (Internally the mixin is used by Ember.CoreView,
+     Ember.ControllerMixin, and Ember.Route and available to the above classes through inheritance.)
+     **/
+    interface ActionHandler {
+        /**
+         Triggers a named action on the ActionHandler. Any parameters supplied after the actionName
+         string will be passed as arguments to the action target function.
+
+         If the ActionHandler has its target property set, actions may bubble to the target.
+         Bubbling happens when an actionName can not be found in the ActionHandler's actions
+         hash or if the action target function returns true.
+         **/
+        send(actionName: string, ...args: any[]): void;
+        /**
+         The collection of functions, keyed by name, available on this ActionHandler as action targets.
+         **/
+        actions: ActionsHash;
+    }
+    const ActionHandler: Ember.Mixin<ActionHandler>;
     /**
     An instance of Ember.Application is the starting point for every Ember application. It helps to
     instantiate, initialize and coordinate the many objects that make up your app.
@@ -336,7 +437,7 @@ export namespace Ember {
         /**
         The DOM events for which the event dispatcher should listen.
         */
-        customEvents: {};
+        customEvents: EventDispatcherEvents;
         /**
         The Ember.EventDispatcher responsible for delegating events to this application's views.
         **/
@@ -445,7 +546,7 @@ export namespace Ember {
          * return an enumerable that maps automatically to the named key on the
          * member objects.
          */
-        '@each': ComputedProperty<EachProxy>;
+        '@each': ComputedProperty<T>;
     }
     // Ember.Array rather than Array because the `array-type` lint rule doesn't realize the global is shadowed
     const Array: Mixin<Ember.Array<any>>;
@@ -469,11 +570,12 @@ export namespace Ember {
     **/
     class AutoLocation extends Object {
     }
-    const BOOTED: boolean;
     /**
-    Connects the properties of two objects so that whenever the value of one property changes,
-    the other property will be changed also.
-    **/
+     * Connects the properties of two objects so that whenever the value of one property changes,
+     * the other property will be changed also.
+     *
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     **/
     class Binding {
         constructor(toPath: string, fromPath: string);
         connect(obj: any): Binding;
@@ -490,12 +592,14 @@ export namespace Ember {
     class Checkbox extends Component {
     }
     /**
-    Implements some standard methods for comparing objects. Add this mixin to any class
-    you create that can compare its instances.
-    **/
-    class Comparable {
+     * Implements some standard methods for comparing objects. Add this mixin to
+     * any class you create that can compare its instances.
+     * @private
+     */
+    interface Comparable {
         compare(a: any, b: any): number;
     }
+    const Comparable: Mixin<Comparable>;
     /**
     A view that is completely isolated. Property access in its templates go to the view object
     and actions are targeted at the view object. There is no access to the surrounding context or
@@ -600,30 +704,18 @@ export namespace Ember {
         meta(meta: {}): this;
         meta(): {};
     }
+    /**
+     * A container used to instantiate and cache objects.
+     * @private
+     */
     class Container {
-        constructor(parent: Container);
-        parent: Container;
-        children: any[];
-        owner: any;
-        ownerInjection(): any;
-        resolver: Function;
-        registry: Registry;
-        cache: {};
-        typeInjections: {};
-        injections: {};
-        child(): Container;
-        set(object: {}, key: string, value: any): void;
         /**
-        registers a factory for later injection
-        @param fullName type:name (e.g., 'model:user')
-        @param factory (e.g., App.Person)
-        **/
-        describe(fullName: string): string;
-        makeToString(factory: any, fullName: string): Function;
-        lookup(fullName: string, options?: {}): any;
-        lookupFactory(fullName: string, options?: {}): any;
-        destroy(): void;
-        reset(): void;
+         * Given a fullName, return the corresponding factory. The consumer of the factory
+         * is responsible for the destruction of any factory instances, as there is no
+         * way for the container to ensure instances are destroyed when it itself is
+         * destroyed.
+         */
+        factoryFor(fullName: string, options?: {}): any;
     }
     /**
     The ContainerDebugAdapter helps the container and resolver interface
@@ -634,18 +726,37 @@ export namespace Ember {
       canCatalogEntriesByType(type: string): boolean;
       catalogEntriesByType(type: string): any[];
     }
-
+    /**
+     * Additional methods for the Controller.
+     * @private
+     */
+    interface ControllerMixin extends ActionHandler {
+        replaceRoute(name: string, ...args: any[]): void;
+        transitionToRoute(name: string, ...args: any[]): void;
+        model: any;
+        queryParams: string[] | Array<{ [key: string]: { type: string } }>;
+        target: Object;
+    }
+    const ControllerMixin: Ember.Mixin<ControllerMixin>;
     class Controller extends Object.extend(ControllerMixin) {}
     /**
-    Implements some standard methods for copying an object. Add this mixin to any object you
-    create that can create a copy of itself. This mixin is added automatically to the built-in array.
-    You should generally implement the copy() method to return a copy of the receiver.
-    Note that frozenCopy() will only work if you also implement Ember.Freezable.
-    **/
-    class Copyable {
+     * Implements some standard methods for copying an object. Add this mixin to
+     * any object you create that can create a copy of itself. This mixin is
+     * added automatically to the built-in array.
+     * @private
+     */
+    interface Copyable {
+        /**
+         * __Required.__ You must implement this method to apply this mixin.
+         */
         copy(deep: boolean): Copyable;
+        /**
+         * If the object implements `Ember.Freezable`, then this will return a new
+         * copy if the object is not frozen and the receiver if the object is frozen.
+         */
         frozenCopy(): Copyable;
     }
+    const Copyable: Ember.Mixin<Copyable>;
     class CoreObject {
         _super(...args: any[]): any;
 
@@ -844,82 +955,106 @@ export namespace Ember {
         static isClass: boolean;
         static isMethod: boolean;
     }
-    class DAG {
-        add(name: string): any;
-        map(name: string, value: any): void;
-        addEdge(fromName: string, toName: string): void;
-        topsort(fn: Function): void;
-        addEdges(name: string, value: any, before: any, after: any): void;
-        names: any[];
-        vertices: {};
-    }
     /**
-    The DataAdapter helps a data persistence library interface with tools
-    that debug Ember such as the Ember Extension for Chrome and Firefox.
-    */
+     * The `DataAdapter` helps a data persistence library
+     * interface with tools that debug Ember such as Chrome and Firefox.
+     */
     class DataAdapter extends Object {
+        /**
+         * The container-debug-adapter which is used
+         * to list all models.
+         */
+        containerDebugAdapter: any;
+        /**
+         * Ember Data > v1.0.0-beta.18
+         * requires string model names to be passed
+         * around instead of the actual factories.
+         */
         acceptsModelName: any;
-        containerDebugAdapter: ContainerDebugAdapter;
+        /**
+         * Specifies how records can be filtered.
+         * Records returned will need to have a `filterValues`
+         * property with a key for every name in the returned array.
+         */
         getFilters(): any[];
-        watchModelTypes(typesAdded: any, typesUpdated: any): Function;
-        watchRecords(modelName: any, recordsAdded: any, recordsUpdated: any, recordsRemoved: any): Function;
+        /**
+         * Fetch the model types and observe them for changes.
+         */
+        watchModelTypes(typesAdded: Function, typesUpdated: Function): Function;
+        /**
+         * Fetch the records of a given type and observe them for changes.
+         */
+        watchRecords(modelName: string, recordsAdded: Function, recordsUpdated: Function, recordsRemoved: Function): Function;
     }
     const Debug: {
-        registerDeprecationHandler(handler: Function): void;
-        registerWarnHandler(handler: Function): void;
+        /**
+         * Allows for runtime registration of handler functions that override the default deprecation behavior.
+         * Deprecations are invoked by calls to [Ember.deprecate](http://emberjs.com/api/classes/Ember.html#method_deprecate).
+         * The following example demonstrates its usage by registering a handler that throws an error if the
+         * message contains the word "should", otherwise defers to the default handler.
+         */
+        registerDeprecationHandler(handler: Function): any;
+        /**
+         * Allows for runtime registration of handler functions that override the default warning behavior.
+         * Warnings are invoked by calls made to [Ember.warn](http://emberjs.com/api/classes/Ember.html#method_warn).
+         * The following example demonstrates its usage by registering a handler that does nothing overriding Ember's
+         * default warning behavior.
+         */
+        registerWarnHandler(handler: Function): any;
     };
-    function DEFAULT_GETTER_FUNCTION(name: string): Function;
     /**
-    The DefaultResolver defines the default lookup rules to resolve container lookups before consulting
-    the container for registered items:
-    templates are looked up on Ember.TEMPLATES
-    other names are looked up on the application after converting the name.
-    For example, controller:post looks up App.PostController by default.
-    **/
+     * The DefaultResolver defines the default lookup rules to resolve
+     * container lookups before consulting the container for registered
+     * items:
+     */
     class DefaultResolver extends Resolver {
+        /**
+         * This method is called via the container's resolver method.
+         * It parses the provided `fullName` and then looks up and
+         * returns the appropriate template or class.
+         */
         resolve(fullName: string): {};
+        /**
+         * This will be set to the Application instance when it is
+         * created.
+         */
         namespace: Application;
     }
     /**
-    Objects of this type can implement an interface to respond to requests to get and set.
-    The default implementation handles simple properties.
-    You generally won't need to create or subclass this directly.
-    **/
-    class Descriptor {}
-    namespace ENV {
-        const EXTEND_PROTOTYPES: typeof Ember.EXTEND_PROTOTYPES;
-        const LOG_BINDINGS: boolean;
-        const LOG_STACKTRACE_ON_DEPRECATION: boolean;
-        const LOG_VERSION: boolean;
-        const MODEL_FACTORY_INJECTIONS: boolean;
-        const RAISE_ON_DEPRECATION: boolean;
-    }
-    namespace EXTEND_PROTOTYPES {
-        const Array: boolean;
-        const Function: boolean;
-        const String: boolean;
-    }
-    /**
-    This is the object instance returned when you get the @each property on an array. It uses
-    the unknownProperty handler to automatically create EachArray instances for property names.
-    **/
-    class EachProxy extends Object {
-        unknownProperty(keyName: string, value: any): any[];
-    }
-    /**
-    The Engine class contains core functionality for both applications and engines.
-    **/
+     * The `Engine` class contains core functionality for both applications and
+     * engines.
+     */
     class Engine extends Namespace {
-      resolver: Resolver;
-      initializer(initializer: Object): any;
-      instanceInitializer(instanceInitializer: Object): any;
+        /**
+         * The goal of initializers should be to register dependencies and injections.
+         * This phase runs once. Because these initializers may load code, they are
+         * allowed to defer application readiness and advance it. If you need to access
+         * the container or store you should use an InstanceInitializer that will be run
+         * after all initializers and therefore after all code is loaded and the app is
+         * ready.
+         */
+        initializer(initializer: {}): any;
+        /**
+         * Instance initializers run after all initializers have run. Because
+         * instance initializers run after the app is fully set up. We have access
+         * to the store, container, and other items. However, these initializers run
+         * after code has loaded and are not allowed to defer readiness.
+         */
+        instanceInitializer(instanceInitializer: any): any;
+        /**
+         * Set this to provide an alternate class to `Ember.DefaultResolver`
+         */
+        resolver: Resolver;
     }
     /**
-     The `EngineInstance` encapsulates all of the stateful aspects of a
-     running `Engine`.
-     **/
-    class EngineInstance extends Object {
-      unregister(fullName: string): void;
+     * The `EngineInstance` encapsulates all of the stateful aspects of a
+     * running `Engine`.
+     */
+    class EngineInstance extends Ember.Object.extend(_RegistryProxyMixin, _ContainerProxyMixin) {
+        /**
+         * Unregister a factory.
+         */
+        unregister(fullName: string): any;
     }
     /**
      * This mixin defines the common interface implemented by enumerable objects
@@ -1087,115 +1222,200 @@ export namespace Ember {
     /**
     A subclass of the JavaScript Error object for use in Ember.
     **/
-    // Restore this to 'typeof Error' when https://github.com/Microsoft/TypeScript/issues/983 is resolved
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const Error: any; // typeof Error;
+    const Error: ErrorConstructor;
     /**
-    Handles delegating browser events to their corresponding Ember.Views. For example, when you click on
-    a view, Ember.EventDispatcher ensures that that view's mouseDown method gets called.
-    **/
+     * `Ember.EventDispatcher` handles delegating browser events to their
+     * corresponding `Ember.Views.` For example, when you click on a view,
+     * `Ember.EventDispatcher` ensures that that view's `mouseDown` method gets
+     * called.
+     * @private
+     */
     class EventDispatcher extends Object {
-        events: {};
+        /**
+         * The set of events names (and associated handler function names) to be setup
+         * and dispatched by the `EventDispatcher`. Modifications to this list can be done
+         * at setup time, generally via the `Ember.Application.customEvents` hash.
+         */
+        events: EventDispatcherEvents;
     }
     /**
-    This mixin allows for Ember objects to subscribe to and emit events.
-    You can also chain multiple event subscriptions.
-    **/
+     * This mixin allows for Ember objects to subscribe to and emit events.
+     */
     interface Evented {
+        /**
+         * Subscribes to a named event with given function.
+         */
+        on<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        on(name: string, method: (...args: any[]) => void): this;
+        /**
+         * Subscribes a function to a named event and then cancels the subscription
+         * after the first time the event is triggered. It is good to use ``one`` when
+         * you only care about the first time an event has taken place.
+         */
+        one<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        one(name: string, method: (...args: any[]) => void): this;
+        /**
+         * Triggers a named event for the object. Any additional arguments
+         * will be passed as parameters to the functions that are subscribed to the
+         * event.
+         */
+        trigger(name: string, ...args: any[]): any;
+        /**
+         * Cancels subscription for given name, target, and method.
+         */
+        off<Target>(name: string, target: Target, method: (this: Target, ...args: any[]) => void): this;
+        off(name: string, method: (...args: any[]) => void): this;
+        /**
+         * Checks to see if object has any subscriptions for named event.
+         */
         has(name: string): boolean;
-        off(name: string, target: any, method: Function): Evented;
-        on(name: string, target: any, method: Function): Evented;
-        one(name: string, target: any, method: Function): Evented;
-        trigger(name: string, ...args: any[]): void;
     }
     const Evented: Mixin<Evented>;
-    const FROZEN_ERROR: string;
+    /**
+     * The `Ember.Freezable` mixin implements some basic methods for marking an
+     * object as frozen. Once an object is frozen it should be read only. No changes
+     * may be made the internal state of the object.
+     * @private
+     * @deprecated Use `Object.freeze` instead.
+     */
     interface Freezable {
         freeze(): Freezable;
         isFrozen: boolean;
     }
     const Freezable: Mixin<Freezable>;
-    const GUID_KEY: string;
-    namespace Handlebars {
-        function compile(string: string): Function;
-        function compile(environment: any, options?: any, context?: any, asObject?: any): any;
-        function precompile(string: string, options: any): void;
-        class Compiler {}
-        class JavaScriptCompiler {}
-        function registerPartial(name: string, str: any): void;
-        function K(): any;
-        function createFrame(objec: any): any;
-        function Exception(message: string): void;
-        class SafeString {
-            constructor(str: string);
-            static toString(): string;
-        }
-        function parse(string: string): any;
-        function print(ast: any): void;
-        const logger: typeof Ember.Logger;
-        function log(level: string, str: string): void;
-    }
+    /**
+     * `Ember.HashLocation` implements the location API using the browser's
+     * hash. At present, it relies on a `hashchange` event existing in the
+     * browser.
+     * @protected
+     */
     class HashLocation extends Object {
     }
-    class HistoryLocation extends Object {
-        rootURL: string;
-    }
-    const IS_BINDING: RegExp;
     /**
-     * Namespace for injection helper methods.
+     * Ember.HistoryLocation implements the location API using the browser's
+     * history.pushState API.
+     * @protected
      */
-    namespace inject {
-        /**
-         * Creates a property that lazily looks up another controller in the container.
-         * Can only be used when defining another controller.
-         */
-        function controller<T extends Controller>(name?: string): ComputedProperty<T>;
-        /**
-         * Creates a property that lazily looks up a service in the container. There
-         * are no restrictions as to what objects a service can be injected into.
-         */
-        function service<T extends Service>(name?: string): ComputedProperty<T>;
+    class HistoryLocation extends Object {
     }
+    /**
+     * Ember Helpers are functions that can compute values, and are used in templates.
+     * For example, this code calls a helper named `format-currency`:
+     */
     class Helper extends Object {
-        static helper(h: (params: any, hash?: any) => any): Helper;
-        compute(params: any[], hash: any): any;
-        recompute(params: any[], hash: any): any;
+        /**
+         * In many cases, the ceremony of a full `Ember.Helper` class is not required.
+         * The `helper` method create pure-function helpers without instances. For
+         * example:
+         */
+        static helper(helper: (params: any[], hash?: object) => any): Helper;
+        /**
+         * Override this function when writing a class-based helper.
+         */
+        compute(params: any[], hash: object): any;
+        /**
+         * On a class-based helper, it may be useful to force a recomputation of that
+         * helpers value. This is akin to `rerender` on a component.
+         */
+        recompute(): any;
     }
-    class Instrumentation {
-        getProperties(obj: any, list: any[]): {};
-        getProperties(obj: any, ...args: string[]): {};
+    /**
+     * The purpose of the Ember Instrumentation module is
+     * to provide efficient, general-purpose instrumentation
+     * for Ember.
+     * @private
+     */
+    const Instrumentation: {
         instrument(name: string, payload: any, callback: Function, binding: any): void;
         reset(): void;
         subscribe(pattern: string, object: any): void;
         unsubscribe(subscriber: any): void;
-    }
-    const K: Function;
+    };
+    /**
+     * `Ember.LinkComponent` renders an element whose `click` event triggers a
+     * transition of the application's instance of `Ember.Router` to
+     * a supplied route by name.
+     */
     class LinkComponent extends Component {
-      activeClass: string;
-      currentWhen: any;
-      rel: string | null;
-      replace: string | null;
-      tabindex: string | null;
-      target: string | null;
-      title: string | null;
+        /**
+         * Used to determine when this `LinkComponent` is active.
+         */
+        currentWhen: any;
+        /**
+         * Sets the `title` attribute of the `LinkComponent`'s HTML element.
+         */
+        title: string | null;
+        /**
+         * Sets the `rel` attribute of the `LinkComponent`'s HTML element.
+         */
+        rel: string | null;
+        /**
+         * Sets the `tabindex` attribute of the `LinkComponent`'s HTML element.
+         */
+        tabindex: string | null;
+        /**
+         * Sets the `target` attribute of the `LinkComponent`'s HTML element.
+         */
+        target: string | null;
+        /**
+         * The CSS class to apply to `LinkComponent`'s element when its `active`
+         * property is `true`.
+         */
+        activeClass: string;
+        /**
+         * Determines whether the `LinkComponent` will trigger routing via
+         * the `replaceWith` routing strategy.
+         */
+        replace: boolean;
     }
-    const LOG_BINDINGS: boolean;
-    const LOG_STACKTRACE_ON_DEPRECATION: boolean;
-    const LOG_VERSION: boolean;
-    class Location {
+    /**
+     * Ember.Location returns an instance of the correct implementation of
+     * the `location` API.
+     */
+    const Location: {
+        /**
+         * This is deprecated in favor of using the container to lookup the location
+         * implementation as desired.
+         * @deprecated Use the container to lookup the location implementation that you need.
+         */
         create(options?: {}): any;
-        registerImplementation(name: string, implementation: any): void;
-    }
+    };
+    /**
+     * Inside Ember-Metal, simply uses the methods from `imports.console`.
+     * Override this to provide more robust logging functionality.
+     */
     const Logger: {
-        assert(param: any): void;
+        /**
+         * If the value passed into `Ember.Logger.assert` is not truthy it will throw an error with a stack trace.
+         */
+        assert(test: boolean, message?: string): void;
+        /**
+         * Logs the arguments to the console in blue text.
+         */
         debug(...args: any[]): void;
+        /**
+         * Prints the arguments to the console with an error icon, red text and a stack trace.
+         */
         error(...args: any[]): void;
+        /**
+         * Logs the arguments to the console.
+         */
         info(...args: any[]): void;
+        /**
+         * Logs the arguments to the console.
+         */
         log(...args: any[]): void;
+        /**
+         * Prints the arguments to the console with a warning icon.
+         */
         warn(...args: any[]): void;
     };
-    function MANDATORY_SETTER_FUNCTION(value: string): void;
-    const META_KEY: string;
+    /**
+     * A Map stores values indexed by keys. Unlike JavaScript's
+     * default Objects, the keys of a Map can be any JavaScript
+     * object.
+     * @deprecated
+     */
     class Map {
         copy(): Map;
         static create(): Map;
@@ -1205,10 +1425,17 @@ export namespace Ember {
         set(key: any, value: any): void;
         length: number;
     }
+    /**
+     * @deprecated
+     */
     class MapWithDefault extends Map {
         copy(): MapWithDefault;
         static create(): MapWithDefault;
     }
+    /**
+     * The `Ember.Mixin` class allows you to create mixins, whose properties can be
+     * added to other classes.
+     */
     class Mixin<T, Base = Ember.Object> {
         /**
          * Mixin needs to have *something* on its prototype, otherwise it's treated like an empty interface.
@@ -1309,9 +1536,20 @@ export namespace Ember {
         removeObjects(objects: Enumerable<T>): this;
     }
     const MutableEnumerable: Mixin<MutableEnumberable<any>>;
-    const NAME_KEY: string;
+    /**
+     * A Namespace is an object usually used to contain other objects or methods
+     * such as an application or framework. Create a namespace anytime you want
+     * to define one of these new containers.
+     */
     class Namespace extends Object {
     }
+    /**
+     * The NativeArray mixin contains the properties needed to make the native
+     * Array support Ember.MutableArray and all of its dependent APIs. Unless you
+     * have `EmberENV.EXTEND_PROTOTYPES` or `EmberENV.EXTEND_PROTOTYPES.Array` set to
+     * false, this will be applied automatically. Otherwise you can apply the mixin
+     * at anytime by calling `Ember.NativeArray.apply(Array.prototype)`.
+     */
     interface NativeArray<T> extends GlobalArray<T>, MutableArray<T>, Observable, Copyable {
         /**
          * __Required.__ You must implement this method to apply this mixin.
@@ -1325,43 +1563,104 @@ export namespace Ember {
         find(predicate: (value: T, index: number, obj: T[]) => boolean, thisArg?: any): T | undefined;
     }
     const NativeArray: Mixin<NativeArray<any>>;
+    /**
+     * Ember.NoneLocation does not interact with the browser. It is useful for
+     * testing, or when you need to manage state with your Router, but temporarily
+     * don't want it to muck with the URL (for example when you embed your
+     * application in a larger page).
+     * @private
+     */
     class NoneLocation extends Object {
     }
-    const ORDER_DEFINITION: string[];
+    /**
+     * `Ember.Object` is the main base class for all Ember objects. It is a subclass
+     * of `Ember.CoreObject` with the `Ember.Observable` mixin applied. For details,
+     * see the documentation for each of these.
+     */
     class Object extends CoreObject.extend(Observable) {
     }
+    /**
+     * `Ember.ObjectProxy` forwards all properties not defined by the proxy itself
+     * to a proxied `content` object.
+     */
     class ObjectProxy extends Object {
         /**
         The object whose properties will be forwarded.
         **/
         content: Object;
     }
-
+    /**
+     * This mixin provides properties and property observing functionality, core features of the Ember object model.
+     */
     interface Observable {
-        addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
-        beginPropertyChanges(): Observable;
-        cacheFor(keyName: string): any;
-        decrementProperty(keyName: string, decrement?: number): number;
-        endPropertyChanges(): Observable;
+        /**
+         * Retrieves the value of a property from the object.
+         */
         get<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K];
+        /**
+         * To get the values of multiple properties at once, call `getProperties`
+         * with a list of strings or an array:
+         */
         getProperties<T, K extends keyof T>(this: ComputedProperties<T>, list: K[]): Pick<T, K>;
         getProperties<T, K extends keyof T>(this: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
-        getWithDefault(keyName: string, defaultValue: any): any;
-        hasObserverFor(key: string): boolean;
-        incrementProperty(keyName: string, increment?: number): number;
-        notifyPropertyChange(keyName: string): Observable;
-        propertyDidChange(keyName: string): Observable;
-        propertyWillChange(keyName: string): Observable;
-        removeObserver(key: string, target: {}, method: Function | string): void;
-        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
-        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-
         /**
-        Set the value of a boolean property to the opposite of its current value.
-        */
-        toggleProperty(keyName: string): boolean;
+         * Sets the provided key or path to the value.
+         */
+        set<T, K extends keyof T>(this: ComputedProperties<T>, key: K, value: T[K]): T[K];
+        /**
+         * Sets a list of properties at once. These properties are set inside
+         * a single `beginPropertyChanges` and `endPropertyChanges` batch, so
+         * observers will be buffered.
+         */
+        setProperties<T, K extends keyof T>(this: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+        /**
+         * Convenience method to call `propertyWillChange` and `propertyDidChange` in
+         * succession.
+         */
+        notifyPropertyChange(keyName: string): this;
+        /**
+         * Adds an observer on a property.
+         */
+        addObserver<Target>(key: keyof this, target: Target, method: ObserverMethod<Target, this>): void;
+        /**
+         * Remove an observer you have previously registered on this object. Pass
+         * the same key, target, and method you passed to `addObserver()` and your
+         * target will no longer receive notifications.
+         */
+        removeObserver<Target>(key: keyof this, target: Target, method: ObserverMethod<Target, this>): any;
+        /**
+         * Retrieves the value of a property, or a default value in the case that the
+         * property returns `undefined`.
+         */
+        getWithDefault<T, K extends keyof T>(this: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+        /**
+         * Set the value of a property to the current value plus some amount.
+         */
+        incrementProperty(keyName: keyof this, increment?: number): number;
+        /**
+         * Set the value of a property to the current value minus some amount.
+         */
+        decrementProperty(keyName: keyof this, decrement?: number): number;
+        /**
+         * Set the value of a boolean property to the opposite of its
+         * current value.
+         */
+        toggleProperty(keyName: keyof this): boolean;
+        /**
+         * Returns the cached value of a computed property, if it exists.
+         * This allows you to inspect the value of a computed property
+         * without accidentally invoking it if it is intended to be
+         * generated lazily.
+         */
+        cacheFor<T, K extends keyof T>(this: ComputedProperties<T>, key: K): T[K] | undefined;
     }
     const Observable: Mixin<Observable, Ember.CoreObject>;
+    /**
+     * This class is used internally by Ember and Ember Data.
+     * Please do not use it at this time. We plan to clean it up
+     * and add many tests soon.
+     * @deprecated
+     */
     class OrderedSet {
         add(obj: any): void;
         clear(): void;
@@ -1403,21 +1702,16 @@ export namespace Ember {
         promise: RSVP.Promise<T>;
     }
     const PromiseProxyMixin: Mixin<PromiseProxyMixin<any>>;
+    /**
+     * A registry used to store factory and option information keyed
+     * by type.
+     * @private
+     */
     class Registry {
-        constructor(options: any);
-        static set: typeof Ember.set;
-        register(fullName: string, factory: any): void;
-        unregister(fullName: string): void;
+        register(fullName: string, factory: EmberClassConstructor<any>, options?: { singleton?: boolean }): void;
     }
     class Resolver extends Ember.Object {
     }
-
-    // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
-    const RSVP: typeof Rsvp;
-    namespace RSVP {
-        type Promise<T> = Rsvp.Promise<T>;
-    }
-
     /**
       The `Ember.Route` class is used to define individual routes. Refer to
       the [routing guide](http://emberjs.com/guides/routing/) for documentation.
@@ -1684,66 +1978,282 @@ export namespace Ember {
          */
         willTransition(transition: Transition): void;
     }
-    interface RouterMapContext {
-        route(name: string, callback: (this: RouterMapContext) => void): void;
-        route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterMapContext) => void): void;
-    }
-    class Router extends Object {
+    /**
+     * The `Ember.Router` class manages the application state and URLs. Refer to
+     * the [routing guide](http://emberjs.com/guides/routing/) for documentation.
+     */
+    class Router extends Object.extend(Evented) {
         /**
          * The `Router.map` function allows you to define mappings from URLs to routes
          * in your application. These mappings are defined within the
          * supplied callback function using `this.route`.
          */
-        static map(callback: (this: RouterMapContext) => void): void;
+        static map(callback: (this: RouterDSL) => void): void;
+        /**
+         * The `location` property determines the type of URL's that your
+         * application will use.
+         */
+        location: string;
+        /**
+         * Represents the URL of the root of the application, often '/'. This prefix is
+         * assumed on all routes defined on this router.
+         */
+        rootURL: string;
+        /**
+         * Handles updating the paths and notifying any listeners of the URL
+         * change.
+         */
+        didTransition(): any;
+        /**
+         * Handles notifying any listeners of an impending URL
+         * change.
+         */
+        willTransition(): any;
+        /**
+         * Transition the application into another route. The route may
+         * be either a single route or route path:
+         */
+        transitionTo(name: string, ...models: any[]): Transition;
+        transitionTo(name: string, options: {}): Transition;
     }
     class RouterDSL {
-        resource(name: string, options?: {}, callback?: Function): void;
-        resource(name: string, callback: Function): void;
-        route(name: string, options?: {}): void;
-        explicitIndex: boolean;
-        router: Router;
-        options: any;
+        constructor(name: string, options: object);
+        route(name: string, callback: (this: RouterDSL) => void): void;
+        route(name: string, options?: { path?: string, resetNamespace?: boolean }, callback?: (this: RouterDSL) => void): void;
+        mount(name: string): void;
     }
     class Service extends Object {
     }
-    const STRINGS: boolean;
-    class State extends Object implements Evented {
-        has(name: string): boolean;
-        off(name: string, target: any, method: Function): State;
-        on(name: string, target: any, method: Function): State;
-        one(name: string, target: any, method: Function): State;
-        trigger(name: string, ...args: string[]): void;
-        getPathsCache(stateManager: {}, path: string): {};
-        init(): void;
-        setPathsCache(stateManager: {}, path: string, transitions: any): void;
-        static transitionTo(target: string): void;
-        hasContext: boolean;
-        isLeaf: boolean;
-        name: string;
-        parentState: State;
-        path: string;
-        enter: Function;
-        exit: Function;
-        setup: Function;
+    /**
+     * The internal class used to create textarea element when the `{{textarea}}`
+     * helper is used.
+     */
+    class TextArea extends Component.extend(TextSupport) {
     }
-    class StateManager extends State {
-        contextFreeTransition(currentState: State, path: string): TransitionsHash;
-        enterState(transition: TransitionsHash): void;
-        getState(name: string): State;
-        getStateByPath(root: State, path: string): State;
-        getStateMeta(state: State, key: string): any;
-        getStatesInPath(root: State, path: string): State[];
-        goToState(path: string, context: any): void;
-        send(event: string): void;
-        setStateMeta(state: State, key: string, value: any): any;
-        stateMetaFor(state: State): {};
-        transitionTo(path: string, context: any): void;
-        triggerSetupContext(transitions: TransitionsHash): void;
-        unhandledEvent(manager: StateManager, event: string): any;
-        currentPath: string;
-        currentState: State;
-        errorOnUnhandledEvents: boolean;
-        transitionEvent: string;
+    /**
+     * The internal class used to create text inputs when the `{{input}}`
+     * helper is used with `type` of `text`.
+     */
+    class TextField extends Component.extend(TextSupport) {
+        /**
+         * The `value` attribute of the input element. As the user inputs text, this
+         * property is updated live.
+         */
+        value: string;
+        /**
+         * The `type` attribute of the input element.
+         */
+        type: string;
+        /**
+         * The `size` of the text field in characters.
+         */
+        size: string;
+        /**
+         * The `pattern` attribute of input element.
+         */
+        pattern: string;
+        /**
+         * The `min` attribute of input element used with `type="number"` or `type="range"`.
+         */
+        min: string;
+        /**
+         * The `max` attribute of input element used with `type="number"` or `type="range"`.
+         */
+        max: string;
+    }
+    /**
+     * `TextSupport` is a shared mixin used by both `Ember.TextField` and
+     * `Ember.TextArea`. `TextSupport` adds a number of methods that allow you to
+     * specify a controller action to invoke when a certain event is fired on your
+     * text field or textarea. The specifed controller action would get the current
+     * value of the field passed in as the only argument unless the value of
+     * the field is empty. In that case, the instance of the field itself is passed
+     * in as the only argument.
+     */
+    interface TextSupport extends TargetActionSupport {
+        cancel(event: Function): void;
+        focusIn(event: Function): void;
+        focusOut(event: Function): void;
+        insertNewLine(event: Function): void;
+        keyPress(event: Function): void;
+        action: string;
+        bubbles: boolean;
+        onEvent: string;
+    }
+    const TextSupport: Ember.Mixin<TextSupport, Ember.Component>;
+    interface Transition {
+        /**
+         Aborts the Transition. Note you can also implicitly abort a transition
+         by initiating another transition while a previous one is underway.
+        */
+        abort(): Transition;
+        /**
+         Retries a previously-aborted transition (making sure to abort the
+         transition if it's still active). Returns a new transition that
+         represents the new attempt to transition.
+        */
+        retry(): Transition;
+    }
+    interface ViewTargetActionSupport {
+        target: any;
+        actionContext: any;
+    }
+    const ViewTargetActionSupport: Mixin<ViewTargetActionSupport>;
+    const ViewUtils: {}; // TODO: define interface
+
+    // FYI - RSVP source comes from https://github.com/tildeio/rsvp.js/blob/master/lib/rsvp/promise.js
+    const RSVP: typeof Rsvp;
+    namespace RSVP {
+        type Promise<T> = Rsvp.Promise<T>;
+    }
+
+    /**
+     * This is a container for an assortment of testing related functionality
+     */
+    namespace Test {
+        /**
+         * `registerHelper` is used to register a test helper that will be injected
+         * when `App.injectTestHelpers` is called.
+         */
+        function registerHelper(name: string, helperMethod: (app: Application, ...args: any[]) => any, options?: object): any;
+        /**
+         * `registerAsyncHelper` is used to register an async test helper that will be injected
+         * when `App.injectTestHelpers` is called.
+         */
+        function registerAsyncHelper(name: string, helperMethod: (app: Application, ...args: any[]) => any): void;
+        /**
+         * Remove a previously added helper method.
+         */
+        function unregisterHelper(name: string): void;
+        /**
+         * Used to register callbacks to be fired whenever `App.injectTestHelpers`
+         * is called.
+         */
+        function onInjectHelpers(callback: (app: Application) => void): void;
+        /**
+         * This returns a thenable tailored for testing.  It catches failed
+         * `onSuccess` callbacks and invokes the `Ember.Test.adapter.exception`
+         * callback in the last chained then.
+         */
+        function promise<T>(resolver: (
+            resolve: (value?: T | PromiseLike<T>) => void,
+            reject: (reason?: any) => void
+        ) => void, label?: string): Ember.Test.Promise<T>;
+        /**
+         * Replacement for `Ember.RSVP.resolve`
+         * The only difference is this uses
+         * an instance of `Ember.Test.Promise`
+         */
+        function resolve<T>(value?: T | PromiseLike<T>, label?: string): Ember.Test.Promise<T>;
+        function resolve(): Ember.Test.Promise<void>;
+        /**
+         * This allows ember-testing to play nicely with other asynchronous
+         * events, such as an application that is waiting for a CSS3
+         * transition or an IndexDB transaction. The waiter runs periodically
+         * after each async helper (i.e. `click`, `andThen`, `visit`, etc) has executed,
+         * until the returning result is truthy. After the waiters finish, the next async helper
+         * is executed and the process repeats.
+         */
+        function registerWaiter(callback: () => boolean): any;
+        function registerWaiter<Context>(context: Context, callback: (this: Context) => boolean): any;
+        /**
+         * `unregisterWaiter` is used to unregister a callback that was
+         * registered with `registerWaiter`.
+         */
+        function unregisterWaiter(callback: () => boolean): any;
+        function unregisterWaiter<Context>(context: Context, callback: (this: Context) => boolean): any;
+        /**
+         * Iterates through each registered test waiter, and invokes
+         * its callback. If any waiter returns false, this method will return
+         * true indicating that the waiters have not settled yet.
+         */
+        function checkWaiters(): boolean;
+        /**
+         * Used to allow ember-testing to communicate with a specific testing
+         * framework.
+         */
+        const adapter: Adapter;
+        /**
+         * The primary purpose of this class is to create hooks that can be implemented
+         * by an adapter for various test frameworks.
+         */
+        class Adapter {
+            /**
+             * This callback will be called whenever an async operation is about to start.
+             */
+            asyncStart(): any;
+            /**
+             * This callback will be called whenever an async operation has completed.
+             */
+            asyncEnd(): any;
+            /**
+             * Override this method with your testing framework's false assertion.
+             * This function is called whenever an exception occurs causing the testing
+             * promise to fail.
+             */
+            exception(error: string): any;
+        }
+        /**
+         * This class implements the methods defined by Ember.Test.Adapter for the
+         * QUnit testing framework.
+         */
+        class QUnitAdapter extends Adapter {
+        }
+        class Promise<T> extends Rsvp.Promise<T> {
+            constructor(
+                executor: (
+                    resolve: (value?: T | PromiseLike<T>) => void,
+                    reject: (reason?: any) => void
+                ) => void
+            );
+        }
+    }
+    /**
+     * Namespace for injection helper methods.
+     */
+    namespace inject {
+        /**
+         * Creates a property that lazily looks up another controller in the container.
+         * Can only be used when defining another controller.
+         */
+        function controller<T extends Controller>(name?: string): ComputedProperty<T>;
+        /**
+         * Creates a property that lazily looks up a service in the container. There
+         * are no restrictions as to what objects a service can be injected into.
+         */
+        function service<T extends Service>(name?: string): ComputedProperty<T>;
+    }
+    namespace ENV {
+        const EXTEND_PROTOTYPES: typeof Ember.EXTEND_PROTOTYPES;
+        const LOG_BINDINGS: boolean;
+        const LOG_STACKTRACE_ON_DEPRECATION: boolean;
+        const LOG_VERSION: boolean;
+        const MODEL_FACTORY_INJECTIONS: boolean;
+        const RAISE_ON_DEPRECATION: boolean;
+    }
+    namespace EXTEND_PROTOTYPES {
+        const Array: boolean;
+        const Function: boolean;
+        const String: boolean;
+    }
+    namespace Handlebars {
+        function compile(string: string): Function;
+        function compile(environment: any, options?: any, context?: any, asObject?: any): any;
+        function precompile(string: string, options: any): void;
+        class Compiler {}
+        class JavaScriptCompiler {}
+        function registerPartial(name: string, str: any): void;
+        function K(): any;
+        function createFrame(objec: any): any;
+        function Exception(message: string): void;
+        class SafeString {
+            constructor(str: string);
+            static toString(): string;
+        }
+        function parse(string: string): any;
+        function print(ast: any): void;
+        const logger: typeof Ember.Logger;
+        function log(level: string, str: string): void;
     }
     namespace String {
         function camelize(str: string): string;
@@ -1758,249 +2268,6 @@ export namespace Ember {
         function underscore(str: string): string;
         function w(str: string): string[];
     }
-    const TEMPLATES: {};
-    namespace Test {
-        class Adapter extends Ember.Object {
-            constructor();
-        }
-        class Promise<T> extends Rsvp.Promise<T> {
-            constructor();
-        }
-        function oninjectHelpers(callback: Function): void;
-        function promise<T>(resolver: (a: T) => any, label: string): Ember.Test.Promise<T>;
-        function unregisterHelper(name: string): void;
-        function registerHelper(name: string, helperMethod: Function): void;
-        function registerAsyncHelper(name: string, helperMethod: Function): void;
-
-        const adapter: Object;
-        const QUnitAdapter: Object;
-
-        function registerWaiter(callback: Function): void;
-        function registerWaiter(context: any, callback: Function): void;
-        function unregisterWaiter(callback: Function): void;
-        function unregisterWaiter(context: any, callback: Function): void;
-
-        function resolve<T>(result: T): Ember.Test.Promise<T>;
-    }
-    class TextArea extends Component.extend(TextSupport) {
-        cancel(event: Function): void;
-        focusIn(event: Function): void;
-        focusOut(event: Function): void;
-        insertNewLine(event: Function): void;
-        keyPress(event: Function): void;
-        action: string;
-        bubbles: boolean;
-        onEvent: string;
-    }
-    class TextField extends Component.extend(TextSupport) {
-        cancel(event: Function): void;
-        focusIn(event: Function): void;
-        focusOut(event: Function): void;
-        insertNewLine(event: Function): void;
-        keyPress(event: Function): void;
-        action: string;
-        bubbles: boolean;
-        onEvent: string;
-        pattern: string;
-        size: string;
-        type: string;
-        value: string;
-    }
-    interface Transition {
-        targetName: string;
-        urlMethod: string;
-        intent: any;
-        params: {} | any;
-        pivotHandler: any;
-        resolveIndex: number;
-        handlerInfos: any;
-        resolvedModels: {} | any;
-        isActive: boolean;
-        state: any;
-        queryParams: {} | any;
-        queryParamsOnly: boolean;
-
-        isTransition: boolean;
-
-        /**
-          The Transition's internal promise. Calling `.then` on this property
-          is that same as calling `.then` on the Transition object itself, but
-          this property is exposed for when you want to pass around a
-          Transition's promise, but not the Transition object itself, since
-          Transition object can be externally `abort`ed, while the promise
-          cannot.
-         */
-        promise: Rsvp.Promise<any>;
-
-        /**
-          Custom state can be stored on a Transition's `data` object.
-          This can be useful for decorating a Transition within an earlier
-          hook and shared with a later hook. Properties set on `data` will
-          be copied to new transitions generated by calling `retry` on this
-          transition.
-         */
-        data: any;
-
-        /**
-          A standard promise hook that resolves if the transition
-          succeeds and rejects if it fails/redirects/aborts.
-
-          Forwards to the internal `promise` property which you can
-          use in situations where you want to pass around a thennable,
-          but not the Transition itself.
-
-          @arg {Function} onFulfilled
-          @arg {Function} onRejected
-          @arg {String} label optional string for labeling the promise. Useful for tooling.
-          @return {Promise}
-         */
-        then(onFulfilled: Function, onRejected?: Function, label?: string): Rsvp.Promise<any>;
-
-        /**
-          Forwards to the internal `promise` property which you can
-          use in situations where you want to pass around a thennable,
-          but not the Transition itself.
-
-          @method catch
-          @arg {Function} onRejection
-          @arg {String} label optional string for labeling the promise.
-          Useful for tooling.
-          @return {Promise}
-         */
-        catch(onRejection: Function, label?: string): Rsvp.Promise<any>;
-
-        /**
-          Forwards to the internal `promise` property which you can
-          use in situations where you want to pass around a thennable,
-          but not the Transition itself.
-
-          @method finally
-          @arg {Function} callback
-          @arg {String} label optional string for labeling the promise.
-          Useful for tooling.
-          @return {Promise}
-         */
-        finally(callback: Function, label?: string): Rsvp.Promise<any>;
-
-        /**
-         Aborts the Transition. Note you can also implicitly abort a transition
-         by initiating another transition while a previous one is underway.
-        */
-        abort(): Transition;
-        normalize(manager: StateManager, contexts: any[]): void;
-
-        /**
-         Retries a previously-aborted transition (making sure to abort the
-         transition if it's still active). Returns a new transition that
-         represents the new attempt to transition.
-        */
-        retry(): Transition;
-
-        /**
-          Sets the URL-changing method to be employed at the end of a
-          successful transition. By default, a new Transition will just
-          use `updateURL`, but passing 'replace' to this method will
-          cause the URL to update using 'replaceWith' instead. Omitting
-          a parameter will disable the URL change, allowing for transitions
-          that don't update the URL at completion (this is also used for
-          handleURL, since the URL has already changed before the
-          transition took place).
-
-          @arg {String} method the type of URL-changing method to use
-            at the end of a transition. Accepted values are 'replace',
-            falsy values, or any other non-falsy value (which is
-            interpreted as an updateURL transition).
-
-          @return {Transition} this transition
-         */
-        method(method: string): Transition;
-
-        /**
-          Fires an event on the current list of resolved/resolving
-          handlers within this transition. Useful for firing events
-          on route hierarchies that haven't fully been entered yet.
-
-          Note: This method is also aliased as `send`
-
-          @arg {Boolean} [ignoreFailure=false] a boolean specifying whether unhandled events throw an error
-          @arg {String} name the name of the event to fire
-         */
-        trigger(ignoreFailure: boolean, eventName: string): void;
-        /**
-          Fires an event on the current list of resolved/resolving
-          handlers within this transition. Useful for firing events
-          on route hierarchies that haven't fully been entered yet.
-
-          Note: This method is also aliased as `send`
-
-          @arg {String} name the name of the event to fire
-         */
-        trigger(eventName: string): void;
-
-        /**
-          Transitions are aborted and their promises rejected
-          when redirects occur; this method returns a promise
-          that will follow any redirects that occur and fulfill
-          with the value fulfilled by any redirecting transitions
-          that occur.
-
-          @return {Promise} a promise that fulfills with the same
-            value that the final redirecting transition fulfills with
-         */
-        followRedirects(): Rsvp.Promise<any>;
-    }
-    const VERSION: string;
-    interface ViewTargetActionSupport {
-        target: any;
-        actionContext: any;
-    }
-    const ViewTargetActionSupport: Mixin<ViewTargetActionSupport>;
-    const ViewUtils: {}; // TODO: define interface
-    function addListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string,
-        once?: boolean
-    ): void;
-    function addObserver(obj: any, path: string | null, target: Function | any, method?: Function | string): void;
-    /**
-    Ember.alias is deprecated. Please use Ember.aliasMethod or Ember.computed.alias instead.
-    **/
-    const alias: typeof deprecateFunc;
-    function aliasMethod(methodName: string): Descriptor;
-    function assert(desc: string, test: boolean): void;
-    function beginPropertyChanges(): void;
-    function bind(obj: any, to: string, from: string): Binding;
-    function cacheFor(obj: any, key: string): any;
-    function canInvoke(obj: any, methodName: string): boolean;
-    function changeProperties(callback: Function, binding?: any): void;
-    function compare(v: any, w: any): number;
-    type compareFunc = (itemA: any, itemB: any) => number;
-    interface DeprecateOptions {
-        id: string;
-        until: string;
-    }
-    // ReSharper disable once DuplicatingLocalDeclaration
-
-    type ComputedPropertyGetterFunction<T> = (this: any, key: string) => T;
-
-    interface ComputedPropertyGet<T> {
-        get(this: any, key: string): T;
-    }
-
-    interface ComputedPropertySet<T> {
-        set(this: any, key: string, value: T): T;
-    }
-
-    type ComputedPropertyCallback<T> =
-        ComputedPropertyGetterFunction<T> |
-        ComputedPropertyGet<T> |
-        ComputedPropertySet<T> |
-        (ComputedPropertyGet<T> & ComputedPropertySet<T>);
-
-    type ComputedPropertyReturn<T> = ComputedProperty<T>;
-
     const computed: {
         <T>(cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
         <T>(k1: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
@@ -2011,153 +2278,180 @@ export namespace Ember {
         <T>(k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, cb: ComputedPropertyCallback<T>): ComputedProperty<T>;
         (k1: string, k2: string, k3: string, k4: string, k5: string, k6: string, k7: string, ...rest: any[]): ComputedProperty<any>;
 
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is null, an empty string, empty array, or empty function.
+         */
+        empty(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is NOT null, an empty string, empty array, or empty function.
+         */
+        notEmpty(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the value of the dependent
+         * property is null or undefined. This avoids errors from JSLint complaining
+         * about use of ==, which can be technically confusing.
+         */
+        none(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns the inverse boolean value
+         * of the original value for the dependent property.
+         */
+        not(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property that converts the provided dependent property
+         * into a boolean value.
+         */
+        bool(dependentKey: string): ComputedProperty<boolean>;
+        /**
+         * A computed property which matches the original value for the
+         * dependent property against a given RegExp, returning `true`
+         * if the value matches the RegExp and `false` if it does not.
+         */
+        match(dependentKey: string, regexp: RegExp): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is equal to the given value.
+         */
+        equal(dependentKey: string, value: any): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is greater than the provided value.
+         */
+        gt(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is greater than or equal to the provided value.
+         */
+        gte(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is less than the provided value.
+         */
+        lt(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that returns true if the provided dependent property
+         * is less than or equal to the provided value.
+         */
+        lte(dependentKey: string, value: number): ComputedProperty<boolean>;
+        /**
+         * A computed property that performs a logical `and` on the
+         * original values for the provided dependent properties.
+         */
+        and(...dependentKeys: string[]): ComputedProperty<any>;
+        /**
+         * A computed property which performs a logical `or` on the
+         * original values for the provided dependent properties.
+         */
+        or(...dependentKeys: string[]): ComputedProperty<any>;
+        /**
+         * Creates a new property that is an alias for another property
+         * on an object. Calls to `get` or `set` this property behave as
+         * though they were called on the original property.
+         */
         alias(dependentKey: string): ComputedProperty<any>;
-        and(...args: string[]): ComputedProperty<any>;
-        any(...args: string[]): ComputedProperty<any>;
-        bool(dependentKey: string): ComputedProperty<any>;
-        collect(...dependentKeys: string[]): ComputedProperty<any>;
-        defaultTo(defaultPath: string): ComputedProperty<any>;
-        deprecatingAlias(dependentKey: string, options: DeprecateOptions): ComputedProperty<any>;
-        empty(dependentKey: string): ComputedProperty<any>;
-        equal(dependentKey: string, value: any): ComputedProperty<any>;
-        filter(
-            dependentKey: string,
-            callback: (item: any, index?: number, array?: any[]) => boolean
-        ): ComputedProperty<any>;
-        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any>;
-        filterProperty(key: string, value?: string): any[];
-        gt(dependentKey: string, value: number): ComputedProperty<any>;
-        gte(dependentKey: string, value: number): ComputedProperty<any>;
-        intersect(...args: string[]): ComputedProperty<any>;
-        lt(dependentKey: string, value: number): ComputedProperty<any>;
-        lte(dependentKey: string, value: number): ComputedProperty<any>;
-        map(dependentKey: string, callback: <T>(item: any, index: number) => T): ComputedProperty<any>;
-        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
-        mapProperty(key: string): any[];
-        match(dependentKey: string, regexp: RegExp): ComputedProperty<any>;
-        max(dependentKey: string): ComputedProperty<any>;
-        min(dependentKey: string): ComputedProperty<any>;
-        none(dependentKey: string): ComputedProperty<any>;
-        not(dependentKey: string): ComputedProperty<any>;
-        notEmpty(dependentKey: string): ComputedProperty<any>;
+        /**
+         * Where `computed.alias` aliases `get` and `set`, and allows for bidirectional
+         * data flow, `computed.oneWay` only provides an aliased `get`. The `set` will
+         * not mutate the upstream property, rather causes the current property to
+         * become the value set. This causes the downstream property to permanently
+         * diverge from the upstream property.
+         */
         oneWay(dependentKey: string): ComputedProperty<any>;
-        or(...args: string[]): ComputedProperty<any>;
-        readOnly(dependentString: string): ComputedProperty<any>;
+        /**
+         * This is a more semantically meaningful alias of `computed.oneWay`,
+         * whose name is somewhat ambiguous as to which direction the data flows.
+         */
         reads(dependentKey: string): ComputedProperty<any>;
-        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any>;
-        sort(itemsKey: string, sortDefinition: string | compareFunc): ComputedProperty<any>;
-        sum(dependentKey: string): ComputedProperty<any>;
-        union(...args: string[]): ComputedProperty<any>;
-        uniq(...args: string[]): ComputedProperty<any>;
-        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any>;
+        /**
+         * Where `computed.oneWay` provides oneWay bindings, `computed.readOnly` provides
+         * a readOnly one way binding. Very often when using `computed.oneWay` one does
+         * not also want changes to propagate back up, as they will replace the value.
+         */
+        readOnly(dependentKey: string): ComputedProperty<any>;
+        /**
+         * Creates a new property that is an alias for another property
+         * on an object. Calls to `get` or `set` this property behave as
+         * though they were called on the original property, but also
+         * print a deprecation warning.
+         */
+        deprecatingAlias(dependentKey: string, options: { id: string, until: string }): ComputedProperty<any>;
+        /**
+         * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+         */
+        deprecatingAlias(dependentKey: string, options?: { id?: string, until?: string }): ComputedProperty<any>;
+        /**
+         * A computed property that returns the sum of the values
+         * in the dependent array.
+         */
+        sum(dependentKey: string): ComputedProperty<number>;
+        /**
+         * A computed property that calculates the maximum value in the
+         * dependent array. This will return `-Infinity` when the dependent
+         * array is empty.
+         */
+        max(dependentKey: string): ComputedProperty<number>;
+        /**
+         * A computed property that calculates the minimum value in the
+         * dependent array. This will return `Infinity` when the dependent
+         * array is empty.
+         */
+        min(dependentKey: string): ComputedProperty<number>;
+        /**
+         * Returns an array mapped via the callback
+         */
+        map<U>(dependentKey: string, callback: (value: any, index: number, array: any[]) => U): ComputedProperty<U[]>;
+        /**
+         * Returns an array mapped to the specified key.
+         */
+        mapBy(dependentKey: string, propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * Filters the array by the callback.
+         */
+        filter(dependentKey: string, callback: (value: any, index: number, array: any[]) => boolean): ComputedProperty<any[]>;
+        /**
+         * Filters the array by the property and value
+         */
+        filterBy(dependentKey: string, propertyKey: string, value?: any): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from one or more dependent arrays.
+         */
+        uniq(propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from an array, with uniqueness determined by specific key.
+         */
+        uniqBy(dependentKey: string, propertyKey: string): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the unique
+         * elements from one or more dependent arrays.
+         */
+        union(...propertyKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the elements
+         * two or more dependent arrays have in common.
+         */
+        intersect(...propertyKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the
+         * properties from the first dependent array that are not in the second
+         * dependent array.
+         */
+        setDiff(setAProperty: string, setBProperty: string): ComputedProperty<any[]>;
+        /**
+         * A computed property that returns the array of values
+         * for the provided dependent properties.
+         */
+        collect(...dependentKeys: string[]): ComputedProperty<any[]>;
+        /**
+         * A computed property which returns a new array with all the
+         * properties from the first dependent array sorted based on a property
+         * or sort function.
+         */
+        sort(itemsKey: string, sortDefinition: string | ((itemA: any, itemB: any) => number)): ComputedProperty<any[]>;
     };
-    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
-    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
-    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
-    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
-    // ReSharper restore DuplicatingLocalDeclaration
-    function controllerFor(
-        container: Container,
-        controllerName: string,
-        lookupOptions?: {}
-    ): Controller;
-    function copy(obj: any, deep: boolean): any;
-    /**
-    Creates an instance of the CoreObject class.
-    @param arguments A hash containing values with which to initialize the newly instantiated object.
-    **/
-    function create(arguments?: {}): CoreObject;
-    function debug(message: string): void;
-    function defineProperty(obj: any, keyName: string, desc: {}): void;
-    function deprecate(message: string, test?: boolean): void;
-    function deprecateFunc(message: string, func: Function): Function;
-    function destroy(obj: any): void;
-    /**
-    Ember.empty is deprecated. Please use Ember.isEmpty instead.
-    **/
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const empty: typeof deprecateFunc;
-    function endPropertyChanges(): void;
-    function expandProperties(pattern: string, callback: Function): void;
-    function finishChains(obj: any): void;
-    function generateController(
-        container: Container,
-        controllerName: string,
-        context: any
-    ): Controller;
-    function generateGuid(obj: any, prefix?: string): string;
-    function getEngineParent(engine: EngineInstance): EngineInstance;
-    /**
-    getPath is deprecated since get now supports paths.
-    **/
-    const getPath: typeof deprecateFunc;
-    function getWithDefault(root: string, key: string, defaultValue: any): any;
-    function guidFor(obj: any): string;
-    function handleErrors(func: Function, context: any): any;
-    function hasListeners(context: any, name: string): boolean;
-    function hasOwnProperty(prop: string): boolean;
-    function immediateObserver(func: Function, ...propertyNames: any[]): Function;
-    function inspect(obj: any): string;
-    function instrument(name: string, payload: any, callback: Function, binding: any): void;
-    function isArray(obj: any): boolean;
-    function isBlank(obj: any): boolean;
-    function isEmpty(obj: any): boolean;
-    function isEqual(a: any, b: any): boolean;
-    function isGlobalPath(path: string): boolean;
-    const isNamespace: boolean;
-    function isNone(obj: any): obj is null | undefined;
-    function isPresent(obj: any): boolean;
-    function isPrototypeOf(obj: {}): boolean;
-    function isWatching(obj: any, key: string): boolean;
-    function keys(obj: any): any[];
-    function listenersDiff(obj: any, eventName: string, otherActions: any[]): any[];
-    function listenersFor(obj: any, eventName: string): any[];
-    function listenersUnion(obj: any, eventName: string, otherActions: any[]): void;
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const lookup: {}; // TODO: define interface
-    function makeArray(obj: any): any[];
-    function merge(original: any, updates: any): any;
-    function meta(obj: any): {};
-    function mixin(obj: any, ...args: any[]): any;
-    /**
-    Ember.none is deprecated. Please use Ember.isNone instead.
-    **/
-    const none: typeof deprecateFunc;
-    function observer(...args: any[]): Function;
-    function observersFor(obj: any, path: string): any[];
-    function on(eventNames: string, func: Function): Function;
-    function onLoad(name: string, callback: Function): void;
-    const onError: Error;
-    function onerror(error: any): void;
-    function overrideChains(obj: any, keyName: string, m: any): boolean;
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const platform: {
-        defineProperty: boolean;
-        hasPropertyAccessors: boolean;
-    };
-    function propertyDidChange(obj: any, keyName: string): void;
-    function propertyIsEnumerable(prop: string): boolean;
-    function propertyWillChange(obj: any, keyName: string): void;
-    function removeChainWatcher(obj: any, keyName: string, node: any): void;
-    function removeListener(
-        obj: any,
-        eventName: string,
-        target: Function | any,
-        method: Function | string
-    ): void;
-    function removeObserver(obj: any, path: string, target: any, method: Function): any;
-    function required(): Descriptor;
-    function reset(): void;
-    function rewatch(obj: any): void;
-
-    type RunMethod<Target, Ret = any> = ((this: Target, ...args: any[]) => Ret) | keyof Target;
-    type EmberRunQueues = "sync" | "actions" | "routerTransitions" | "render"| "afterRender" | "destroy";
-
-    interface EmberRunTimer {
-        __ember_run_timer_brand__: any;
-    }
-
     const run: {
         /**
          * Runs the passed target and method inside of a RunLoop, ensuring any
@@ -2265,49 +2559,322 @@ export namespace Ember {
 
         queues: EmberRunQueues[];
     };
-    function runInDebug(fn: Function): void;
-    function runLoadHooks(name: string, object: any): void;
+    const platform: {
+        defineProperty: boolean;
+        hasPropertyAccessors: boolean;
+    };
+
+    /**
+     * `getEngineParent` retrieves an engine instance's parent instance.
+     */
+    function getEngineParent(engine: EngineInstance): EngineInstance;
+    /**
+     * Display a deprecation warning with the provided message and a stack trace
+     * (Chrome and Firefox only).
+     */
+    function deprecate(message: string, test: boolean, options: { id: string, until: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function deprecate(message: string, test: boolean, options?: { id?: string, until?: string }): any;
+    /**
+     * Define an assertion that will throw an exception if the condition is not met.
+     */
+    function assert(desc: string, test?: boolean): void | never;
+    /**
+     * Display a debug notice.
+     */
+    function debug(message: string): void;
+    /**
+     * NOTE: This is a low-level method used by other parts of the API.
+     * You almost never want to call this method directly. Instead you
+     * should use Ember.mixin() to define new properties.
+     * @private
+     */
+    function defineProperty(obj: object, keyName: string, desc?: PropertyDescriptor | ComputedProperty<any>, data?: any, meta?: any): void;
+    /**
+     * Alias an old, deprecated method with its new counterpart.
+     * @private
+     */
+    function deprecateFunc<Func extends ((...args: any[]) => any)>(message: string, options: { id: string, until: string }, func: Func): Func;
+    /**
+     * @private
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function deprecateFunc<Func extends ((...args: any[]) => any)>(message: string, func: Func): Func;
+    /**
+     * Run a function meant for debugging.
+     */
+    function runInDebug(func: () => void): any;
+    /**
+     * Display a warning with the provided message.
+     */
+    function warn(message: string, test: boolean, options: { id: string }): any;
+    function warn(message: string, options: { id: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function warn(message: string, test: boolean, options?: { id?: string }): any;
+    /**
+     * @deprecated Missing deprecation options: https://emberjs.com/deprecations/v2.x/#toc_ember-debug-function-options
+     */
+    function warn(message: string, options?: { id?: string }): any;
+    /**
+     * Global helper method to create a new binding. Just pass the root object
+     * along with a `to` and `from` path to create and connect the binding.
+     * @deprecated https://emberjs.com/deprecations/v2.x#toc_ember-binding
+     */
+    function bind(obj: {}, to: string, from: string): Binding;
+    /**
+     * Returns the cached value for a property, if one exists.
+     * This can be useful for peeking at the value of a computed
+     * property that is generated lazily, without accidentally causing
+     * it to be created.
+     */
+    function cacheFor<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K] | undefined;
+    /**
+     * Add an event listener
+     */
+    function addListener<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>, once?: boolean): void;
+    /**
+     * Remove an event listener
+     */
+    function removeListener<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
+    /**
+     * Send an event. The execution of suspended listeners
+     * is skipped, and once listeners are removed. A listener without
+     * a target is executed on the passed object. If an array of actions
+     * is not passed, the actions stored on the passed object are invoked.
+     */
     function sendEvent(obj: any, eventName: string, params?: any[], actions?: any[]): boolean;
     /**
-    setPath is deprecated since set now supports paths.
-    **/
-    const setPath: typeof deprecateFunc;
-    function subscribe(pattern: string, object: any): void;
-    function toLocaleString(): string;
-    function toString(): string;
-    function tryCatchFinally(
-        tryable: Function,
-        catchable: Function,
-        finalizer: Function,
-        binding?: any
-    ): any;
-    function tryInvoke(obj: any, methodName: string, args?: any[]): any;
-    function trySet(obj: any, path: string, value: any): void;
+     * Define a property as a function that should be executed when
+     * a specified event or events are triggered.
+     */
+    function on(eventNames: string, func: (...args: any[]) => void): (...args: any[]) => void;
     /**
-    trySetPath has been renamed to trySet.
-    **/
-    const trySetPath: typeof deprecateFunc;
+     * To get multiple properties at once, call `Ember.getProperties`
+     * with an object followed by a list of strings or an array:
+     */
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, list: K[]): Pick<T, K>;
+    function getProperties<T, K extends keyof T>(obj: ComputedProperties<T>, ...list: K[]): Pick<T, K>;
+    /**
+     * A value is blank if it is empty or a whitespace string.
+     */
+    function isBlank(obj: any): boolean;
+    /**
+     * Verifies that a value is `null` or an empty string, empty array,
+     * or empty function.
+     */
+    function isEmpty(obj: any): boolean;
+    /**
+     * Returns true if the passed value is null or undefined. This avoids errors
+     * from JSLint complaining about use of ==, which can be technically
+     * confusing.
+     */
+    function isNone(obj: any): obj is null | undefined;
+    /**
+     * A value is present if it not `isBlank`.
+     */
+    function isPresent(obj: any): boolean;
+    /**
+     * Merge the contents of two objects together into the first object.
+     * @deprecated Use Object.assign
+     */
+    function merge<T, U>(original: T, updates: U): T & U;
+    /**
+     * Makes a method available via an additional name.
+     */
+    function aliasMethod(methodName: string): ComputedProperty<any>;
+    /**
+     * Specify a method that observes property changes.
+     */
+    function observer(key1: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, key4: string, func: (target: any, key: string) => void): void;
+    function observer(key1: string, key2: string, key3: string, key4: string, key5: string, func: (target: any, key: string) => void): void;
+    /**
+     * Adds an observer on a property.
+     */
+    function addObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): void;
+    /**
+     * Remove an observer you have previously registered on this object. Pass
+     * the same key, target, and method you passed to `addObserver()` and your
+     * target will no longer receive notifications.
+     */
+    function removeObserver<Context, Target>(obj: Context, key: keyof Context, target: Target, method: ObserverMethod<Target, Context>): any;
+    /**
+     * Gets the value of a property on an object. If the property is computed,
+     * the function will be invoked. If the property is not defined but the
+     * object implements the `unknownProperty` method then that will be invoked.
+     */
+    function get<T, K extends keyof T>(obj: ComputedProperties<T>, key: K): T[K];
+    /**
+     * Retrieves the value of a property from an Object, or a default value in the
+     * case that the property returns `undefined`.
+     */
+    function getWithDefault<T, K extends keyof T>(obj: ComputedProperties<T>, key: K, defaultValue: T[K]): T[K];
+    /**
+     * Sets the value of a property on an object, respecting computed properties
+     * and notifying observers and other listeners of the change. If the
+     * property is not defined but the object implements the `setUnknownProperty`
+     * method then that will be invoked as well.
+     */
+    function set<T, K extends keyof T, V extends T[K]>(obj: ComputedProperties<T>, key: K, value: V): V;
+    /**
+     * Error-tolerant form of `Ember.set`. Will not blow up if any part of the
+     * chain is `undefined`, `null`, or destroyed.
+     */
+    function trySet(root: object, path: string, value: any): any;
+    /**
+     * Set a list of properties on an object. These properties are set inside
+     * a single `beginPropertyChanges` and `endPropertyChanges` batch, so
+     * observers will be buffered.
+     */
+    function setProperties<T, K extends keyof T>(obj: ComputedProperties<T>, hash: Pick<T, K>): Pick<T, K>;
+    /**
+     * Detects when a specific package of Ember (e.g. 'Ember.Application')
+     * has fully loaded and is available for extension.
+     * @private
+     */
+    function onLoad(name: string, callback: Function): any;
+    /**
+     * Called when an Ember.js package (e.g Ember.Application) has finished
+     * loading. Triggers any callbacks registered for this event.
+     * @private
+     */
+    function runLoadHooks(name: string, object?: {}): any;
+    /**
+     * Creates an `Ember.NativeArray` from an Array like object.
+     * Does not modify the original object's contents. Ember.A is not needed if
+     * `EmberENV.EXTEND_PROTOTYPES` is `true` (the default value). However,
+     * it is recommended that you use Ember.A when creating addons for
+     * ember or when you can not guarantee that `EmberENV.EXTEND_PROTOTYPES`
+     * will be `true`.
+     */
+    function A<T>(arr?: T[]): NativeArray<T>;
+    /**
+     * Compares two javascript values and returns:
+     */
+    function compare(v: any, w: any): number;
+    /**
+     * Creates a shallow copy of the passed object. A deep copy of the object is
+     * returned if the optional `deep` argument is `true`.
+     */
+    function copy(obj: any, deep?: boolean): any;
+    /**
+     * Compares two objects, returning true if they are equal.
+     */
+    function isEqual(a: any, b: any): boolean;
+    /**
+     * Returns true if the passed object is an array or Array-like.
+     */
+    function isArray(obj: any): obj is ArrayLike<any>;
+    /**
+     * Returns a consistent type for the passed object.
+     */
     function typeOf(item: any): string;
-    function unsubscribe(subscriber: any): void;
-    function unwatch(obj: any, keyPath: string): void;
-    function unwatchKey(obj: any, keyName: string): void;
-    function unwatchPath(obj: any, keyPath: string): void;
-    // ReSharper disable once DuplicatingLocalDeclaration
-    const uuid: number;
-    function valueOf(): {};
-    function warn(message: string, test?: boolean): void;
-    function watch(obj: any, keyPath: string): void;
-    function watchKey(obj: any, keyName: string): void;
-    function watchPath(obj: any, keyPath: string): void;
-    function watchedEvents(obj: {}): any[];
-    function wrap(func: Function, superFunc: Function): Function;
-    const _ContainerProxyMixin: Mixin<Object>;
-    const _RegistryProxyMixin: Mixin<Object>;
+    /**
+     * Copy properties from a source object to a target object.
+     * @deprecated Use Object.assign
+     */
+    function assign<T, U>(target: T, source: U): T & U;
+    function assign<T, U, V>(target: T, source1: U, source2: V): T & U & V;
+    function assign<T, U, V, W>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+    /**
+     * Polyfill for Object.create
+     * @deprecated Use Object.create
+     */
+    function create(o: object | null): any;
+    /**
+     * Polyfill for Object.keys
+     * @deprecated Use Object.keys
+     */
+    function keys(o: any): string[];
+    /**
+     * Returns a unique id for the object. If the object does not yet have a guid,
+     * one will be assigned to it. You can call this on any object,
+     * `Ember.Object`-based or not, but be aware that it will add a `_guid`
+     * property.
+     */
+    function guidFor(obj: any): string;
+    /**
+     * Convenience method to inspect an object. This method will attempt to
+     * convert the object into a useful string description.
+     * @private
+     */
+    function inspect(obj: any): string;
+    /**
+     * Checks to see if the `methodName` exists on the `obj`,
+     * and if it does, invokes it with the arguments passed.
+     */
+    function tryInvoke(obj: any, methodName: string, args?: any[]): any;
+    /**
+     * Forces the passed object to be part of an array. If the object is already
+     * an array, it will return the object. Otherwise, it will add the object to
+     * an array. If obj is `null` or `undefined`, it will return an empty array.
+     * @private
+     */
+    function makeArray<T>(obj?: T[] | T | null | undefined): T[];
+    /**
+     * Framework objects in an Ember application (components, services, routes, etc.)
+     * are created via a factory and dependency injection system. Each of these
+     * objects is the responsibility of an "owner", which handled its
+     * instantiation and manages its lifetime.
+     */
     function getOwner(object: any): any;
+    /**
+     * `setOwner` forces a new owner on a given object instance. This is primarily
+     * useful in some testing cases.
+     */
     function setOwner(object: any, owner: any): void;
+    /**
+     * A function may be assigned to `Ember.onerror` to be called when Ember
+     * internals encounter an error. This is useful for specialized error handling
+     * and reporting code.
+     */
+    function onerror(error: Error): void;
+    /**
+     * An empty function useful for some operations. Always returns `this`.
+     * @deprecated https://emberjs.com/deprecations/v2.x/#toc_code-ember-k-code
+     */
+    function K<This>(this: This): This;
+    /**
+     * The semantic version
+     */
+    const VERSION: string;
+    /**
+     * Alias for jQuery
+     */
+    const $: JQueryStatic;
+    /**
+     * This property indicates whether or not this application is currently in
+     * testing mode. This is set when `setupForTesting` is called on the current
+     * application.
+     */
     const testing: boolean;
-    const MODEL_FACTORY_INJECTIONS: boolean;
-    function assign(original: any, ...sources: any[]): any;
+    /**
+     * @private
+     */
+    const instrument: typeof Instrumentation.instrument;
+    /**
+     * @private
+     */
+    const reset: typeof Instrumentation.reset;
+    /**
+     * @private
+     */
+    const subscribe: typeof Instrumentation.subscribe;
+    /**
+     * @private
+     */
+    const unsubscribe: typeof Instrumentation.unsubscribe;
+    /**
+     * Expands `pattern`, invoking `callback` for each expansion.
+     * @private
+     */
+    function expandProperties(pattern: string, callback: (expanded: string) => void): void;
 }
 
 export default Ember;
@@ -2476,7 +3043,6 @@ declare module '@ember/object/computed' {
     export const expandProperties: typeof Ember.expandProperties;
     export const filter: typeof Ember.computed.filter;
     export const filterBy: typeof Ember.computed.filterBy;
-    export const filterProperty: typeof Ember.computed.filterProperty;
     export const gt: typeof Ember.computed.gt;
     export const gte: typeof Ember.computed.gte;
     export const intersect: typeof Ember.computed.intersect;
@@ -2484,7 +3050,6 @@ declare module '@ember/object/computed' {
     export const lte: typeof Ember.computed.lte;
     export const map: typeof Ember.computed.map;
     export const mapBy: typeof Ember.computed.mapBy;
-    export const mapProperty: typeof Ember.computed.mapProperty;
     export const match: typeof Ember.computed.match;
     export const max: typeof Ember.computed.max;
     export const min: typeof Ember.computed.min;

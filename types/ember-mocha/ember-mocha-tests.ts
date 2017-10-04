@@ -73,9 +73,12 @@ describeModel('user', {
 
 describeModule('component:x-foo', 'TestModule callbacks', function() {
     before(function() {
+        class I18n extends Ember.Object {}
+
         this.skip();
         this.timeout(1000);
-        this.registry.register('helper:i18n', {});
+        this.registry.register('helper:i18n', I18n);
+        this.registry.register('helper:i18n', I18n, { singleton: true });
         this.register('service:i18n', {});
         this.inject.service('i18n');
         this.inject.service('i18n', { as: 'i18n' });

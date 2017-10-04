@@ -19,4 +19,5 @@ AppRouter.map(function() {
         this.route('comment', { path: '/comment/:id' });
     });
     this.route('not-found', { path: '/*path' });
+    this.mount('my-engine');
 });

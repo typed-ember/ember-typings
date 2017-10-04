@@ -16,10 +16,13 @@
     "files": [
         "index.d.ts",
         "test/lib/assert.ts",
+        "test/application.ts",
         "test/ember-tests.ts",
+        "test/event.ts",
         "test/extend.ts",
         "test/create.ts",
         "test/object.ts",
+        "test/observable.ts",
         "test/mixin.ts",
         "test/reopen.ts",
         "test/detect.ts",
@@ -27,10 +30,7 @@
         "test/array.ts",
         "test/array-ext.ts",
         "test/array-proxy.ts",
-        "test/get.ts",
-        "test/get-properties.ts",
-        "test/set.ts",
-        "test/set-properties.ts",
+        "test/helper.ts",
         "test/computed.ts",
         "test/component.ts",
         "test/function-ext.ts",
@@ -39,6 +39,7 @@
         "test/transition.ts",
         "test/router.ts",
         "test/run.ts",
+        "test/test.ts",
         "test/controller.ts",
         "test/route.ts"
     ]
