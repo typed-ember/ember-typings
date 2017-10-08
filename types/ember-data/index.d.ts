@@ -4,10 +4,9 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
-declare module 'ember-data' {
 import Ember from 'ember';
 
-namespace DS {
+declare namespace DS {
   /**
    * Convert an hash of errors into an array with errors in JSON-API format.
    */
@@ -1658,48 +1657,4 @@ namespace DS {
     normalize(typeClass: Model, hash: {}): {};
   }
 }
-/**
- * Manages relationship payloads for a given store, for uninitialized
- * relationships.  Acts as a single source of truth (of payloads) for both sides
- * of an uninitialized relationship so they can agree on the most up-to-date
- * payload received without needing too much eager processing when those payloads
- * are pushed into the store.
- */
-class RelationshipPayloadsManager {
-}
-/**
- * Manages the payloads for both sides of a single relationship, across all model
- * instances.
- */
-class RelationshipPayloads {
-}
-/**
- * `IdentityMap` is a custom storage map for records by modelName
- * used by `DS.Store`.
- */
-class IdentityMap {
-  /**
-   * Retrieves the `InternalModelMap` for a given modelName,
-   * creating one if one did not already exist. This is
-   * similar to `getWithDefault` or `get` on a `MapWithDefault`
-   */
-  retrieve(modelName: any): InternalModelMap;
-  /**
-   * Clears the contents of all known `RecordMaps`, but does
-   * not remove the InternalModelMap instances.
-   */
-  clear(): any;
-}
-/**
- * `InternalModelMap` is a custom storage map for internalModels of a given modelName
- * used by `IdentityMap`.
- */
-class InternalModelMap {
-  /**
-   * Destroy all models in the internalModelTest and wipe metadata.
-   */
-  clear(): any;
-}
-
 export default DS;
-}

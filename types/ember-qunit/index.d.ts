@@ -4,6 +4,8 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
+/// <reference types="qunit" />
+
 declare module 'ember-qunit' {
     import Ember from 'ember';
     import { ModuleCallbacks } from "ember-test-helpers";

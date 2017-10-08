@@ -1,6 +1,11 @@
 import RSVP from 'rsvp';
 import { all, race, resolve } from 'rsvp';
-import { assertType } from '../ember/test/lib/assert';
+
+/** Static assertion that `value` has type `T` */
+// Disable tslint here b/c the generic is used to let us do a type coercion and
+// validate that coercion works for the type value "passed into" the function.
+// tslint:disable-next-line:no-unnecessary-generics
+declare function assertType<T>(value: T): void;
 
 async function testAsyncAwait() {
     const awaitedNothing = await RSVP.resolve();

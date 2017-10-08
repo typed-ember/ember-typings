@@ -1,3 +1,4 @@
+/// <reference types="qunit" />
 import { ModuleCallbacks, TestModule } from "ember-test-helpers";
 import wait from 'ember-test-helpers/wait';
 import hasEmberVersion from 'ember-test-helpers/has-ember-version';

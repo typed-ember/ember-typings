@@ -7,7 +7,10 @@
         "noImplicitAny": true,
         "noImplicitThis": true,
         "strictNullChecks": true,
+        "strictFunctionTypes": false,
         "baseUrl": "../",
+        "typeRoots": ["../"],
+        "types": [],
         "noEmit": true,
         "forceConsistentCasingInFileNames": true
     },

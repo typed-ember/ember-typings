@@ -4,6 +4,7 @@
         "only-arrow-functions": false,
         "strict-export-declare-modifiers": false,
         "no-duplicate-imports": false,
-        "unified-signatures": false
+        "unified-signatures": false,
+        "no-declare-current-package": false
     }
 }
