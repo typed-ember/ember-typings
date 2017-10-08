@@ -4,10 +4,9 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
-declare module 'ember-data' {
 import Ember from 'ember';
 
-namespace DS {
+declare namespace DS {
   /**
    * Convert an hash of errors into an array with errors in JSON-API format.
    */
@@ -1702,4 +1701,3 @@ class InternalModelMap {
 }
 
 export default DS;
-}
