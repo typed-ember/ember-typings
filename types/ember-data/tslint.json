@@ -10,6 +10,7 @@
         "object-literal-key-quotes": false,
         "only-arrow-functions": false,
         "no-empty-interface": false,
-        "prefer-const": false
+        "prefer-const": false,
+        "no-unnecessary-generics": false
     }
 }
