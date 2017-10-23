@@ -1855,7 +1855,7 @@ declare module 'ember' {
              * A hook you can implement to convert the URL into the model for
              * this route.
              */
-            model<T>(params: {}, transition: Transition): T | Rsvp.Promise<T>;
+            model(params: {}, transition: Transition): any;
 
             /**
              * Returns the model of a parent (or any ancestor) route
