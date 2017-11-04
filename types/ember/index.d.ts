@@ -3247,7 +3247,7 @@ declare module 'ember' {
          * an array. If obj is `null` or `undefined`, it will return an empty array.
          * @private
          */
-        function makeArray<T>(obj?: T[] | T | null | undefined): T[];
+        function makeArray<T>(obj?: T[] | T | null): T[];
         /**
          * Framework objects in an Ember application (components, services, routes, etc.)
          * are created via a factory and dependency injection system. Each of these
