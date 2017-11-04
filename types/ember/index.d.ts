@@ -555,6 +555,8 @@ declare module 'ember' {
         **/
         interface ArrayProxy<T> extends MutableArray<T> {}
         class ArrayProxy<T> extends Object.extend(MutableArray as {}) {
+            content: NativeArray<T>;
+
             /**
              * Should actually retrieve the object at the specified index from the
              * content. You can override this method in subclasses to transform the
