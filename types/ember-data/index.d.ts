@@ -1658,3 +1658,22 @@ declare namespace DS {
   }
 }
 export default DS;
+
+declare module 'ember' {
+    namespace Ember {
+        /*
+         * The store is automatically injected into these objects
+         *
+         * https://github.com/emberjs/data/blob/05e95280e11c411177f2fbcb65fd83488d6a9d89/addon/setup-container.js#L71-L78
+         */
+        interface Route {
+            store: DS.Store;
+        }
+        interface Controller {
+            store: DS.Store;
+        }
+        interface DataAdapter {
+            store: DS.Store;
+        }
+    }
+}
