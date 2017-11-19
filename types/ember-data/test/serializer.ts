@@ -5,7 +5,7 @@ const JsonApi = DS.JSONAPISerializer.extend({});
 
 const Customized = DS.JSONAPISerializer.extend({
     serialize(snapshot: DS.Snapshot, options: {}) {
-        let json = this._super(...Array.from(arguments));
+        let json: any = this._super(...Array.from(arguments));
 
         json.data.attributes.cost = {
             amount: json.data.attributes.amount,
