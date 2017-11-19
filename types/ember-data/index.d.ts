@@ -664,17 +664,22 @@ declare namespace DS {
    */
   class HasManyReference<T> {
     /**
-     * `ids()` returns an array of the record ids in this relationship.
+     * This returns a string that represents how the reference will be
+     * looked up when it is loaded. If the relationship has a link it will
+     * use the "link" otherwise it defaults to "id".
      */
-    remoteType(): any[];
+    remoteType(): string;
     /**
      * The link Ember Data will use to fetch or reload this has-many
      * relationship.
      */
     link(): string;
     /**
-     * The link Ember Data will use to fetch or reload this has-many
-     * relationship.
+     * `ids()` returns an array of the record ids in this relationship.
+     */
+    ids(): any[];
+    /**
+     * The meta data for the has-many relationship.
      */
     meta(): {};
     /**
@@ -684,7 +689,7 @@ declare namespace DS {
      */
     push(objectOrPromise: T[] | Promise<T[]>): ManyArray<T>;
     /**
-     * `value()` sycronously returns the current value of the has-many
+     * `value()` synchronously returns the current value of the has-many
      * relationship. Unlike `record.get('relationshipName')`, calling
      * `value()` on a reference does not trigger a fetch if the async
      * relationship is not yet loaded. If the relationship is not loaded
