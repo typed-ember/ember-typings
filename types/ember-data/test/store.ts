@@ -69,7 +69,7 @@ people.update().then(function() {
 people.get('isUpdating'); // true
 
 const MyRoute = Ember.Route.extend({
-    model(params: any) {
+    model(params: any): any {
         return this.store.findRecord('post', params.post_id, {include: 'comments,comments.author'});
     }
 });
