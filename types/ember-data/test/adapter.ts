@@ -23,3 +23,12 @@ const AuthTokenHeader = DS.JSONAPIAdapter.extend({
         };
     })
 });
+
+const OverrideQuery = DS.JSONAPIAdapter.extend({
+    query(store: DS.Store, type: string, query: object) {
+        const url = 'https://api.example.com/my-api';
+        return this.ajax(url, 'POST', {
+            param: 'foo'
+        });
+    }
+});
