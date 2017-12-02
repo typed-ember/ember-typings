@@ -4,16 +4,26 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.4
 
-declare module 'ember-mocha' {
-    import Ember from 'ember';
-    import { it as mochaIt, SuiteCallbackContext } from 'mocha';
-    import { ModuleCallbacks } from "ember-test-helpers";
+import { TestContext, ModuleCallbacks } from "ember-test-helpers";
+import Ember from 'ember';
+import { it as mochaIt, ISuiteCallbackContext } from 'mocha';
 
+// these globals are re-exported as named exports by ember-mocha
+type mochaBefore = typeof before;
+type mochaAfter = typeof after;
+type mochaBeforeEach = typeof beforeEach;
+type mochaAfterEach = typeof afterEach;
+type mochaSetup = typeof setup;
+type mochaTeardown = typeof teardown;
+type mochaSuiteSetup = typeof suiteSetup;
+type mochaSuiteTeardown = typeof suiteTeardown;
+
+declare module 'ember-mocha' {
     interface ContextDefinitionFunction {
-        (name: string, description: string, callbacks: ModuleCallbacks, tests: (this: SuiteCallbackContext) => void): void;
-        (name: string, description: string, tests: (this: SuiteCallbackContext) => void): void;
-        (name: string, callbacks: ModuleCallbacks, tests: (this: SuiteCallbackContext) => void): void;
-        (name: string, tests: (this: SuiteCallbackContext) => void): void;
+        (name: string, description: string, callbacks: ModuleCallbacks, tests: (this: ISuiteCallbackContext) => void): void;
+        (name: string, description: string, tests: (this: ISuiteCallbackContext) => void): void;
+        (name: string, callbacks: ModuleCallbacks, tests: (this: ISuiteCallbackContext) => void): void;
+        (name: string, tests: (this: ISuiteCallbackContext) => void): void;
     }
 
     interface ContextDefinition extends ContextDefinitionFunction {
@@ -67,73 +77,19 @@ declare module 'ember-mocha' {
 }
 
 declare module 'mocha' {
-    import { TestContext } from "ember-test-helpers";
+    // augment test callback context
+    interface ITestCallbackContext extends TestContext {}
+    interface IHookCallbackContext extends TestContext {}
 
-    interface Runnable {
-        title: string;
-        fn(...args: any[]): any;
-        async: boolean;
-        sync: boolean;
-        timedOut: boolean;
-        timeout(n: number): this;
-    }
-
-    interface Suite {
-        parent: Suite;
-        title: string;
-
-        fullTitle(): string;
-    }
-
-    interface Test extends Runnable {
-        parent: Suite;
-        pending: boolean;
-        state: 'failed' | 'passed' | undefined;
-
-        fullTitle(): string;
-    }
-
-    interface MochaTestContext extends TestContext {
-        skip(): this;
-        timeout(ms: number): this;
-    }
-
-    interface BeforeAndAfterContext extends MochaTestContext {
-        currentTest: Test;
-    }
-
-    interface TestDefinition {
-        (expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
-        only(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): Test;
-        skip(expectation: string, callback?: (this: MochaTestContext, done: MochaDone) => any): void;
-        timeout(ms: number): void;
-        state: "failed" | "passed";
-    }
-
-    type MochaDone = (error?: any) => any;
-
-    interface SuiteCallbackContext {
-        timeout(ms: number): this;
-        retries(n: number): this;
-        slow(ms: number): this;
-    }
-
-    interface ContextDefinition {
-        (description: string, callback: (this: SuiteCallbackContext) => void): Suite;
-        only(description: string, callback: (this: SuiteCallbackContext) => void): Suite;
-        skip(description: string, callback: (this: SuiteCallbackContext) => void): void;
-    }
-
-    // export const mocha: Mocha;
-    export const describe: ContextDefinition;
-    export const context: ContextDefinition;
-    export const it: TestDefinition;
-    export function before(callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function before(description: string, callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function after(callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function after(description: string, callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function beforeEach(callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function beforeEach(description: string, callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function afterEach(callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
-    export function afterEach(description: string, callback: (this: BeforeAndAfterContext, done: MochaDone) => any): void;
+    // re-export mocha globals as named exports
+    export const describe: Mocha.IContextDefinition;
+    export const it: Mocha.ITestDefinition;
+    export const setup: mochaSetup;
+    export const teardown: mochaTeardown;
+    export const suiteSetup: mochaSuiteSetup;
+    export const suiteTeardown: mochaSuiteTeardown;
+    export const before: mochaBefore;
+    export const after: mochaAfter;
+    export const beforeEach: mochaBeforeEach;
+    export const afterEach: mochaAfterEach;
 }
