@@ -25,6 +25,7 @@
   "dependencies": {
     "@types/handlebars": "^4.0.35",
     "@types/jquery": "^3.2.11",
+    "@types/mocha": "^2.2.44",
     "@types/qunit": "^2.0.31",
     "jslint": "^0.10.3"
   }
