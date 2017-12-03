@@ -23,10 +23,13 @@
     "types-publisher": "Microsoft/types-publisher#production"
   },
   "dependencies": {
+    "@types/ember": "^2.8.2",
+    "@types/ember-data": "^2.14.2",
     "@types/handlebars": "^4.0.35",
-    "@types/jquery": "^3.2.11",
+    "@types/jquery": "^3.2.16",
     "@types/mocha": "^2.2.44",
     "@types/qunit": "^2.0.31",
+    "@types/rsvp": "^4.0.0",
     "jslint": "^0.10.3"
   }
 }

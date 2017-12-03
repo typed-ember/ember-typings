@@ -6,13 +6,32 @@
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.0.4.tgz#fe86315d9a66827feeb16f73bc954688ec950e18"
 
-"@types/handlebars@^4.0.35":
+"@types/ember-data@^2.14.2":
+  version "2.14.2"
+  resolved "https://registry.yarnpkg.com/@types/ember-data/-/ember-data-2.14.2.tgz#9870c4e474570143b0581780d36fc18187c60ec3"
+  dependencies:
+    "@types/ember" "*"
+
+"@types/ember@*", "@types/ember@^2.8.2":
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/@types/ember/-/ember-2.8.2.tgz#eb833b0b3e98f6afd093f6b8ab5c36e1de951a83"
+  dependencies:
+    "@types/handlebars" "*"
+    "@types/htmlbars-inline-precompile" "*"
+    "@types/jquery" "*"
+    "@types/rsvp" "*"
+
+"@types/handlebars@*", "@types/handlebars@^4.0.35":
   version "4.0.36"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.36.tgz#ff57c77fa1ab6713bb446534ddc4d979707a3a79"
 
-"@types/jquery@^3.2.11":
-  version "3.2.15"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.2.15.tgz#3f620a9f5a0b296866f4bc729825226d0a35fba6"
+"@types/htmlbars-inline-precompile@*":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/htmlbars-inline-precompile/-/htmlbars-inline-precompile-1.0.0.tgz#4c283da1a7e303b269de3c6aa953acc8d8736949"
+
+"@types/jquery@*", "@types/jquery@^3.2.16":
+  version "3.2.16"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.2.16.tgz#04419c404a3194350e7d3f339a90e72c88db3111"
 
 "@types/mocha@^2.2.44":
   version "2.2.44"
@@ -25,6 +44,10 @@
 "@types/qunit@^2.0.31":
   version "2.0.31"
   resolved "https://registry.yarnpkg.com/@types/qunit/-/qunit-2.0.31.tgz#a53e2cf635262c8bf46a71a137d8c7970dde9562"
+
+"@types/rsvp@*", "@types/rsvp@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rsvp/-/rsvp-4.0.0.tgz#6c59d84bb5ea8a4fd11ec3d7aa748710e0e5e373"
 
 JSONStream@~1.3.1:
   version "1.3.1"
