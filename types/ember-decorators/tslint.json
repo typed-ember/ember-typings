@@ -1,0 +1,14 @@
+{
+    "extends": "dtslint/dt.json",
+    "rules": {
+        // Heavy use of Function type in this older package.
+        "ban-types": false,
+        "jsdoc-format": false,
+        "no-misused-new": false,
+        // not sure what this means
+        "no-single-declare-module": false,
+        "no-empty-interface": false,
+        // disabled because of rfc176 module exports
+        "strict-export-declare-modifiers": false
+    }
+}

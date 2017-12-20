@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "baseUrl": "../",
+        "noEmit": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true
+    },
+    "files": [
+        "index.d.ts",
+        "ember-decorators-tests.ts"
+    ]
+}
