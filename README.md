@@ -1,6 +1,6 @@
 <h1 style="text-align: center">:stop_sign: ARCHIVED :stop_sign:</h1>
 
-<h2 style="text-align: center">This repository is now in archival mode, having fulfilled its purpose. We now track type definition issues for the Ember project in the [ember-cli-typescript](https://github.com/typed-ember/ember-cli-typescript) repository.</h2>
+<h2 style="text-align: center">This repository is now in archival mode, having fulfilled its purpose. We now track type definition issues for the Ember project in the <a href="https://github.com/typed-ember/ember-cli-typescript">ember-cli-typescript</a> repository.</h2>
 
 ---
 
